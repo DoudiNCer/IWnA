@@ -5,7 +5,7 @@ Some of my interesting and useful programming works and articles.
 
 ## Articles
 
-+ [Training Essay](Articles/TrainingEssay.md)科协培训笔记
++ [Training Essay](Articles/TrainingEssay.md)科协&机器人培训笔记
 
 ## System or software config files
 
