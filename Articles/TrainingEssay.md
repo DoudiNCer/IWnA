@@ -339,6 +339,8 @@ memset(num,1,4);	// 注意匹配问题，memset是在内存层面进行初始化
 
 ### **C语言 #2**
 
+**BV1Bf4y1g7Hm**
+
 cjb的另一条路
 
 > 1. 可以用来快速“查询”的东西有：数组
@@ -439,4 +441,60 @@ cjb的另一条路
 ## 2021.10.19
 
 ### **算法 #0**
+
+**BV1ou411d7Po**
+
+深度学习（Deep Learning）：感知-->推理-->知识-->规划
+
+> 自然语言处理
+>
+> 计算机视觉
+>
+> 机器学习
+
+### 算法
+
+> Informally, an algorithm is any well-defined computational procedure that takes some value, or set of values, as input and produces some value, or set of values, as output.
+
+1.  算法的要求
+
+> 正确性
+>
+> 复杂度小
+
+2. 评判算法优劣：
+
+> f(n)=O(g(n))：∀n>N₀,s.t. f(x)<=c₁g(x)（上界，最坏复杂度）
+>
+> f(n)=Ω(g(n))：∀n>N₀,s.t. f(x)>=c₂g(x)（下界，最优复杂度）
+>
+> f(n)=ϴ(g(n))：说明O(g(n))=Ω(g(n))
+
+3. 分治：
+
+> 把复杂的问题拆分成小问题
+>
+> 比如Karatsuba Multiplication O(n^log3^)
+>
+> > z=x*y;
+> >
+> > x=xL\*10^m^+xR; y=yL\*10^m^+yR;
+> >
+> > zL=xL\*yL; zM=xL\*yR+xR\*yL; xR\*yR
+> >
+> > z=zL\*10^2m^+zM*10^m^+zR;
+> >
+> > 升级后 
+> >
+> > zM=(xL+xR)*(yL+yR)-zL-zR;
+> >
+> > z=zL\*10^2m^+zM*10^m^+zR;
+
+4. 快速幂
+
+> a^n^ = (a^n/2^)^2^ = ...
+>
+> 递归求幂，时间复杂度为O(log(n))
+
+5. Fibonacci
 
