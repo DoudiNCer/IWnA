@@ -32,12 +32,12 @@
 
 2. 123，0123，\0123都表示八进制123
 
-3. float 1 8 23位分别表示符号、数据和指数 ，double为1 9 52
+3. float 1 8 23位分别表示符号、指数和数据 ，double为1 9 52
 
 + 参考IEEE-754
-+ 由于指数不需要做加减法，指数用~~原码~~-127=00000000,1=10000000（加127）表示，线性对应便于比较大小。
-+ 拆分规则同科学记数法，但是只表示1到2之间的数
-+ 精确到6到7位
++ 由于指数不需要做加减法，指数用~~原码~~-127=00000000,1=10000000（原数加127的无符号类型）表示，线性对应便于比较大小。
++ 拆分规则同科学记数法，但是只表示1到2之间的数。
++ 精确到6到7位。
 + [关于C语言float类型的详细介绍](https://blog.csdn.net/hzw05103020/article/details/50626076?utm_source=app&app_version=4.16.0&code=app_1562916241&uLinkId=usr1mkqgl919blen)
 
 ##### 标准输入输出
@@ -86,7 +86,7 @@ b=b<<2;	// 二进制移位，相当于除以2
 
 [高程的课件链接](https://pan.baidu.com/s/1NqTNDfAJvr3_r8Ndw7Isww)提取码：tjut
 
-###### 敲代码常见错误（欢迎补充）：
+##### 敲代码常见错误（欢迎补充）：
 
 1. “==”和“=”的区别
 
@@ -260,7 +260,7 @@ EOF的使用
 > ```C
 > int num;
 > if(scanf("%d",&num)!=EOF){
->    	printf("%d",num);
+> 	printf("%d",num);
 > }
 > ```
 >
@@ -274,7 +274,7 @@ EOF的使用
 > ```C
 > int Sort(int num, int* Num) {
 > 	int i,j;
->     int temp;
+>  int temp;
 > 	for(i = num - 1; i > 0; i--) {			// 进行(数目-1)!轮
 > 		for(j = 0; j < i; j++) {
 > 			if(Num[j]<Num[j+1]) {
@@ -284,7 +284,7 @@ EOF的使用
 > 			}
 > 		}
 > 	}
->     return 0;
+>  return 0;
 > }
 > ```
 >
@@ -385,17 +385,18 @@ cjb的另一条路
 > 传数组的方式：
 >
 > >直接传：
-> >  
-> > ```C
-> > int foo(a[]);
-> > 
-> > int a[10]={0};
-> > foo(a);				// a==&a==&a[0]
-> > ```
 > >
-> > 或者用指针（参考DevC++新建项目时main()函数的参数）
+> >```C
+> >int foo(a[]);
+> >
+> >int a[10]={0};
+> >foo(a);				// a==&a==&a[0]
+> >```
+> >
+> >或者用指针（参考DevC++新建项目时main()函数的参数）
+> >
+> >（其实这俩没区别）
 >
->  
 
 ### 全局变量与局部变量
 
@@ -404,7 +405,7 @@ cjb的另一条路
 |   全局变量   |  定义在函数外   | 整个程序 | 整个程序 |    数据区    |
 |   局部变量   |    代码块内     |  代码块  |  代码块  |     栈区     |
 | 静态局部变量 |  static int a;  |  代码块  | 整个程序 |    数据区    |
-|  寄存器变量  | restrict int a; |  代码块  |  代码块  |  CPU寄存器   |
+|  寄存器变量  | register int a; |  代码块  |  代码块  |  CPU寄存器   |
 
 ### 变量存储位置
 
@@ -452,7 +453,7 @@ cjb的另一条路
 >
 > 机器学习
 
-### 算法
+#### 算法
 
 > Informally, an algorithm is any well-defined computational procedure that takes some value, or set of values, as input and produces some value, or set of values, as output.
 
@@ -498,3 +499,112 @@ cjb的另一条路
 
 5. Fibonacci
 
+## 2021.10.23
+
+### **算法 #1 **
+
+**BV1Wh41187gA**
+
+#### 分治的时间复杂度
+
+> T(n) = a * T(n/b) + C * n^d^ 
+>
+> T(1) = C
+>
+> a：子问题数
+>
+> b：分解一次问题规模减小的比例
+>
+> C：常数，
+>
+> d：每个节点操作次数
+
+#### 二分查找
+
+> 对于**不严格单调**的待查找数组，先判断两个端点，，依次类推再看中间，找出待查找的项或将查找范围减半，查找范围减半后判断新范围中间元素与待查找值的关系，以次类推……
+>
+> 时间复杂度：O(log2(n))
+>
+> 实现：
+>
+> > ``` C
+> >/*
+> > *摘自洛谷P2249答案，返回单调不减数列中某元素第一次出现的位置（1 == 1序号）
+> > */
+> >  
+> > int Find(int ask, int rP, int* array, int* code) {	// array and code is two array,whose values are the number need to be find and its "first code"
+> > 	int lP = 0;
+> > 	int mP;
+> > 	if(array[lP] == ask) {
+> > 		return code[lP] + 1;
+> > 	}
+> > 	if(array[rP] == ask) {
+> > 		return code[rP] + 1;
+> > 	}
+> > 	do{
+> > 		if ((rP - lP) < 2) {					// if we don't fnd the number,return -1
+> > 			return -1;
+> > 		}
+> > 		mP = (lP + rP) / 2;
+> > 		if (array[mP] == ask) {
+> > 			return 	code[mP] + 1;
+> > 		}else if (array[mP] > ask) {
+> > 			rP = mP;
+> > 		}else if (array[mP] < ask) {
+> > 			lP = mP;
+> > 		}
+> > 	}while(1);
+> > }
+> > ```
+
+####  归并排序
+
+   >将待排序的数组不断分组直至每个小组内n元素数量不大于2，对最小小组排序，
+   >
+   >时间复杂度：O(nlog(n))
+   >
+   >实现：
+   >
+   >> ```C
+   >> void Sort(int arr[], int len) {
+   >>     int* a = arr;
+   >>     int* b = (int*) malloc(len * sizeof(int));
+   >>     int seg, start;
+   >>     for (seg = 1; seg < len; seg += seg) {
+   >>         for (start = 0; start < len; start += seg + seg) {
+   >>             int low = start, mid = min(start + seg, len), high = min(start + seg + seg, len);
+   >>             int k = low;
+   >>             int start1 = low, end1 = mid;
+   >>             int start2 = mid, end2 = high;
+   >>             while (start1 < end1 && start2 < end2)
+   >>                 b[k++] = a[start1] < a[start2] ? a[start1++] : a[start2++];
+   >>             while (start1 < end1)
+   >>                 b[k++] = a[start1++];
+   >>             while (start2 < end2)
+   >>                 b[k++] = a[start2++];
+   >>         }
+   >>         int* temp = a;
+   >>         a = b;
+   >>         b = temp;
+   >>     }
+   >>     if (a != arr) {
+   >>         int i;
+   >>         for (i = 0; i < len; i++)
+   >>             b[i] = a[i];
+   >>         b = a;
+   >>     }
+   >>     free(b);
+   >> }
+   >> ```
+   >
+
+#### 取中位数
+
+> 0. 先排序后取中间的，O(nlog(n))
+> 1. 随机取a属于S，遍历S找出比a大的、小的和等于a的，然后砍掉不符合的。O(n)
+
+#### 矩阵快速乘法
+
+> 0. 暴力计算
+> 1. 分块矩阵
+> 2. 无法描述
