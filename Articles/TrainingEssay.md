@@ -689,8 +689,8 @@ C程序开始不是main()函数，前面有东西
    > ```C
    > int a = 1;
    > int b = 2;
-   > const int *p1 = &a;			// 常量指针，指向的变量被写const,使*p不能被修改
-   > int *const p2 = &a;			// 指针常量，一个指针被写const，使p1不变
+   > const int *p1 = &a;			// 常量指针，指向的变量被写const,使*p1不能被修改
+   > int *const p2 = &a;			// 指针常量，一个指针被写const，使p2不变
    > ```
 
 5. 空指针和未知类型指针
