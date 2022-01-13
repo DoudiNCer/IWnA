@@ -1149,7 +1149,73 @@ Java代码编译得到的东东叫“字节码”，由JVMi执行；
 >
 > 行列式：面积、体积
 
-## 2022.1.4
+## 2022.1.12
 
-### **安全组培训 #0**
+### 安全组web方向培训 #0x02
 
+编程语言分为机械语言、汇编语言、高级语言，前两者属于低级语言
+
+Python解释器：CPython、JPython、IPython等
+
+**列表（list）**：使用[]括起来的一组变量，可以进行切片、检索、加、乘、替换操作
+
+> ```python
+> #!/usr/bin/python3
+> myList = [1, 2.3, '3', "4567", [8]]
+> print(myList[1])
+> print(myList[-1])			# 反向索引
+> print(myList[1:3])			# 切片
+> myList[1] = 3.4				# 更新
+> myList.append("Google")		# 添加
+> del myList[1]				# Python3.x开始的删除功能
+> ```
+>
+> 列表中元素不一定为同一类型
+
+**元组（tuple）**：使用()括起来的一组变量，元祖内元素不能被修改、删除
+
+> ```python
+> myTuple = (1, 2.2, '3', '45')
+> myTuple1 = (1,)					# 使用逗号表示这是元组
+> MyTuple2 = '1', '2', '3'		# 甚至可以不用逗号
+> ```
+>
+> 
+
+**字典（dict）**：使用{}括起来的一组key:value对，使用key作为索引访问value
+
+> ```python
+> myDict = {'Name':'ZhangSan', 2:18, [2]:'2'}
+> ```
+>
+> 字典的key必须不可变，即不能用列表
+
+\__class__方法：返回对象所属类
+
+Python通过双下划线表示私有属性
+
+**迭代器**：iter()创建迭代器，next()下一个
+
+**生成器**：yield()保存数据，返回一个迭代器
+
+Python语法糖：a,b = b,a
+
+**装饰器**：将原函数作为参数传给装饰器函数，从而添加功能
+
+```python
+def func():
+    print("原函数")
+    
+def deco(func):
+    print("开始装饰")
+    func()
+    print("装饰完成")
+    
+
+deco(func)
+
+@deco
+func()
+```
+
+> 
