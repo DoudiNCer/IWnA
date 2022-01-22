@@ -2,7 +2,7 @@
 
 ## MySQL介绍
 
-MySQL是一种流行的**关系型数据库**，除NySQL以外，还有其他数据库：
+&emsp;&emsp;MySQL是一种流行的**关系型数据库管理系统**(RDBMS)，除NySQL以外，还有其他数据库管理系统：
 
 - **关系型数据库**：SQL Server,SQLite...
 - **非关系型数据库**：MongoDB.Redis...
@@ -48,6 +48,8 @@ mysqladmin --version		# 验证安装
 ```
 
 ## MySQL专业术语
+
+
 
 ## 数据操作
 
