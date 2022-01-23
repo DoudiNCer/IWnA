@@ -47,13 +47,55 @@ systemctl enable mysqld		# 酌情使用
 mysqladmin --version		# 验证安装
 ```
 
+用户登录：
+
+```shell
+mysql -h server -P port(default 3306) -u username -p password
+```
+
 ## MySQL专业术语
 
-
+> - **数据库:** 数据库是一些关联表的集合。
+> - **数据表:** 表是数据的矩阵。在一个数据库中的表看起来像一个简单的电子表格。
+> - **列:** 一列(数据元素) 包含了相同类型的数据, 例如邮政编码的数据。
+> - **行：**一行（元组，或记录）是一组相关的数据，例如一条用户订阅的数据。
+> - **冗余**：存储两倍数据，冗余降低了性能，但提高了数据的安全性。
+> - **主键**：主键是唯一的。一个数据表中只能包含一个主键。你可以使用主键来查询数据。
+> - **外键：**外键用于关联两个表。
+> - **复合键**：复合键（组合键）将多个列作为一个索引键，一般用于复合索引。
+> - **索引：**使用索引可快速访问数据库表中的特定信息。索引是对数据库表中一列或多列的值进行排序的一种结构。类似于书籍的目录。
+> - **参照完整性:** 参照的完整性要求关系中不允许引用不存在的实体。与实体完整性是关系模型必须满足的完整性约束条件，目的是保证数据的一致性。
 
 ## 数据操作
 
+#### 库的操作
+
+```mysql
+create database databaseName 
+```
+
+
+
 ## 数据结构
 
-## 用户权限
+## 用户操作与权限
 
+SQL方法：编辑mysql\user
+
+非SQL方法：
+
+#### 用户操作
+
+```mysql
+create user username@ip identified by password;	# ip的通配符为%
+drop user username@ip;
+rename user old_username@ip to new_username@ip;
+```
+
+#### 权限管理
+
+```mysql
+show grants for username@ip;
+grant permissions on databases.tables to username@ip;
+revoke permissions on databases.tables from username@ip;
+```
