@@ -208,7 +208,7 @@ md，居家隔离14天
 > > >
 > > > ```java
 > > > if (b instanceof A){
-> > >     A a = (A)b;
+> > >    	A a = (A)b;
 > > > }
 > > > ```
 > > >
@@ -219,14 +219,14 @@ md，居家隔离14天
 
 #### 线程
 
-> **匿名类**：这玩意儿在创建进程的时候很有用
+> **匿名内部类**：这玩意儿在创建进程的时候很有用
 >
 > ```java
 > new Thread(){
->     @Override
+>  @Override
 > 	public void run(){
->         ...
->     }
+>      ...
+>  }
 > }.start();
 > ```
 >
@@ -234,11 +234,24 @@ md，居家隔离14天
 >
 > > 0. extend Thread
 > > 1. implements Runnable 并用Thread的含参构造器构造（一个对象初始化多个线程时天然共享对象属性）
+> > 1. implements Callable 并用Thread的含参构造器构造以启动线程、用FutureTask的含参构造器构造（用get()获得返回值、捕获异常）
+> > 1. 线程池
 >
 > **线程同步的方法**：
 >
 > > 0. 同步代码块synchronized(){}（手动指定同步监视器）
 > > 1. 同步方法synchronized（使用this或当前类本身（静态方法）作为同步监视器）
+> > 1. 使用ReentrantLock的lock()和unlock()手动上锁、解锁（更加灵活、JVM资源消耗少）
+>
+> **线程间通信**：
+>
+> > &emsp;&emsp;由java.lang.Object提供（因此任何对象都可以充当同步监视器），但必须在synchronized代码块或synchronized方法中使用，且调用者为同步监视器
+> >
+> > wait()：使当前线程阻塞并释放同步锁
+> >
+> > notify()：释放一个wait()的线程（不释放锁）
+> >
+> > notifyAll()：释放所有wait()的线程
 
 ### 第0x02次培训
 
@@ -260,3 +273,58 @@ md，居家隔离14天
 > &emsp;&emsp;Java的继承符合“is a”的理念，因此不允许多继承。且多继承存在“菱形继承”问题：B和C继承A，D继承B和C,B和C分别重写了A的某方法。
 >
 > &emsp;&emsp; Java允许一个类实现多个接口，由于接口的方法都是抽象方法，不存在两个接口“同名方法实现不同”的问题。
+
+## Week 0x02
+
+## 2022.1.20
+
+### 随手一记
+
+#### Java中的各种“集合”
+
+|               |   底层实现    |  无序性&唯一性  | 随机访问 | Synchronized |  implement   |
+| :-----------: | :-----------: | :-------------: | :------: | :----------: | :----------: |
+|   ArrayList   |     Array     |      false      |   true   |    false     |     List     |
+|  LinkedList   |  LinkedList   |      false      |  false   |    false     |     List     |
+|    Vector     |     Array     |      false      |   true   |     true     |     List     |
+|    HashSet    |  "hash"Array  |      true       |   true   |     true     |     Set      |
+| LinkedHashSet |    HashSet    |      true       |   true   |     true     |     Set      |
+|    TreeSet    |    TreeMap    |      true?      |   true   |    false     |     Set      |
+|   Hashtable   |               |      true       |   true   |     true     |     Map      |
+|    HashMap    |               |      true       |   true   |    false     |     Map      |
+| LinkedHashMap |    HashMap    |      true       |   true   |    false     |     Map      |
+|    TreeMap    | Red-BlackTree | true?（可重复） |   true   |    false     | NavigableMap |
+
+## 2022.1.22
+
+### 随手一记
+
+#### Lambda表达式
+
+Lambda表达式，或者叫闭包，是Java*开始的一种更简洁地定义方法的形式。
+
+Lambda表达式的基本形式如下：
+
+```java
+(参数列表) -> {代码块}
+```
+
+为了做到更加简单，Lambda可以省略某些内容，包括：
+
+> - 参数列表和代码块只有一项时的括号（空参需要保留小括号）
+> - 可以推导出的参数数据类型
+> - 代码块仅有一个表达式时的返回语句和分号
+
+当 Lambda 表达式中的代码块**仅调用一个方法并且参数全部传递到该方法中**时可用方法引用代替，如
+
+```java
+Func func1 = System.out::println;	// 没有括号诶！
+```
+
+引用构造器：
+
+```java
+Func func1 = MyClass::new;
+```
+
+有且仅有一个抽象方法的接口就叫**函数式接口**
