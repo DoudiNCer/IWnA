@@ -19,11 +19,11 @@
 > - **MySQL-shared** - 该软件包包含某些语言和应用程序需要动态装载的共享库(libmysqlclient.so*)。
 > - **MySQL-bench** - MySQL数据库服务器的基准和性能测试工具。
 
-### MySQL的安装（RHEL系）
+### MySQL的安装
 
 （自觉用root，不会的命令自觉man一下）
 
-下载安装：
+下载安装（RHEL系）：
 
 ```shell
 wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
@@ -47,10 +47,16 @@ systemctl enable mysqld		# 酌情使用
 mysqladmin --version		# 验证安装
 ```
 
+或者用Docker：
+
+```shell
+docker run -itd --name=$containerName -p $hostPort:3306 -e MYSQL_ROOT_PASSWORD=$rootPassword mysql:5
+```
+
 用户登录：
 
 ```shell
-mysql -h server -P port(default 3306) -u username -p password
+mysql -h $serverLocate -P $port(default 3306) -u $username -p $password
 ```
 
 ## MySQL专业术语
@@ -73,8 +79,6 @@ mysql -h server -P port(default 3306) -u username -p password
 ```mysql
 create database databaseName 
 ```
-
-
 
 ## 数据结构
 
