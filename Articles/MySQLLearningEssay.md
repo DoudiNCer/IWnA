@@ -74,19 +74,122 @@ mysql -h $serverLocate -P $port(default 3306) -u $username -p $password
 
 ## 数据操作
 
-#### 库的操作
+#### 库
 
 ```mysql
-create database databaseName 
+show databases;
+create database $databaseName engine=$engineName default $key $value;
+drop database $databaseName;
+use $database;
 ```
 
-## 数据结构
+#### 表
+
+```mysql
+show tables;
+create table $tableNme($listName $dataType ￥characteristics) default $key=$value;
+	auto_increment（唯一）
+	primary key （散列化）（唯一）
+	default $value
+	not null
+delete from $tableName;					# 清空表
+truncate table $tableName				# 重置自增，快速
+drop table $tableName;					# 删除表
+```
+
+#### 记录
+
+#### 增
+
+```mysql
+insert into $tableName($listName) values($value);
+```
+
+#### 删
+
+```mysql
+delete from $tableName where $条件;
+```
+
+#### 改
+
+```mysql
+update $tableName set $key=$value where $条件
+```
+
+#### 查
+
+```mysql
+select $listHead from $table;			# As default,show them on screen
+```
+
+
+
+## 数据类型
+
+### 数字
+
+|     类型     |                   大小                   |                        范围（有符号）                        |                        范围（无符号）                        |      用途       |
+| :----------: | :--------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :-------------: |
+|   TINYINT    |                 1 Bytes                  |                         (-128，127)                          |                           (0，255)                           |    小整数值     |
+|   SMALLINT   |                 2 Bytes                  |                      (-32 768，32 767)                       |                         (0，65 535)                          |    大整数值     |
+|  MEDIUMINT   |                 3 Bytes                  |                   (-8 388 608，8 388 607)                    |                       (0，16 777 215)                        |    大整数值     |
+| INT或INTEGER |                 4 Bytes                  |               (-2 147 483 648，2 147 483 647)                |                      (0，4 294 967 295)                      |    大整数值     |
+|    BIGINT    |                 8 Bytes                  |   (-9,223,372,036,854,775,808，9 223 372 036 854 775 807)    |               (0，18 446 744 073 709 551 615)                |   极大整数值    |
+|    FLOAT     |                 4 Bytes                  | (-3.402 823 466 E+38，-1.175 494 351 E-38)，0，(1.175 494 351 E-38，3.402 823 466 351 E+38) |         0，(1.175 494 351 E-38，3.402 823 466 E+38)          | 单精度 浮点数值 |
+|    DOUBLE    |                 8 Bytes                  | (-1.797 693 134 862 315 7 E+308，-2.225 073 858 507 201 4 E-308)，0，(2.225 073 858 507 201 4 E-308，1.797 693 134 862 315 7 E+308) | 0，(2.225 073 858 507 201 4 E-308，1.797 693 134 862 315 7 E+308) | 双精度 浮点数值 |
+|   DECIMAL    | 对DECIMAL(M,D) ，如果M>D，为M+2否则为D+2 |                        依赖于M和D的值                        |                        依赖于M和D的值                        |    定点小数     |
+
+### 日期
+
+|   类型    | 大小 ( bytes) |                             范围                             |        格式         |           用途           |
+| :-------: | :-----------: | :----------------------------------------------------------: | :-----------------: | :----------------------: |
+|   DATE    |       3       |                    1000-01-01/9999-12-31                     |     YYYY-MM-DD      |          日期值          |
+|   TIME    |       3       |                   '-838:59:59'/'838:59:59'                   |      HH:MM:SS       |     时间值或持续时间     |
+|   YEAR    |       1       |                          1901/2155                           |        YYYY         |          年份值          |
+| DATETIME  |       8       |           1000-01-01 00:00:00/9999-12-31 23:59:59            | YYYY-MM-DD HH:MM:SS |     混合日期和时间值     |
+| TIMESTAMP |       4       | 1970-01-01 00:00:00/2038结束时间是第 **2147483647** 秒，北京时间 **2038-1-19 11:14:07**，格林尼治时间 2038年1月19日 凌晨 03:14:07 |   YYYYMMDD HHMMSS   | 混合日期和时间值，时间戳 |
+
+### 字符
+
+|    类型    |         大小          |              用途               |
+| :--------: | :-------------------: | :-----------------------------: |
+|    CHAR    |      0-255 bytes      |           定长字符串            |
+|  VARCHAR   |     0-65535 bytes     |           变长字符串            |
+|  TINYBLOB  |      0-255 bytes      | 不超过 255 个字符的二进制字符串 |
+|  TINYTEXT  |      0-255 bytes      |          短文本字符串           |
+|    BLOB    |    0-65 535 bytes     |     二进制形式的长文本数据      |
+|    TEXT    |    0-65 535 bytes     |           长文本数据            |
+| MEDIUMBLOB |  0-16 777 215 bytes   |  二进制形式的中等长度文本数据   |
+| MEDIUMTEXT |  0-16 777 215 bytes   |        中等长度文本数据         |
+|  LONGBLOB  | 0-4 294 967 295 bytes |    二进制形式的极大文本数据     |
+|  LONGTEXT  | 0-4 294 967 295 bytes |          极大文本数据           |
+
+### 空间
+
+|        类型        |           用途            |
+| :----------------: | :-----------------------: |
+|      GEOMETRY      |     任何类型的空间值      |
+|       POINT        |    一个点(一对X-Y坐标)    |
+|     LINESTRING     | 曲线(一个或多个`POINT`值) |
+|      POLYGON       |          多边形           |
+| GEOMETRYCOLLECTION |    `GEOMETRY`值的集合     |
+|  MULTILINESTRING   |   `LINESTRING`值的集合    |
+|     MULTIPOINT     |      `POINT`值的集合      |
+|    MULTIPOLYGON    |     `POLYGON`值的集合     |
+
+### 特殊
+
+- enum：枚举
+- set：n选m
+
+> 为了加速查找，将定长数据放在前面，变长数据放在后面
 
 ## 用户操作与权限
 
-SQL方法：编辑mysql\user
+一看就懂方法：编辑mysql\user
 
-非SQL方法：
+高级方法：
 
 #### 用户操作
 
