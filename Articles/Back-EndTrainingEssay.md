@@ -78,11 +78,18 @@
 >
 > **protected**：对包内同类和所有子类可见
 >
-> (缺省)：包内可见
+> **default**(缺省)：包内可见
+>
+> |   修饰符    | 当前类 | 同一包内 | 子孙类(同一包) |                        子孙类(不同包)                        | 其他包 |
+> | :---------: | :----: | :------: | :------------: | :----------------------------------------------------------: | :----: |
+> |  `public`   |   Y    |    Y     |       Y        |                              Y                               |   Y    |
+> | `protected` |   Y    |    Y     |       Y        | Y/N（[说明](https://www.runoob.com/java/java-modifier-types.html#protected-desc)） |   N    |
+> |  `default`  |   Y    |    Y     |       Y        |                              N                               |   N    |
+> |  `private`  |   Y    |    N     |       N        |                              N                               |   N    |
 
 > **static**：属于类，同类所有对象共用
 >
-> > 可以在没对象的时候使用static的方法
+> > 可以在没对象的时候使用static方法
 >
 > **final**：类似const（const是个以后可能会被用到的保留字）
 >
@@ -92,7 +99,7 @@
 
 > 同类中名称相同、参数列表不同的方法会根据所给参数重载合适的方法
 >
-> 形参不同不算
+> 形参不同不算，**返回值类型不同不算**
 >
 > Java5开始的不定数量方法组成的重载：
 >
@@ -101,7 +108,6 @@
 > public void show(String[] str){}	// 旧写法
 > ```
 >
-> 
 
 #### 对象的生成与销毁
 
@@ -223,10 +229,10 @@ md，居家隔离14天
 >
 > ```java
 > new Thread(){
->  @Override
+>  	@Override
 > 	public void run(){
->      ...
->  }
+>      	...
+>  	}
 > }.start();
 > ```
 >
@@ -255,7 +261,7 @@ md，居家隔离14天
 
 ### 第0x02次培训
 
-#### 接口：
+#### 接口
 
 > 一种“完全”的抽象类，字段默认强制public static final，可以有public或private方法（java9开始）Java8开始可以有默认方法（default）并可被实现
 
@@ -268,7 +274,7 @@ md，居家隔离14天
 |   方法   |   可以没抽象方法   | 必须为公共抽象方法（8开始可实现默认方法、静态方法，9开始可以有私有方法）（暂时没有protected方法） |
 |   子类   | 符合Java单继承规则 |    一个类可实现多个方法（默认方法可能出现“菱形继承”问题）    |
 
-#### 关于多继承的讨论：
+#### 关于多继承的讨论
 
 > &emsp;&emsp;Java的继承符合“is a”的理念，因此不允许多继承。且多继承存在“菱形继承”问题：B和C继承A，D继承B和C,B和C分别重写了A的某方法。
 >
@@ -328,3 +334,179 @@ Func func1 = MyClass::new;
 ```
 
 有且仅有一个抽象方法的接口就叫**函数式接口**
+
+## Week 0x03
+
+## 2022.1.25
+
+### 泛型
+
+> &emsp;&emsp;从Java 5开始，程序猿可以使用泛型更灵活地实现不同类型之间的兼容问题，尽量避免了直接使用Object带来的不安全问题。
+
+#### 泛型的使用
+
+Java中的泛型写在<>里，多个泛型变量用“,”隔开，用extends限制泛型且限定条件用&连接，采取“唯一类在前，接口在后”的顺序，如：
+
+```java
+<T extends Thread & Runnable>
+```
+
+Java 中泛型标记符：
+
+- **E** - Element (在集合中使用，因为集合中存放的是元素)
+- **T** - Type（Java 类）
+- **K** - Key（键）
+- **V** - Value（值）
+- **N** - Number（数值类型）
+- **?** - 表示不确定的 java 类型（通配符类型）
+
+#### 通配符类型
+
+> &emsp;&emsp;由于泛型在某些时候过于严格，Java开发人员设计了一种灵活且安全的方式——通配符来解决这些问题。
+
+&emsp;&emsp;在Java中，使用“?”指代任何类型，通配符也可以用extends来加以限定或使用super加以限定。
+
+&emsp;&emsp;由于无法使用类型变量，通配符类型的使用会受到部分限制，比如extends修饰的通配符类型才能被赋值，使用super修饰的通配符类型才能被作为参数传入.
+
+#### JVM对泛型的实现原理——类型擦除
+
+> 虚拟机没有泛型类型对象——所有对象都属于普通类。
+
+&emsp;&emsp;编译器会对泛型类型进行类型擦除并在必要时添加强制类型转换（这不又回去了吗？）。有限定类型的会被擦除，仅保留限定类型；没有限定类型的会被擦除，保留Object。
+
+&emsp;&emsp;由于发生了类型擦除，编译器会为泛型类自动添加桥方法。
+
+#### 泛型的限制与局限性
+
+&emsp;&emsp;受制于泛型的实现原理，Java使用泛型具有以下的限制：
+
+> - 不能用基本数据类型实例化泛型参数（自动装箱"解决"了这一问题）
+> - 程序运行时的类型查询只适用于原始类型
+> - 不能创建参数化类型的数组
+> - Varargs 警告
+> - 不能实例化类型变量
+> - 不能构造泛型数组
+> - 泛型类的静态上下文中类型变量无效
+> - 不能抛出或捕获泛型类的实例
+> - 可以取消对检查型异常的检查
+> - 泛型类型不存在继承关系
+
+## 2022.2.6
+
+### 反射
+
+> &emsp;&emsp;反射（Reflection）机制允许程序在执行期间取得任何类的内部信息，并能直接操作任何类的内部属性和方法。Java通过反射机制产生了一定的动态性，因此属于“准动态语言”。
+
+#### Class类
+
+> 万物皆对象，类也如此。Class<>便是一个用来表示类型的泛型类，
+
+**具有Class的“类”**
+
+> - class
+> - interface
+> - array（忽略长度）
+> - enum
+> - annotation
+> - 基本数据类型
+> - void
+
+**获取Class<>的实例**
+
+> 0. 直接实例化
+>
+> ```java
+> Class<MyClass> clazz = MyClass.class;
+> ```
+>
+> 1. 使用对象的getClass()方法
+> 2. 使用Class的静态方法forname()
+> 3. 使用类加载器Classloader
+
+#### 类的加载过程
+
+> - **加载**：将class字节码加载到内存，将静态变量和常量等转换为方法去中的运行时数据，初始化一个Class的实例。此过程有类加载器参与。
+>
+> - **链接**：
+>
+>   将Java类的二进制代码合并到JVM的运行状态之中。
+>
+>   > 0. **验证**：确保加载的类信息符合JVM规范，没有安全方面的问题。
+>   > 1. **准备**：正式为类变量(static变量)分配内存并设置类变量初始值的阶段，这些内存都将在方法区中进行分配。注意此时的设置初始值为默认值，具体赋值在初始化阶段完成。
+>   > 2. **解析**：虚拟机常量池内的符号引用替换为直接引用（地址引用）。
+>
+> - **初始化**：
+> - 初始化阶段是执行类构造器<clinit>()方法的过程。类构造器<clinit>()方法是由编译器自动收集类中的所有类变量的**赋值**动作和**静态语句块(static块)**中的语句合并产生的。
+>   - 当初始化一个类的时候，如果发现其父类还没有进行过初始化、则需要先初始化其父类。
+>   - 虚拟机会保证一个类的<clinit>()方法在多线程环境中被正确加锁和同步。
+
+#### 创建运行时类对象
+
+```java
+clazz.newInstance()；	// 调用空参构造器
+```
+
+```java
+Constructor<T> constructor = clazz.getDeclaredConstructor();	// 获取含参构造器
+constructor.setAccessible(true);
+T t = constructor.newInstance();
+```
+
+#### 获取运行时类的属性、方法
+
+##### 获取运行时类的属性
+
+```java
+// 获取当前运行的类及其超类的public属性
+Fieldd[] fields = clazz.getFields();
+// 获取当前运行的类的所有属性
+Fieldd[] declaredFields = clazz.getDeclaredFields();
+// 获取指定的属性
+Field field = clazz.getDeclared(fieldName);
+```
+
+**获取属性的修饰符**
+
+```java
+int modififier = field.getModifiers();
+// 参考java.lang.reflect.Modifier
+```
+
+**获取属性的类型**
+
+```java
+Class type = field.getType();
+```
+
+**获取属性的变量名**
+
+```java
+String name = field.getName();
+```
+
+##### 获取运行时类的方法
+
+```java
+Method[] methods = clazz.getMethods();
+Method[] declaredMethods = clazz.getDeclaredMethods();
+Method declaredMethod = clazz.getDeclaredMethod(methodName, parameterTypes[]);	// 没有参数可以不写
+```
+
+~~然后慢慢get吧~~
+
+#### 调用运行时类的指定结构
+
+##### 调用属性
+
+```java
+field.setAccessible(true);	// 启用访问非public属性
+field.get(obj);	
+field.set(obj,value);
+```
+
+##### 调用方法
+
+```java
+method.setAccessible(true);	// 启用访问非public方法
+method.invoke(obj, parameters[]);	// 没有参数可以不写
+```
