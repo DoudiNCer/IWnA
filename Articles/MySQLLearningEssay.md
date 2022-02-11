@@ -4,8 +4,8 @@
 
 &emsp;&emsp;MySQL是一种流行的**关系型数据库管理系统**(RDBMS)，除NySQL以外，还有其他数据库管理系统：
 
-- **关系型数据库**：SQL Server,SQLite...
-- **非关系型数据库**：MongoDB.Redis...
+- **关系型数据库**：表与表之间有复杂的逻辑关系，如SQL Server,SQLite...
+- **非关系型数据库**：将数据简化为key-value,避免数据冗余，如MongoDB.Redis...
 
 &emsp;&emsp;在Orcale收购MySQL后，有将其闭源的风险，因此原开发团队开发了其分支版本——MariaDB并全面兼容MySQL 5.x。
 
@@ -87,43 +87,114 @@ use $database;
 
 ```mysql
 show tables;
-create table $tableNme($listName $dataType ￥characteristics) default $key=$value;
-	auto_increment（唯一）
-	primary key （散列化）（唯一）
+create table $tableNme($listName $dataType $characteristics) default $key=$value;
 	default $value
 	not null
 delete from $tableName;					# 清空表
-truncate table $tableName				# 重置自增，快速
+truncate table $tableName;				# 重置自增，快速
 drop table $tableName;					# 删除表
+alter table $tableName; 					# change table's setting variables.
 ```
 
 #### 记录
 
-#### 增
+##### 增
 
 ```mysql
-insert into $tableName($listName) values($value);
+insert into $tableName($listNames) values($values);	# 逐行插入
+insert into $tableName($listNames) select $listNames from $sourceTable;	# 导入已有数据
 ```
 
-#### 删
+##### 删
 
 ```mysql
 delete from $tableName where $条件;
 ```
 
-#### 改
+##### 改
 
 ```mysql
-update $tableName set $key=$value where $条件
+update $tableName set $key=$value where $条件;
 ```
 
-#### 查
+##### 查
 
 ```mysql
-select $listHead from $table;			# As default,show them on screen
+select 
+	function()
+	$listHead 
+	as $newListHead 
+	from $table 
+	group by $listName
+	having $条件						# 对聚合结果二次排序
+	where $条件 
+	order by $listName desc/asc;			
+# Default,show them on screen
 ```
 
+**where后面能用啥**：
 
+> - \>,<,=,!=,\<>（<>相当于!=）
+>
+> - and,or,not
+>
+> - in ($enum)
+>
+> - between and（闭区间）
+>
+> - select套娃
+>
+> - **like**：
+>
+>   > - "%"：任意多个字符
+>   >
+>   > - "_"：一个字符
+>
+> - **limit**：
+>
+>   > - a：前a条
+>   > - a,b：从a开始的b条
+>   > - b offset a：同a,b
+>
+> - **连表**：将外键抽取的数据拿回来
+>
+>   ```mysql
+>   $tableA.$listA = $tableB.$listB
+>   ```
+>
+>   > 连表也可以使用left/innder/right join实现
+
+#### 列的特殊属性
+
+- **primary key**：主键，要求值唯一且不为空，表内只有一个主键，主键可由多个列组成
+
+- **auto_increment**：自增，要求被设置为primary key且唯一
+
+  > auto_increament：下一个记录中的值
+
+  ```mysql
+  show session variables like "auto_increament%";		# 查看会话变量
+  set session auto_increament_increament = $value;	# 设置自增步长(会话)
+  set global auto_increament_increament = $value;		# 设置自增步长（全局）
+  set session auto_increament_offset = $value;		# 设置自增起始值(会话)
+  set global auto_increament_offset = $value;			# 设置自增起始值（全局）
+  ```
+
+- **unique**：值唯一（可不完全为空），可加速查找
+
+  ```mysql
+  unique $name ($listNames)
+  ```
+
+- **default**：设置默认值
+
+- **constraint**：约束
+
+  - **foreign key**：外键，将某一列的值限制在一个可变范围内，相当于升级版enum（n对多）
+
+    ```mysql
+    constraint $constraintName foreign key ($listNames) references $tableName($primaryKeyName)
+    ```
 
 ## 数据类型
 
