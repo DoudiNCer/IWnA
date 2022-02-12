@@ -72,12 +72,16 @@ docker rmi -f $imageName:$imageTag/$imageID	# delete inage(s)
 docker run:
 
 ```shell
-docker run --name=$containerName			# container name
+docker run --name=$containerName		# container name
            -d							# Run container in background and print container ID
            -it							# Interactive(STDIN avalible and a tty)
 (-p(($hostIP)$hostPort:))$containerPort	# Open container's port to the host
            -P							# Publish all of the container's ports
+           --rm							# auto delete the container after stop
+           -e $envKey=$envValue			# add a environment variable
 ```
+
+> Tips:"-d" need a running foreground program!!
 
 docler ps:
 
@@ -90,8 +94,64 @@ docler ps -a							# show all of the container(even if it's not running)
 
 ```shell
 docker rm (-f） $containerName/$containerID	# remove container(s) (force?)
-docker start/stop/restart/kill $containerID	
+docker start/stop/restart/kill $container
+docker attach $container					# show the background container
+docker exec $container $command				# exec a new command in the container
+docker cp $container:$srcPath $machinePath	# copy file(s)
+docker stats $container						# show container's resource usage
 ```
+
+### Logs
+
+```shell
+docker logs -tf --tail $number $container	# show logs with timestamps and fresh
+docker inspect $container					# show container's detail information
+```
+
+累了？下个portainer玩玩吧
+
+```shell
+docker volume create portainer_data
+docker run -d -p 8000:8000 -p 9443:9443 --name portainer \
+    --restart=always \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v portainer_data:/data \
+    cr.portainer.io/portainer/portainer-ce:2.9.3
+```
+
+### Commit
+
+```shell
+docker commit (-m=$commitMessage) (-a=$author) $container ($repository(:$tag))
+# commit a container as a image
+```
+
+## 容器数据卷
+
+数据卷的作用：
+
+- 数据持久化
+- 不同容器间数据同步
+
+### Mount by command
+
+```shell
+docker run -v ($localVolumnName:)$containerDirectory(:ro/rw)
+# Local data is /var/lib/docker/volumns/$localVolumnName/_data
+			-v $localDirectory::$containerDirectory
+```
+
+### Volume operation
+
+```shell
+docker volume create 
+			inspite		# show volume detail info
+			ls
+			prune		# clean unused volumes
+			rm
+```
+
+
 
 ## DockerFile
 
