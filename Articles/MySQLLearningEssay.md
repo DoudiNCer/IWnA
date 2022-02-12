@@ -74,6 +74,8 @@ mysql -h $serverLocate -P $port(default 3306) -u $username -p $password
 
 ## 数据操作
 
+> 这里有几个坑：表名、列名用反引号“``”，数据用单引号“''”，NULL不要用引号。
+
 #### 库
 
 ```mysql
@@ -93,7 +95,7 @@ create table $tableNme($listName $dataType $characteristics) default $key=$value
 delete from $tableName;					# 清空表
 truncate table $tableName;				# 重置自增，快速
 drop table $tableName;					# 删除表
-alter table $tableName; 					# change table's setting variables.
+alter table $tableName; 				# change table's setting variables.
 ```
 
 #### 记录
@@ -277,3 +279,4 @@ show grants for username@ip;
 grant permissions on databases.tables to username@ip;
 revoke permissions on databases.tables from username@ip;
 ```
+
