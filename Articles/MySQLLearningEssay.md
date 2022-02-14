@@ -85,6 +85,13 @@ drop database $databaseName;
 use $database;
 ```
 
+##### 数据库备份/恢复
+
+```shell
+mysqldump -u $username (-d) $database > $file -p $password	# 备份（-d：仅备份结构）
+mysqldump -u $username $database < $file -p $password		# 恢复
+```
+
 #### 表
 
 ```mysql
@@ -155,16 +162,30 @@ select
 > - **limit**：
 >
 >   > - a：前a条
+>   >
 >   > - a,b：从a开始的b条
+>   >
 >   > - b offset a：同a,b
+>   >
+
+#### 连表
+
+> 将多张表以一定的关系拼接起来
+
+
+```mysql
+inner/full /left/right(outer) join $tableB on $tableA.$listA = $tableB.$listB
+```
+
+> - **inner**：内连接，取交集，采用先求笛卡尔积后筛选的方式操作
 >
-> - **连表**：将外键抽取的数据拿回来
+> - **left**：左连接，以左表为准
 >
->   ```mysql
->   $tableA.$listA = $tableB.$listB
->   ```
+> - **right**：右连接，以右表为准
 >
->   > 连表也可以使用left/innder/right join实现
+> - **full**：完全连接，取并集（MySQL不支持）
+>
+> - ##### **cross**，交叉连接，后无on语句（甚至可以不写cross join语句），与无on语句的内连接相同
 
 #### 列的特殊属性
 
@@ -197,6 +218,14 @@ select
     ```mysql
     constraint $constraintName foreign key ($listNames) references $tableName($primaryKeyName)
     ```
+
+#### 临时表
+
+```mysql
+($data) as $yempTable
+```
+
+可通过临时表简化部分操作
 
 ## 数据类型
 
