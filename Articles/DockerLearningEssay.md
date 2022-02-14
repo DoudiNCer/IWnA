@@ -127,6 +127,20 @@ docker commit (-m=$commitMessage) (-a=$author) $container ($repository(:$tag))
 
 ## 容器数据卷
 
+（前方高能）
+
+### Docker存储原理
+
+> &emsp;&emsp;Docker的数据采用层状存储模式，构建镜像时不断向上叠加新的只读层，创建容器时在镜像的基础上添加一个读写层，对容器的所有操作对视在这个读写层上进行的。
+>
+> &emsp;&emsp;新文件写入时，若该文件不存在，则按需在宿主机上分配空间（allocate-on-demand）；若同名文件位于只读层，则从只读层复制该文件的副本到读写层并隐蔽原文件（copy-on-write）；若要删除只读层色文件，则在读写层添加一个删除标记。
+>
+> &emsp;&emsp;当执行commit命令时，会将当前的读写层转换为只读层并添加新的读写层。
+>
+> &emsp;&emsp;Docker的层状存储结构依靠存储驱动维护，早期为AUFS，现在为Overlay2。当然，根据宿主机使用的文件系统不同。Docker可以使用的存储引擎也不同。
+>
+> &emsp;&emsp;下文提到的数据卷不通过存储驱动，直接挂载到读写层中，以实现数据持久化。
+
 数据卷的作用：
 
 - 数据持久化
@@ -189,7 +203,6 @@ docker build:
 
 ```shell
 docker build -f $dockerfile -t $imageName:$tag $workDir
-			
 ```
 
 ### 发布镜像
@@ -208,7 +221,45 @@ docker save
 docker load
 ```
 
-## Docker网络原理
+## Docker网络
+
+（前方高能）
+
+### Docker网络原理
+
+> &emsp;&emsp;Docker通过veth-pair技术为每个容器配置了一对虚拟网卡，用于容器和宿主机之间连接。默认情况下宿主机端的网卡以docker作为网关并由docker0调度通信。
+>
+> &emsp;&emsp;默认情况下，宿主机通过docker0与容器接入一个虚拟局域网内，容器通过暴露端口和端口映射使外部设备可通过宿主机指定端口访问容器。
+
+### Docker网络配置
+
+&emsp;&emsp;在默认情况下，可通过--link绑定一对容器以实现容器名访问对方其本质为修改容器的hosts文件。该方法如今已很少使用。
+
+#### **Docker的网络连接模式**：
+
+在创建容器时通过"--network="指定所用的网络连接模式
+
+> - **bridge**：默认的桥接模式，通过docker0连接宿主机和各个容器（默认）
+> - **host**：容器和宿主机共享网络
+> - **none**：容器不具有网络连接
+> - **container**：和指定的容器共享网络，使用 --net=container:$container 指定
+> - 各种自定义模式
+
+docker neiwork：
+
+```shell
+docker network connect $network $container		# Connect a container to a network
+			disconnect (-f) $network $container	# Disconnect a container from a network
+			inspect $networks...				# Show details of neiwork(s)
+			ls
+			prune								# Clean unused network(s)
+			rm $neywork
+
+			create --drive $driver 
+			--subnet $subnet		# subnet address and mask
+			--getway $getway		# host address
+			$networkName						# Create a network
+```
 
 ## Docker Compose
 
