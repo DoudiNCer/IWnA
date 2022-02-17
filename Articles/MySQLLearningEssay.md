@@ -124,12 +124,14 @@ delete from $tableName where $条件;
 
 ```mysql
 update $tableName set $key=$value where $条件;
+replace $tableName set $key=$value where $条件;	# 增/改（慎用）
 ```
 
 ##### 查
 
 ```mysql
 select 
+	distinct						# 对查询结果去重
 	function()
 	$listHead 
 	as $newListHead 
@@ -404,7 +406,7 @@ DROP TRIGGER $triggerName;
 #### 日期时间函数
 
 |                      函数名                       | 描述                                                         | 实例                                                         |
-| :-----------------------------------------------: | ------------------------------------------------------------ | :----------------------------------------------------------- |
+| :-----------------------------------------------: | :----------------------------------------------------------- | :----------------------------------------------------------- |
 |                   ADDDATE(d,n)                    | 计算起始日期 d 加上 n 天的日期                               | `SELECT ADDDATE("2017-06-15", INTERVAL 10 DAY); ->2017-06-25` |
 |                   ADDTIME(t,n)                    | n 是一个时间表达式，时间 t 加上时间表达式 n                  | 加 5 秒：`SELECT ADDTIME('2011-11-11 11:11:11', 5); ->2011-11-11 11:11:16 (秒)`添加 2 小时, 10 分钟, 5 秒:`SELECT ADDTIME("2020-06-15 09:34:21", "2:10:5");  -> 2020-06-15 11:44:26` |
 |                     CURDATE()                     | 返回当前日期                                                 | `SELECT CURDATE(); -> 2018-09-19`                            |
@@ -414,7 +416,7 @@ DROP TRIGGER $triggerName;
 |                     CURTIME()                     | 返回当前时间                                                 | `SELECT CURTIME(); -> 19:59:02`                              |
 |                      DATE()                       | 从日期或日期时间表达式中提取日期值                           | `SELECT DATE("2017-06-15");     -> 2017-06-15`               |
 |                  DATEDIFF(d1,d2)                  | 计算日期 d1->d2 之间相隔的天数                               | `SELECT DATEDIFF('2001-01-01','2001-02-02') -> -32`          |
-|          DATE_ADD(d，INTERVAL expr type)          | 计算起始日期 d 加上一个时间段后的日期，type 值可以是：MICROSECONDSECONDMINUTEHOURDAYWEEKMONTHQUARTERYEARSECOND_MICROSECONDMINUTE_MICROSECONDMINUTE_SECONDHOUR_MICROSECONDHOUR_SECONDHOUR_MINUTEDAY_MICROSECONDDAY_SECONDDAY_MINUTEDAY_HOURYEAR_MONTH | `SELECT DATE_ADD("2017-06-15", INTERVAL 10 DAY);     -> 2017-06-25 SELECT DATE_ADD("2017-06-15 09:34:21", INTERVAL 15 MINUTE); -> 2017-06-15 09:49:21 SELECT DATE_ADD("2017-06-15 09:34:21", INTERVAL -3 HOUR); ->2017-06-15 06:34:21 SELECT DATE_ADD("2017-06-15 09:34:21", INTERVAL -3 MONTH); ->2017-04-15` |
+|          DATE_ADD(d，INTERVAL expr type)          | 计算起始日期 d 加上一个时间段后的日期，type 值可以是：MICROSECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR, SECOND_MICROSECOND, MINUTE_MICROSECOND, MINUTE_SECOND, HOUR_MICROSECOND, HOUR_SECOND, HOUR_MINUTE, DAY_MICROSECOND, DAY_SECOND, DAY_MINUTE, DAY_HOUR, YEAR_MONTH | `SELECT DATE_ADD("2017-06-15", INTERVAL 10 DAY);     -> 2017-06-25 SELECT DATE_ADD("2017-06-15 09:34:21", INTERVAL 15 MINUTE); -> 2017-06-15 09:49:21 SELECT DATE_ADD("2017-06-15 09:34:21", INTERVAL -3 HOUR); ->2017-06-15 06:34:21 SELECT DATE_ADD("2017-06-15 09:34:21", INTERVAL -3 MONTH); ->2017-04-15` |
 |                 DATE_FORMAT(d,f)                  | 按表达式 f的要求显示日期 d                                   | `SELECT DATE_FORMAT('2011-11-11 11:11:11','%Y-%m-%d %r') -> 2011-11-11 11:11:11 AM` |
 |         DATE_SUB(date,INTERVAL expr type)         | 函数从日期减去指定的时间间隔。                               | Orders 表中 OrderDate 字段减去 2 天：`SELECT OrderId,DATE_SUB(OrderDate,INTERVAL 2 DAY) AS OrderPayDate FROM Orders` |
 |                      DAY(d)                       | 返回日期值 d 的日期部分                                      | `SELECT DAY("2017-06-15");   -> 15`                          |
@@ -422,7 +424,7 @@ DROP TRIGGER $triggerName;
 |                   DAYOFMONTH(d)                   | 计算日期 d 是本月的第几天                                    | `SELECT DAYOFMONTH('2011-11-11 11:11:11') ->11`              |
 |                   DAYOFWEEK(d)                    | 日期 d 今天是星期几，1 星期日，2 星期一，以此类推            | `SELECT DAYOFWEEK('2011-11-11 11:11:11') ->6`                |
 |                   DAYOFYEAR(d)                    | 计算日期 d 是本年的第几天                                    | `SELECT DAYOFYEAR('2011-11-11 11:11:11') ->315`              |
-|               EXTRACT(type FROM d)                | 从日期 d 中获取指定的值，type 指定返回的值。 type可取值为： MICROSECONDSECONDMINUTEHOURDAYWEEKMONTHQUARTERYEARSECOND_MICROSECONDMINUTE_MICROSECONDMINUTE_SECONDHOUR_MICROSECONDHOUR_SECONDHOUR_MINUTEDAY_MICROSECONDDAY_SECONDDAY_MINUTEDAY_HOURYEAR_MONTH | `SELECT EXTRACT(MINUTE FROM '2011-11-11 11:11:11')  -> 11`   |
+|               EXTRACT(type FROM d)                | 从日期 d 中获取指定的值，type 指定返回的值。 type可取值为： MICROSECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR, SECOND_MICROSECOND, MINUTE_MICROSECOND, MINUTE_SECOND, HOUR_MICROSECOND, HOUR_SECOND, HOUR_MINUTE, DAY_MICROSECOND, DAY_SECOND, DAY_MINUTE, DAY_HOUR, YEAR_MONTH | `SELECT EXTRACT(MINUTE FROM '2011-11-11 11:11:11')  -> 11`   |
 |                   FROM_DAYS(n)                    | 计算从 0000 年 1 月 1 日开始 n 天后的日期                    | `SELECT FROM_DAYS(1111) -> 0003-01-16`                       |
 |                      HOUR(t)                      | 返回 t 中的小时值                                            | `SELECT HOUR('1:2:3') -> 1`                                  |
 |                    LAST_DAY(d)                    | 返回给给定日期的那一月份的最后一天                           | `SELECT LAST_DAY("2017-06-20"); -> 2017-06-30`               |
@@ -495,10 +497,6 @@ BEGIN
 	# 函数内不支持SQL语句
 END
 ```
-
-## MySQL存储过程
-
-
 
 ## 用户操作与权限
 
