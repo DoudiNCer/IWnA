@@ -166,3 +166,97 @@ Content-Type: text/plain
 |  504   |        Gateway Time-out         | 充当网关或代理的服务器，未及时从远端服务器获取请求           |
 |  505   |   HTTP Version not supported    | 服务器不支持请求的HTTP协议的版本，无法完成处理               |
 
+## cURL
+
+&emsp;&emsp;cURL（transfer a URL）是一个通过URL传输数据的命令行工具，支持的协议包括DICT, FILE, FTP, FTPS, GOPHER, GOPHERS, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, MQTT, POP3, POP3S, RTMP, RTMPS, RTSP, SCP, SFTP, SMB, SMBS, SMTP, SMTPS, TELNET 和 TFTP。
+
+&emsp;&emsp;除了用来上传/下载文件，cURL作为一个强大的网络访问工具，还可以用来进行一些手动的接口测试。在它的库libcurl的加持下，可以开发众多优秀的应用程序。
+
+> 本节关于cURL的使用方法参考了[Arch manual page curl(1)](https://man.archlinux.org/man/curl.1)。
+
+### 输入输出
+
+#### 多URL匹配
+
+&emsp;&emsp;当需要使用多个相似的URL时，可以使用[]和/或{}来匹配这些URL。
+
+&emsp;&emsp;{str1,str2,str3}会依次匹配其中的么每个字符串，如：
+
+```shell
+curl "http:/localhost:8080/{1,2,3}.png"
+```
+
+&emsp;&emsp;[start-end:range]会依次匹配范围内的数字或字母，如有需要可指定步长，如：
+
+```shell
+curl "http:/localhost:8080/{1-50:2}.png"
+```
+
+> 注意：该功能由cURL提供，为避免shell的转义，需要将完整的URL置于双引号中。
+
+#### 输出重定向
+
+&emsp;&emsp;cURL默认将响应数据输出到标准输出，如有必要，可使用-o fileName或-O指定输出到文件。
+
+```shell
+curl $url
+	--create-dirs			# 根据需要使用0750在本地创建文件夹
+	-o $fileDir
+	-O --output-dir $dir	# 使用服务器上的文件名并指定储存目录
+```
+
+#### 查看
+
+```shell
+curl $url
+	-I, --head			# 仅查看响应头
+	-s, --silent		# 屏蔽除响应数据外的标准输出和标准错误
+	-S, --show-error	# 屏蔽除响应数据外的标准输出，但保留标准错误
+```
+
+### 编辑请求头
+
+```shell
+curl $url
+	-d, --data %key=$value				# HTTP POST 数据
+     --data-ascii 
+     --data-binary 
+     --data-raw 		# 可使用'@'
+     --data-urlencode 
+    -H, --header $key:$value/@$file		# 添加/修改/删除额外的请求头字段
+```
+
+### 认证/身份
+
+```shell
+curl $url
+	-A, --user-agent $UA			# 指定UA
+	--anyauth						# 自动检查使用的认证方式（不推荐）
+	-b, --cookie $cookie/$filename	# 使用cookie
+	-c, --cookie-jar $file			# 保存cookie，用“-”做文件名以将Cookie输出到标准输出
+	-u, --user $user:$password		# 指定用户名、密码
+```
+
+### 连接
+
+```shell
+curl $url
+	-0, --http1.0            		# Use HTTP 1.0
+     --http1.1            			# Use HTTP 1.1
+     --http2              			# Use HTTP 2
+     --http2-prior-knowledge 		# Use HTTP 2 without HTTP/1.1 Upgrade
+     --http3              			# Use HTTP v3
+	--ssl							# 尝试SSL/TLS
+	-2, --sslv2              		# Use SSLv2
+ 	-3, --sslv3              		# Use SSLv3
+ 	-4, --ipv4						# Use IPv4
+ 	-6, --ipv6
+ 	-k, --insecure					# 忽略SSL证书
+	-L, --location           		# 自动跳转
+     --location-trusted   			# 自动跳转并继承授权
+	-m, --max-time $second			# 最长等待时间
+	--max-filesize $bytes 			# 下载文件大小限制
+    --max-redirs $num  				# 跳转次数限制
+	-x [$protocol://]$host[:$port]	# 使用代理
+```
+
