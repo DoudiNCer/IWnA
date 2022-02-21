@@ -87,7 +87,7 @@ Content-Type: text/plain
 </html>
 ```
 
->  &emsp;&emsp;注意，HTTP报文中换行采用<CR><LF>
+>  注意：HTTP报文中换行采用<CR><LF>
 
 ### HTTP请求方法
 
