@@ -76,70 +76,80 @@ mysql -h $serverLocate -P $port(default 3306) -u $username -p $password
 
 > 这里有几个坑：表名、列名用反引号“``”，数据用单引号“''”，NULL不要用引号。
 
-#### 库
+### 库
 
 ```mysql
 show databases;
-create database $databaseName engine=$engineName default $key $value;
-drop database $databaseName;
+show create database $database;		# 查看已创建数据库的信息
+select database() from dual;		# 查看正在使用的数据库
+create database if not exists $databaseName engine=$engineName character set $charSet;
+alter database $database $command;	# 修改数据库信息
+drop database if exists $databaseName;
 use $database;
+show status status;					# 查看库中表的属性信息
 ```
 
-##### 数据库备份/恢复
+> 注意：数据库一旦创建无法修改名称
+
+#### 数据库备份/恢复
 
 ```shell
 mysqldump -u $username (-d) $database > $file -p $password	# 备份（-d：仅备份结构）
 mysqldump -u $username $database < $file -p $password		# 恢复
 ```
 
-#### 表
+### 表
 
 ```mysql
-show tables;
-create table $tableNme($listName $dataType $characteristics) default $key=$value;
-	default $value
-	not null
-delete from $tableName;					# 清空表
-truncate table $tableName;				# 重置自增，快速
-drop table $tableName;					# 删除表
-alter table $tableName; 				# change table's setting variables.
+show tables (as $database);
+describe $table;							# 查看表的字段结构
+create table $tableNme($columnName $dataType $constraint);
+alter table $table 
+	add $column [first/after  $columnName];	# 添加字段
+	modify $column $columnName $type;		# 修改字段数据类型
+	drop column $column;					# 删除字段 
+	rename to $tablename					# 重命名表
+delete from $tableName;						# 清空表
+rename table $table to $tableName;			# 重命名表
+truncate table $tableName;					# 重置自增，快速清空表（不支持rollback）
+drop table $tableName;						# 删除表
 ```
 
-#### 记录
+### 记录
 
-##### 增
+#### 增
 
 ```mysql
-insert into $tableName($listNames) values($values);	# 逐行插入
-insert into $tableName($listNames) select $listNames from $sourceTable;	# 导入已有数据
+insert into $tableName($columnNames) values($values);	# 逐行插入
+insert into $tableName($columnNames) select $columnNames from $sourceTable;	# 导入已有数据
 ```
 
-##### 删
+#### 删
 
 ```mysql
 delete from $tableName where $条件;
 ```
 
-##### 改
+#### 改
 
 ```mysql
 update $tableName set $key=$value where $条件;
 replace $tableName set $key=$value where $条件;	# 增/改（慎用）
 ```
 
-##### 查
+#### 查
 
 ```mysql
 select 
 	distinct						# 对查询结果去重
 	function()
-	$listHead 
-	as $newListHead 
+	$column 
+	as $newColumnName 
 	from $table 
-	group by $listName
-	having $条件						# 对聚合结果二次排序
+	group by $columnName
+	having $条件						# 对聚合结果二次筛选，且having须位于group by之后
 	where $条件 
-	order by $listName desc/asc;			
+	order by $columnName desc/asc;			
 # Default,show them on screen
 ```
 
@@ -170,25 +180,49 @@ select
 >   > - b offset a：同a,b
 >   >
 
-#### 连表
+### 连表
 
 > 将多张表以一定的关系拼接起来
 
 
 ```mysql
-inner/full/ /left/right(outer) join /union $tableB on $tableA.$listA = $tableB.$listB
+inner/full/nature/ /left/right(outer) join /union $tableB on $tableA.$columnA = $tableB.$columnB /using ($column);
 ```
 
 > - **inner**：内连接，取交集，采用先求笛卡尔积后筛选的方式操作
->- **left**：左连接，以左表为准
+>
+> - **left**：左连接，以左表为准
+>
 > - **right**：右连接，以右表为准
->- **full**：完全连接，取并集（MySQL不支持）
+>
+> - **full**：完全连接，取并集（MySQL不支持）
+>
 > - **cross**：交叉连接，后无on语句（甚至可以不写cross join语句），与无on语句的内连接相同
->- **union**：将两组数据合并并去重（使用union all取消去重）
+>
+> - **nature**：自然连接，自动查找表中相同字段并连接
+>
+> - **union**：将两组数据合并并去重（使用union all取消去重）
+>
+>   考虑到效率，尽量使用union all
+>
+> - **using**：简化on语句
 
-#### 列的特殊属性
+### 约束
 
-- **primary key**：主键，要求值唯一且不为空，表内只有一个主键，主键可由多个列组成
+> 为了保证数据库的**数据完整性**，有时需要额外添加一些对表或字段的**约束**（constraint）。
+
+&emsp;&emsp;既可以在创建表时添加约束，又可以在创建表后添加、修改、删除约束。
+
+```mysql
+alter table $table modify $column $constraints;								# 添加列约束
+alter table $table add constraint $constraintName $constraint($columns);	# 添加表约束
+```
+
+&emsp;&emsp;约束种类包括：
+
+- **primary key**：主键，要求值唯一且不为空，表内只有一个主键约束
+
+- **check**：检查约束，检查值是否满足预先定义的规则（MySQL5.7 不支持）
 
 - **auto_increment**：自增，要求被设置为primary key且唯一
 
@@ -202,39 +236,33 @@ inner/full/ /left/right(outer) join /union $tableB on $tableA.$listA = $tableB.$
   set global auto_increament_offset = $value;			# 设置自增起始值（全局）
   ```
 
-- **unique**：值唯一（可不完全为空），可加速查找
-
-  ```mysql
-  unique $name ($listNames)
-  ```
+- **unique**：值唯一（可为空且NULL不断重复），可加速查找
 
 - **default**：设置默认值
 
-- **constraint**：约束
+- **not null**：非空
 
-  - **foreign key**：外键，将某一列的值限制在一个可变范围内，相当于升级版enum（n对多）
+- **geberated**：生成列，根据表达式确定数据值，并确定是否储存在表中。
 
-    ```mysql
-    constraint $constraintName foreign key ($listNames) references $tableName($primaryKeyName)
-    ```
+  ```mysql
+  generated always as $exp virtual/stored
+  ```
 
-#### 临时表（子查询）
+- **foreign key**：外键，将某一列的值限制在一个可变范围内，相当于升级版enum（n对多）
+
+  ```mysql
+  constraint $constraintName foreign key ($columnNames) references $tableName($primaryKeyName)
+  ```
+
+  >外键不能跨引擎使用。
+
+### 临时表（子查询）
 
 ```mysql
 ($data) as $yempTable
 ```
 
 临时表的作用域为当前语句
-
-#### 视图
-
-```mysql
-create/replace view $viewName as $sql;	# 创建视图
-alter view $viewName as $sql;	# 修改视图
-drop view $viewname				# 删除视图
-```
-
-视图是对一个查询语句的复用，其数据依赖于真实的表，具有只读、高效、安全的特点。
 
 ## 数据类型
 
@@ -296,7 +324,7 @@ drop view $viewname				# 删除视图
 
 > 为了加速查找，将定长数据放在前面，变长数据放在后面
 
-## MySQL触发器
+## 触发器
 
 > 触发器是在执行某些MySQL语句前后自动执行特定语句的一种工具。
 
@@ -319,7 +347,19 @@ DELIMITER ;
 DROP TRIGGER $triggerName;
 ```
 
-## MySQL函数
+## 视图
+
+&emsp;&emsp;视图是对某查询语句的复用，其数据依赖于真实的表，具有只读、高效、安全的特点。
+
+```mysql
+create 
+(algorithm = undefined/murge/temptable)	# 算法
+view $viewName as $sql;							# 创建视图
+alter view $viewName as $sql;					# 修改视图
+drop view $viewname								# 删除视图
+```
+
+## 函数
 
 ### 内置函数
 
