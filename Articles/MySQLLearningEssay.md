@@ -538,6 +538,31 @@ BEGIN
 END
 ```
 
+## 存储过程
+
+> &emsp;&emsp;存储过程（Stored Procedure）是一种在数据库中存储复杂程序，以便外部程序调用的一种数据库对象。
+>
+> &emsp;&emsp;存储过程是为了完成特定功能的SQL语句集，经编译创建并保存在数据库中，用户可通过指定存储过程的名字并给定参数(需要时)来调用执行。
+>
+> &emsp;&emsp;存储过程。是存储的一个操作过程，不是MySQL存储数据的过程。
+
+### 创建存储过程
+
+存储过程在SQL中用call调用，无返回值
+
+```mysql
+CREATE PROCEDURE $proceName (
+    [in/out/inout $arg $type]...
+    # in为参数，out为变量（通过set @$varName = $value定义）
+)
+BEGIN
+	$SQLs...
+	$fubctions...
+END
+```
+
+> 阿里发话，这个咱不学了！！
+
 ## 用户操作与权限
 
 一看就懂方法：编辑mysql\user
