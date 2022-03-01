@@ -436,7 +436,8 @@ Java 中泛型标记符：
 >   > 2. **解析**：虚拟机常量池内的符号引用替换为直接引用（地址引用）。
 >
 > - **初始化**：
-> - 初始化阶段是执行类构造器<clinit>()方法的过程。类构造器<clinit>()方法是由编译器自动收集类中的所有类变量的**赋值**动作和**静态语句块(static块)**中的语句合并产生的。
+>
+>   初始化阶段是执行类构造器<clinit>()方法的过程。类构造器<clinit>()方法是由编译器自动收集类中的所有类变量的**赋值**动作和**静态语句块(static块)**中的语句合并产生的。
 >   - 当初始化一个类的时候，如果发现其父类还没有进行过初始化、则需要先初始化其父类。
 >   - 虚拟机会保证一个类的<clinit>()方法在多线程环境中被正确加锁和同步。
 
@@ -510,3 +511,61 @@ field.set(obj,value);
 method.setAccessible(true);	// 启用访问非public方法
 method.invoke(obj, parameters[]);	// 没有参数可以不写
 ```
+
+## 以下为Java Web内容
+
+## File&IO流
+
+&emsp;&emsp;Java通过File对象来操作文件或文件夹
+
+### 初始化File对象
+
+```java
+String path = new String();			// 可使用java.io.File.separator代替分隔符
+File file = new File(path);
+File dir = new File(paraDir, dirName);
+File file = new File(dir,filename);
+```
+
+### File的常用方法
+
+```java
+String path = file.getPath();
+String absPath = file.getAbsolutePath();
+Long length = file.length();
+Long sec = file.getLastModified();
+String[] name = dir.list();
+File[] files = dir.listFiles();	
+file.renameTo(new File(newName));				// 重命名
+file.createNewFile();							// 新建
+dir.makedir();									// 创建文件夹
+dir.makedirs();									// 递归创建文件夹
+file.delete();									// 删除
+```
+
+### IO流基类
+
+&emsp;&emsp;Java中的所有流都继承自四个基本的抽象类，即：
+
+|      |    输入     |     输出     |
+| :--: | :---------: | :----------: |
+| 字节 | InputStream | OutputStream |
+| 字符 |   Reader    |    Writer    |
+
+### 文件内容的读写
+
+&emsp;&emsp;通过文件字符流可直接对文本文件进行操作：
+
+```java
+File file = new File(path);							// 初始化文件
+FileReader fr = new FileReader(file);				// 初始化文件输入字符流
+fr.read();											// 迭代读取文件单个字符
+chrr[] cbuf = new char[len];
+fr.read(cbuf);										// 将读取内容写入字符数组
+fr.clode();											// 关闭文件流（物理连接无法被GC）
+FileWriter fw = new FileWriter(file, true/false);	// 初始化文件写入字符流（指定是否为追加模式）
+fw.write(str);										// 写入（文件不存在会自动创建）
+fw.close();
+```
+
+> 注意：读写二进制文件需使用文件字节流
