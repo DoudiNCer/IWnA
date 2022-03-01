@@ -280,6 +280,21 @@ docker network connect $network $container		# Connect a container to a network
  sudo chmod +x /usr/local/bin/docker-compose
 ```
 
+### docker-compose,yaml
+
+```yaml
+version: '3'	# compose 版本，参照 https://docs.docker.com/compose/compose-file
+services:
+	serviceName:
+		build: .				# 指定build命令参数
+		ports:
+			- "hostPort:clientPort"
+		depends_on:
+			- anotherService	# 在启动该服务前启动以下服务
+		...						# 参考docker命令可用的参数
+...		# 其他配置
+```
+
 
 
 ## Docker Swarm
