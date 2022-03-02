@@ -559,13 +559,34 @@ file.delete();									// 删除
 ```java
 File file = new File(path);							// 初始化文件
 FileReader fr = new FileReader(file);				// 初始化文件输入字符流
-fr.read();											// 迭代读取文件单个字符
+fr.read();											// 迭代读取文件单个字符（以EOL表示文件结尾）
 chrr[] cbuf = new char[len];
 fr.read(cbuf);										// 将读取内容写入字符数组
-fr.clode();											// 关闭文件流（物理连接无法被GC）
+fr.close();											// 关闭文件流（物理连接无法被GC）
 FileWriter fw = new FileWriter(file, true/false);	// 初始化文件写入字符流（指定是否为追加模式）
 fw.write(str);										// 写入（文件不存在会自动创建）
 fw.close();
 ```
 
 > 注意：读写二进制文件需使用文件字节流
+
+### 缓冲流的使用
+
+&emsp;&emsp;可以使用缓冲流对其他流进行“包装”以实现加速读写等功能。
+
+```java
+FileReader fr = new FileReader(file);
+BufferedReader bfr = new BufferedReader(fr);
+bfr.read();
+bfr.readLine();											// 不含换行符，以null表示文件结尾
+bfr.close();
+
+FileWriter fw = new FileWriter(file,true);
+BufferedWriter bfw = new BufferedWriter(fw);
+bfw.write(str);
+bfw.newLine();											// 插入换行符
+bfw.flush();											// 刷新缓冲区（强制写入）
+bfw.close();											// 关闭由外向内（自动关闭呢）
+```
+
+&emsp;&emsp;
