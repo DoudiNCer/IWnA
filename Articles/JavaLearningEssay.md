@@ -552,7 +552,7 @@ file.delete();									// 删除
 | 字节 | InputStream | OutputStream |
 | 字符 |   Reader    |    Writer    |
 
-### 文件内容的读写
+### 文本文件内容的读写
 
 &emsp;&emsp;通过文件字符流可直接对文本文件进行操作：
 
