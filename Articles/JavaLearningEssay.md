@@ -589,3 +589,36 @@ bfw.flush();											// 刷新缓冲区（强制写入）
 bfw.close();											// 关闭由外向内（自动关闭呢）
 ```
 
+### 转换流
+
+&emsp;&emsp;转换流用于将输入/输出字节流转换成字符流，包括InputStreamReader和OutputStreamWriter。
+
+> 注意，转换流属于字符流
+
+```java
+FileInputStream frs = new FileInputStream(file);
+InputStreamReader fir = new InputStreamReader(frs, StandardCharsets.UTF_8);	// 指定彼岸
+fir.read(cbuf);
+fir.close();
+FileOutputStream fws = new FileOutputStream(file,false);
+OutputStreamWriter fow = new OutputStreamWriter(fws, "GBK");
+fow.write(cbuf);
+fow.close();
+```
+
+### 标准输入输出
+
+&emsp;&emsp;Java中的标准输入输出流有三个：
+
+- System.in：标准输入
+- Syatem.out：标准输出
+- System.err：标准错误
+
+> - 默认的标准输入输出为字节流
+> - 如有需要，可通过System.setIn()，System.setOut()，System.setErr()修改标注输入输出。
+
+### 其他的流
+
+- 打印流：PrintStream和PrintWriter，提供高级的print功能
+- 数据流：DataInputStream和DataOutputstream，传输基本数据类型
+- 对象流：ObjectInputStream和ObjectOutputStream，可传输Java对象和基本数据类型
