@@ -651,3 +651,22 @@ class myClass implements Serializable{						// 实现Serializable接口
 
 - 打印流：PrintStream和PrintWriter，提供高级的print功能
 - 数据流：DataInputStream和DataOutputstream，传输基本数据类型
+
+### 随机访问文件
+
+&emsp;&emsp;可通过RandomAccessFile对文件进行随机访问。
+
+```java
+RandomAccessFile raf = new RandomAccessFile(file,mode);		// mode表示访问模式
+// r：只读
+// rw：读写
+// rwd：读写，同步文件内容
+// rws：读写，同步文件内容与元数据
+raf.seek(position);											// 修改访问指针位置
+raf.read();
+raf.write(bytes);
+raf.close();
+```
+
+> 注意：RandomAccessFile并未继承四种IO流基类
+
