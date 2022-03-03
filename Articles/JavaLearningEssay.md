@@ -617,8 +617,37 @@ fow.close();
 > - 默认的标准输入输出为字节流
 > - 如有需要，可通过System.setIn()，System.setOut()，System.setErr()修改标注输入输出。
 
+### 对象流
+
+&emsp;&emsp;对象流是用于处理基本数据类型数据和对象的处理流，OnjectOutputStream和ObjectInputstream通过**序列化**和**反序列化**将Java对象转换为与平台无关的二进制代码进行传输或将这些二进制代码转换为内存中的Jaa对象。
+
+```java
+// 反序列化
+ObjectInputStream ois = new ObjectInputStream(inputStream);
+ois.readObject();													// 需要强制类型转换
+ois.close();
+// 序列化
+ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+oos.writeObject(obj);
+oos.flush();														// 需要手动flush
+oos.close();
+```
+
+#### 序列化自定义类
+
+```java
+class myClass implements Serializable{						// 实现Serializable接口
+    private static final long serialVersionUID = 42L;		// 提供序列化版本号
+}
+```
+
+> 对象可序列化的条件：
+>
+> - 实现Serializable接口
+> - 具有静态serialVersionUID字段
+> - 不能为static或transient的对象（对象中存在的此类字段会被忽略）
+
 ### 其他的流
 
 - 打印流：PrintStream和PrintWriter，提供高级的print功能
 - 数据流：DataInputStream和DataOutputstream，传输基本数据类型
-- 对象流：ObjectInputStream和ObjectOutputStream，可传输Java对象和基本数据类型
