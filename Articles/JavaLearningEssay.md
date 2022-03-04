@@ -48,7 +48,7 @@
 > import java.util.HashMap;
 > 
 > public class Main {
->      public static void main(String[] args) {
+>        public static void main(String[] args) {
 >            HashMap<Integer, String> hashMap = new HashMap<>();
 >            hashMap.put(0, "One");
 >            hashMap.put(1, "Two");
@@ -58,7 +58,7 @@
 >                    hashMap.remove(i);
 >            }
 >            System.out.println(hashMap.values());
->      }
+>        }
 > }
 > ```
 >
@@ -669,4 +669,66 @@ raf.close();
 ```
 
 > 注意：RandomAccessFile并未继承四种IO流基类
+
+## Java网络通信
+
+> 关于网络的基础知识，请参阅[Web学习笔记](Articles/WebLearningEssay.md)。
+
+### 地址
+
+&emsp;&emsp;可以通过InetAddress操作IP地址域名
+
+```java
+InetAddress addr = InetAddress.getByName(hostname);
+InetAddress.getLocalHost();
+addr.getHostAddress();
+addr.getHostName();
+```
+
+### Socket
+
+&emsp;&emsp;Socket（套接字）是程序间通信的通道，Java提供了Socket类用于网络通信。
+
+&emsp;&emsp;TCP Socket的一个例子如下：
+
+```java
+// Client
+Socket s2server = new Socket(serverAddr, port);
+OutputStream os = s2server.getOutputStream();
+os.write(obj.getBytes());
+os.close();
+s2server.close();
+
+// Server
+ServerSocket monitor = new ServerSocket(port);
+Socket s2client = monitor.accept();
+InputStream is = s2client.getInputStream();
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+int len;
+byte[] buffer = new byte[1024];
+while ((len = is.read(buffer)) != -1 ){
+    baos.write(buffer, 0, len);
+}
+	// Close
+baos.close();
+is.close();
+s2client.close();
+monitor.close();
+```
+
+> UDP Socket使用DatagramSocket
+
+### URL
+
+&emsp;&emsp;Java提供的URL类可以简单的实现对URL的访问。
+
+```java
+URL url = new URL(urlstr);
+HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();	// 获取URL连接
+urlConnection.connect();
+InputStream is = urlConnection.getInputStream();
+is.read();
+is.close();
+urlConnection.disconnect();
+```
 
