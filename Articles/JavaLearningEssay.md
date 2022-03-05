@@ -732,3 +732,78 @@ is.close();
 urlConnection.disconnect();
 ```
 
+## 注解
+
+> &emsp;&emsp;注解（Annotation）是代码里的特殊标记，这些标记可以在编译、类加载、运行时被读取，并进行相应的处理。
+>
+> &emsp;&emsp;注解可以像修饰符一样用来修饰**包**、**类**、**构造器**、**方法**、**成员变量**、**参数**、**局部变量的声明**，这些信息被保存在annotation的键值对中。
+>
+> &emsp;&emsp;框架 == 注解 + 反射 + 设计模式; // true
+
+### 生成文档注解
+
+```java
+@author			// 作者
+@version		// 版本
+@see			// 参考
+@since			// 首次出现的版本
+@param			// 参数说明
+@return			// 返回值说明
+@exception		// 异常说明
+```
+
+### 编译检查注解
+
+```java
+@Override			// 重写超类方法
+@Deprecated			// 已过时
+@SuppressWarning	// 抑制编译期警告
+```
+
+### 自定义注解
+
+```java
+public @interface MyAnnotation {
+}
+```
+
+### 元注解
+
+&emsp;&emsp;元注解是用来修饰注解的注解，Java提供的元注解包括以下四个：
+
+```java
+@Retention		// 修饰注解生命期
+RetentionPolicy.SOURCE	// 源代码保留
+RetentionPolicy.CLASS	// class保留（默认）
+RetentionPolicy.RUNTIME	// 运行时保留
+
+@Target			// 限定修饰对象
+CONTRACTOR				// 构造器
+FIELD					// 属性
+LOCAL_VARIABLE			// 变量
+METHOD					// 方法
+PACKAGE					// 包
+PARAMETER				// 参数
+TYPE					// 类、接口、enum
+TYPE_PARAMETER			// 泛型类型的定义（J8）
+TYPE_USE				// 任何使用泛型类型的地方（J8）
+
+@Documented		// 该注解将被javadoc等工具读取（还要求RetentionPolicy.RUNTIME）
+@Inherited		// 该注解将被继承
+```
+
+### 	可重复注解
+
+&emsp;&emsp;被@Repeatable修饰的注解可重复使用，定义方式如下：
+
+```java
+@Repeatable(MyAnnotations.class)
+public @interface MyAnnotation {
+    String[] value();
+}
+
+public @interface MyAnnotations {
+    NoMonroe[] value();
+}
+```
+
