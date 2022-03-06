@@ -739,6 +739,8 @@ urlConnection.disconnect();
 > &emsp;&emsp;注解可以像修饰符一样用来修饰**包**、**类**、**构造器**、**方法**、**成员变量**、**参数**、**局部变量的声明**，这些信息被保存在annotation的键值对中。
 >
 > &emsp;&emsp;框架 == 注解 + 反射 + 设计模式; // true
+>
+> &emsp;&emsp;注解的本质就是一个 继承 自 Annotation 接口的接口。
 
 ### 生成文档注解
 
@@ -758,6 +760,7 @@ urlConnection.disconnect();
 @Override			// 重写超类方法
 @Deprecated			// 已过时
 @SuppressWarning	// 抑制编译期警告
+@SafeVarargs		// 忽略任何使用参数为泛型变量的方法或构造函数调用产生的警告。（J7）
 ```
 
 ### 自定义注解
