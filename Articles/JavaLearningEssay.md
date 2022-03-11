@@ -810,3 +810,107 @@ public @interface MyAnnotations {
 }
 ```
 
+## JDBC
+
+> 关于MySQL和SQQL语法，请参阅[MySQL学习笔记](MySQLLearningEssay.md)。
+
+&emsp;&emsp;JDBC~~Java Database Connectivity）~~是一个独立于特定数据库管理系统，通用的数据库存取操作的应用编程接口。
+
+### 建立连接
+
+&emsp;&emsp;最简单的建立与MySQL数据库连接的方法如下：
+
+```java
+Driver driver = new com.mysql.cj.jdbc.Driver();
+Properties info = new Properties();
+info.setProperty("user", userName);
+info.setProperty("password", password);
+Connection conn = driver.connect(url, info);
+```
+
+&emsp;&emsp;为了提高程序可移植性，可使用反射创建驱动对象。
+
+&emsp;&emsp;使用驱动管理器可以简化部分操作：
+
+```java
+DriverManager.registerDriver(driver);						// 可省略，会随Driver加载自动完成
+Connection conn = DriverManager.getConnection(url, info);
+```
+
+&emsp;&emsp;为实现解耦，通过配置文件获得连接信息，最终代码为：
+
+```java
+// 读取配置文件
+InputStream is = Main.class.getResourceAsStream("jdbc.cfg");
+Properties prop =  new Properties();
+prop.load(is);
+String url = prop.getProperty("url");
+String userName = prop.getProperty("userName");
+String password = prop.getProperty("password");
+String device = prop.getProperty("device");
+// 加载驱动
+Class.forName(device);
+// 连接
+Connection conn = DriverManager.getConnection(url, userName, password);
+//断开连接
+conn.close();
+```
+
+### 操作和访问数据库
+
+&emsp;&emsp;操作和访问数据库的方式有以下三种：
+
+> - Statement：用于执行静态SQL语句并返回执行结果对象。
+>
+>   由于存在SQL注入等安全问题和操作繁琐等缺点，已不再使用。
+>
+> - PreparedStatement：用于存储预编译的SQL语句，可多次高效地执行这些SQL语句
+>
+> - CallableStatement用于执行SQL存储过程。
+
+#### PreparedStatement的使用
+
+&emsp;&emsp;与Statement相比，PreparedStatement使用预编译的SQL语句并通过占位符代替变量，具有以下优点：
+> - 解决了SQL注入的安全问题
+> - 可操作Blob数组
+> - 实现更高效的批量操作
+
+&emsp;&emsp;PreparedStatement对数据库的操作（增删改）基本符合以下的步骤：
+
+```java
+String sql = "insert into Beauty(Name) values (?);";	// 以“?”作为占位符
+PreparedStatement sm = conn.prepareStatement(sql);
+sm.setString(1, value);									// 填充占位符，从1开始
+sm.execute();											// 执行SQL语句
+sm.close();
+```
+
+&emsp;&emsp;如果需要对数据进行查询，可以使用executeQuery()执行SQL语句并获得结果集：
+
+```java
+ResultSet rs = sm.executeQuery();
+ResultSetMetaData rsMetaData = rs.getMetaData();	// 回去结果集的元数据
+rs.close();											// 需要手动关闭
+```
+
+&emsp;&emsp;对结果集的访问可以使用迭代器，对结果集数据的存储一般使用ORM（Object Relational Mopping）：
+
+> - 数据表<-->Java类
+> - 记录<-->对象
+> - 字段<-->对象属性
+
+&emsp;&emsp;MySQL数据类型与Java数据类型对应关系
+
+|    Java数据类型    |      MySQL数据类型       |
+| :----------------: | :----------------------: |
+|      boolean       |           BIT            |
+|        byte        |         TINYINT          |
+|       short        |         SMALLINT         |
+|        int         |         INTEGER          |
+|        long        |          BIGINT          |
+|       String       | CHAR,VARCHAR,LONGVARCHAR |
+|     byte array     |    BINARY,VAR BINARY     |
+|   java.sql.Date    |           DATE           |
+|   java.sql.Time    |           TIME           |
+| java.sql.Timestamp |        TIMESTAMP         |
+
