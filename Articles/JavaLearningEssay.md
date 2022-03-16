@@ -914,3 +914,105 @@ rs.close();											// 需要手动关闭
 |   java.sql.Time    |           TIME           |
 | java.sql.Timestamp |        TIMESTAMP         |
 
+## Spring
+
+&emsp;&emsp;Spring是一个开源（[Apache-2.0 License](https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt)）的**轻量级**的**控制反转**(IoC)和**面向切面**(AOP)的JavaEE框架。
+
+### IoC
+
+&emsp;&emsp;**IoC**（Inversion of Control，控制反转）：将对象的创建和调用交由用户负责，降低代码耦合度。DI（Dependency Injection，依赖注入）是一种常用的IoC实现方法。
+
+&emsp;&emsp;IoC使用的主要技术为XML解析、工厂模式和反射。
+
+#### 基于XML配置文件创建对象、注入属性
+
+```xml
+<bean id="myObj" class="com.example.MyObj" scope="singleton">
+<!--“name”可代替"id"，前者值可以含有特殊符号-->
+<!--scope用于指定bean的作用域。默认为单例（“static”）“singleton”，此外还有多实例“prototype”、请求“request”和会话“sessiom”-->
+    <constructor-arg name="field" value="value"></constructor-arg>
+    <constructor-arg index="0" value="value"></constructor-arg>
+    <!--调用含参构造器创建对象并指定参数值-->
+    <property name="fieldName" value="value"></property>
+    <!--通过调用set方法注入所依赖的对象-->
+    <property name="field">
+        <null/>
+    </property>
+     <!--注入空值-->
+    <property name="name">
+        <value><![CDATA[value]]></value>
+    </property>
+    <!--使用CDATE注入特殊值-->
+    <property name="fieldObj" ref="beanName"></property>
+    <!--注入Bean-->
+</bean>
+```
+
+除此之外，还有一种称为“P名称空间”的注入方式
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       <bean id="myObj" class="com.example.MyObj" p:fieldName="value"></bean>
+</beans>
+```
+
+##### FactoryBean
+
+&emsp;&emsp;工厂Bean（FactoryBean）是一种特殊的Bean，用来创造创建多个同一类的对象。该对象实现FactoryBean接口，相当于一个工厂类。
+
+#### Bean的生命周期
+
+0. Spring 启动，查找并加载需要被 Spring 管理的 Bean，对 Bean 进行实例化。
+
+1. 对 Bean 进行属性注入。
+
+2. 如果 Bean 实现了 BeanNameAware 接口，则 Spring 调用 Bean 的 setBeanName() 方法传入当前 Bean 的 id 值。
+
+3. 如果 Bean 实现了 BeanFactoryAware 接口，则 Spring 调用 setBeanFactory() 方法传入当前工厂实例的引用。
+
+4. 如果 Bean 实现了 ApplicationContextAware 接口，则 Spring 调用 setApplicationContext() 方法传入当前 ApplicationContext 实例的引用。
+
+5. 如果 Bean 实现了 BeanPostProcessor 接口，则 Spring 调用该接口的预初始化方法 postProcessBeforeInitialzation() 对 Bean 进行加工操作，此处非常重要，Spring 的 AOP 就是利用它实现的。
+
+6. 如果 Bean 实现了 InitializingBean 接口，则 Spring 将调用 afterPropertiesSet() 方法。
+
+7. 如果在配置文件中通过 init-method 属性指定了初始化方法，则调用该初始化方法。
+
+8. 如果 BeanPostProcessor 和 Bean 关联，则 Spring 将调用该接口的初始化方法 postProcessAfterInitialization()。此时，Bean 已经可以被应用系统使用了。
+
+9. 如果在 <bean> 中指定了该 Bean 的作用域为 singleton，则将该 Bean 放入 Spring IoC 的缓存池中，触发 Spring 对该 Bean 的生命周期管理；如果在 <bean> 中指定了该 Bean 的作用域为 prototype，则将该 Bean 交给调用者，调用者管理该 Bean 的生命周期，Spring 不再管理该 Bean。
+
+10. 如果 Bean 实现了 DisposableBean 接口，则 Spring 会调用 destory() 方法销毁 Bean；如果在配置文件中通过 destory-method 属性指定了 Bean 的销毁方法，则 Spring 将调用该方法对 Bean 进行销毁。
+
+#### 自动装配
+
+> 根基指定的规则（根据名称装配/或根据类型装配），Spring将特定属性注入的操作叫做自动装配。
+
+```xml
+<bean id="myObj" class="com.example.MyObj" autowire="no">
+<!--通过autowire属性指定自动装配行为：
+	no：不自动装配（默认行为）
+	byName：根据属性名装配符合条件的bean
+	byType：根据属性类型装配符合条件的bean
+	constructor：自动装配构造器参数
+-->
+</bean>
+```
+
+#### 获取Bean
+
+&emsp;可以通过BeanFactory或ApplicationContext加载配置文件，前者是Spring内部的创建方法，实际开发中主要使用后者。
+
+```java
+ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+MyClass myClass = (MyClass) context.getBean("myClass");
+((ClassPathXmlApplicationContext) context).close();
+```
+
+### AOP
+
+> **AOP**（Aspect Oriented Programming，面向切面编程）：将任务分为多个切面，在各个切面独立实现。
