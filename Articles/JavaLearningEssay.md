@@ -924,7 +924,7 @@ rs.close();											// 需要手动关闭
 
 &emsp;&emsp;IoC使用的主要技术为XML解析、工厂模式和反射。
 
-#### 基于XML配置文件创建对象、注入属性
+#### 创建对象、注入属性
 
 ```xml
 <bean id="myObj" class="com.example.MyObj" scope="singleton">
@@ -960,7 +960,7 @@ rs.close();											// 需要手动关闭
 </beans>
 ```
 
-##### FactoryBean
+#### FactoryBean
 
 &emsp;&emsp;工厂Bean（FactoryBean）是一种特殊的Bean，用来创造创建多个同一类的对象。该对象实现FactoryBean接口，相当于一个工厂类。
 
@@ -1012,6 +1012,51 @@ ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
 MyClass myClass = (MyClass) context.getBean("myClass");
 ((ClassPathXmlApplicationContext) context).close();
 ```
+
+#### 基于注解实现IoC
+
+&emsp;&emsp;除了通过XML文件来配置IoC，还可以通过注解实现IoC：
+
+开启注解支持
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       <context:annotation-config/>
+       <!--开启属性注解支持-->
+       <context:component-scan base-package="com.springtest" use-default-filters="false">
+       <!--默认扫描所有类，除非设置了use-default-filters="false"-->
+              <context:exclude-filter type="" expression=""/>
+              <context:include-filter type="" expression=""/>
+       </context:component-scan>
+</beans>
+```
+
+创建对象
+
+```java
+@Component
+@Service
+@Controller
+@Repository
+// 四选一，默认以类名首字母小写作为id
+```
+
+自动装配
+
+```java
+@Autowired					// 自动装配对象，默认byType
+@Qualifier(value = "")		// 使@Autowired以byName自动装配对象
+@Resource					// 默认byType自动装配对象，给定name后byName自动装配
+@Value						// 注入普通类型
+```
+
+> 0. 此处不需要set()方法
+> 1. @Autowired、@Qualifier和@Value由org.springframework提供，@Resource由javax提供
 
 ### AOP
 
