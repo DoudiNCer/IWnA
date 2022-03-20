@@ -1027,7 +1027,7 @@ MyClass myClass = (MyClass) context.getBean("myClass");
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
        <context:annotation-config/>
-       <!--开启属性注解支持-->
+       <!--开启属性注解支持（该注视已被context:component-scan替代）-->
        <context:component-scan base-package="com.springtest" use-default-filters="false">
        <!--默认扫描所有类，除非设置了use-default-filters="false"-->
               <context:exclude-filter type="" expression=""/>
@@ -1060,4 +1060,153 @@ MyClass myClass = (MyClass) context.getBean("myClass");
 
 ### AOP
 
-> **AOP**（Aspect Oriented Programming，面向切面编程）：将任务分为多个切面，在各个切面独立实现。
+&emsp;&emsp;**AOP**（Aspect Oriented Programming，面向切面编程）：~~将任务分为多个切面，在各个切面独立实现。~~可以在不修改已有代码的情况下添加新功能。
+
+&emsp;&emsp;AOP的底层原理为动态代理。
+
+#### 动态代理
+
+```java
+public class ProxyVegetableFarm {
+    public static Object getProxyInstance(Object object){
+        MyInvocationHandler handler = new MyInvocationHandler();
+        handler.bind(object);
+        return Proxy.newProxyInstance(object.getClass().getClassLoader(), object.getClass().getInterfaces(), handler);
+    }
+}
+
+class MyInvocationHandler implements InvocationHandler {
+    private Object object;
+
+    public void bind(Object object){
+        this.object = object;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        // some func();
+        method.invoke(object, args);
+        // some func();
+    }
+}
+```
+
+#### AOP专业术语
+
+ - Joint point（连接点）：表示在程序中明确定义的点，典型的包括方法调用、对类成员的访问以及异常处理程序块的执行等等，它自身还可以嵌套其它 joint point。
+
+ - Pointcut（切入点）：表示一组 joint point，这些 joint point 或是通过逻辑关系组合起来，或是通过通配、正则表达式等方式集中起来，它定义了相应的 Advice 将要发生的地方。
+
+ - Advice（增强/通知）：Advice 定义了在 Pointcut 里面定义的程序点具体要做的操作，它通过 before、after 和 around 来区别是在每个 joint point 之前、之后还是代替执行的代码。
+
+   |   通知类型   |       连接点       |                   实现接口                   | 注解            |
+   | :----------: | :----------------: | :------------------------------------------: | --------------- |
+   |   前置通知   |       方法前       |  org.springframework.aop.MethodBeforeAdvice  | @Before         |
+   |   最终通知   |       方法后       |     org.springframework.aop.AfterAdvice      | @After          |
+   | 后置正常通知 | 方法后且不抛出异常 | org.springframework.aop.AfterReturningAdvice | @AfterReturning |
+   |   环绕通知   |      方法前后      | org.aopalliance.intercept.MethodInterceptor  | @Around         |
+   |   异常通知   |  方法后且抛出异常  |     org.springframework.aop.ThrowsAdvice     | @AfterThrowing  |
+   |   引介通知   |  类的新方法/属性   | org.springframework.aop.IntroductionAdvisor  |                 |
+
+ - Aspect（切面）： Aspect 声明类似于 Java 中的类声明，在 Aspect 中会包含着一些 Pointcut 以及相应的 Advice。
+ - Target（目标对象）：织入 Advice 的目标对象.。
+ - Weaving（织入）：将 Aspect 和其他对象连接起来, 并创建 Adviced object 的过程
+
+#### 切入点表达式
+
+```java
+execution(Permission ReturnType Class.Method(args...))
+// 可以使用通配符*
+```
+
+#### 基于AspectJ注解实现AOP
+
+0. 开启注解扫描
+
+1. 注解被增强类
+
+   ```java
+   @Component
+   // 增强类和被增强类都需要
+   ```
+
+2. 注解增强类
+
+   ```java
+   @Component
+   @Aspect
+   ```
+
+3. 在配置文件中开启代理生成
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:aop="http://www.springframework.org/schema/aop"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/beans/spring-comtext.xsd
+                           http://www.springframework.org/schema/aop  http://www.springframework.org/schema/beans/spring-aop.xsd">
+       <context:component-scan base-package="com.springtest"></context:component-scan>
+       <!--开启注解扫描-->
+       <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+       <!--开启AspectJ自动生成代理对象-->
+   </beans>
+   ```
+
+5. 注解增强方法
+
+   ```java
+   // 根据需要选择其一
+   @Before("execution()")
+   @After("execution()")
+   @AfterReturning("execution()")
+   @AfterThrowing("execution()")
+   @Around("execution()")
+   ```
+
+   Around有些特殊，可用过如下方法调用被增强方法：
+
+   ```java
+   @Around("execution()")
+   public void show(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+       System.out.println("邓紫棋真美！");
+       proceedingJoinPoint.proceed();
+       System.out.println("我爱邓紫棋！");
+   }
+   ```
+
+#### 相同切入点抽取
+
+&emsp;&emsp;有时会有多个通知使用同一切入点，可以通过以下技巧提取公共切入点：
+
+```java
+@Pointcut("")
+public void publicPintcut(){}
+@Before("publicPintcut()")
+```
+
+#### 通知优先级
+
+&emsp;&emsp;可以通过以下注解控制同一切入点的通知优先级：
+
+```java
+@Order(int) // 数字越小优先级越高，默认为2147483647（2^31-1）
+```
+
+#### 基于配置文件实现AOP
+
+```xml
+<bean id="advising" class="com.springtest.MyClass"></bean>
+<bean id="advised" class="com.springtest.MyBean"></bean>
+<aop:config>
+    <aop:pointcut id="pointoutName" expression="execution()"/>
+    <!--配置切入点-->
+    <aop:aspect ref="advising">
+    <!--配置切面-->
+        <aop:around method="show" pointcut-ref="pointoutName"/>
+    </aop:aspect>
+</aop:config>
+```
+
