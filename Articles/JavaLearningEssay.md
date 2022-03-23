@@ -1529,3 +1529,55 @@ MVC的工作流程：
 
 ### 编写Controller
 
+## SpringBoot
+
+### 服务启动
+
+&emsp;&emsp;被@SugwApplication注解的类会被当作起动器并在SpringBoot项目起动时调用其main方法，如：
+
+```java
+@SpringBootApplication
+public class SugwApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SugwApplication.class, args);
+    }
+}
+```
+
+### SpringBoot配置
+
+&emsp;&emsp;SpringBoot的配置文件为resources/application.properties，可使用其他格式，建议为YAML
+
+> 建议参考[官方文档](https://docs.spring.io/spring-boot/docs/2.5.10/reference/html/application-properties.html#appendix.application-properties)，很短的
+
+&emsp;&emsp;YAML除了用来编写SpringBoot的主配置文件外，还可将属性注入到其他配置类中，如：
+
+```java
+@ConfigurationProperties(prefix = "zml")
+// 与application,yml中的类zml匹配
+@PropertySources(value = "classpath:zml.yml")
+// 指定配置文件，且需要@value($(variable))取出变量值手动赋值
+public class zml{
+    private String name;
+    private Date birthday;
+    private List hobby;
+    private boolean beautiful;
+}
+```
+
+```yaml
+zml:
+	name: Monroe
+	birthday: 1993/1/11
+	hobby:
+		- sing
+		- dance
+	beautiful: true
+```
+
+&emsp;&emsp;@ConfigurationProperties还支持其他功能：
+
+> - 松散绑定：first-name == firstName
+> - JSR303数据校验：开启@Validated后可对某些字段开启数据类型/格式校验
+
+### Web开发
