@@ -1118,7 +1118,7 @@ public class myfilter implements Filter{
 <filter-mapping>
     <filter-name>filter</filter-name>
     <url-pattern>/*</url-pattern>
-    <!--要被拦截的请求-->
+    <!--要被拦截的请求，不能用/-->
 </filter-mapping>
 ```
 
@@ -1260,10 +1260,10 @@ MyClass myClass = (MyClass) context.getBean("myClass");
 创建对象
 
 ```java
-@Component
-@Service
-@Controller
-@Repository
+@Component	// 普通组件
+@Service	// 业务层组件
+@Controller	// 控制器
+@Repository	// 持久层
 // 四选一，默认以类名首字母小写作为id
 ```
 
@@ -1430,3 +1430,47 @@ public void publicPintcut(){}
     </aop:aspect>
 </aop:config>
 ```
+
+## SpringMVC
+
+### MVC
+
+&emsp;&emsp;MVC是一种软件架构的思想，将软件按照模型、视图、控制器来划分
+
+- M：**Model**，模型层，指工程中的JavaBean，作用是处理数据
+- V：**View**，视图层，指工程中的html或jsp等页面，作用是与用户进行交互，展示数据
+- C：**Controller**，控制层，指工程中的servlet，作用是接收请求和响应浏览器
+
+MVC的工作流程：
+
+&emsp;&emsp;用户通过视图层发送请求到服务器，在服务器中请求被Controller接收，Controller调用相应的Model层处理请求，处理完毕将结果返回到Controller，Controller再根据请求处理的结果找到相应的View视图，渲染数据后最终响应给浏览器
+
+### 配置Servlet
+
+&emsp;&emsp;可以在web.xml中注册DispatcherServlet，并在每个Servlet对应的xml中配置Servlet。也可以通过以下方式配置：
+
+1. 在web.xml注册DispatcherServlet
+
+```xml
+<web-app>      
+    <servlet>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-mvc.xml</param-value>
+            <!--配置文件路径-->
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+        <!--不要匹配到jsp-->
+    </servlet-mapping>
+</web-app> 
+```
+2. 在spring-mvc.xml中配置其他Servlet
+
+### 编写Controller
+
