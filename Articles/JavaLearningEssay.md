@@ -1135,6 +1135,61 @@ public class myfilter implements Filter{
 - XML优先于注解
 - XML与注解重复的过滤器会执行多次
 
+## MyBatis
+
+&emsp;&emsp;MyBatis是一款优秀的持久层框架，它支持自定义 SQL、存储过程以及高级映射。MyBatis 免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis 可以通过简单的 XML 或注解来配置和映射原始类型、接口和 Java POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。
+
+### MyBatis配置文件
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration><!-- 配置 -->
+    <properties /><!-- 属性 -->
+    <settings /><!-- 设置 -->
+    <typeAliases /><!-- 类型命名 -->
+    <typeHandlers /><!-- 类型处理器 -->
+    <objectFactory /><!-- 对象工厂 -->
+    <plugins /><!-- 插件 -->
+    <environments><!-- 配置环境 -->
+        <environment><!-- 环境变量 -->
+            <transactionManager type="jdbc"/><!-- 事务管理器 -->
+            <dataSource type=:POOLED><!-- 数据源 -->
+                <property name="driver" value=""/>
+                <property name="url" value=""/>
+                <property name="username" value=""/>
+                <property name="passowrd" value=""/>
+            </dataSource>
+        </environment>
+    </environments>
+    <databaseIdProvider /><!-- 数据库厂商标识 -->
+    <mappers><!-- 映射器 -->
+        <mapper resources="mapper/UserMapper.xml"/>
+    </mappers>
+</configuration>
+```
+
+### Mapper
+
+&emsp;&emsp;在MyBatis中，创建Mapper需要一个Mapper的接口以及一个XML映射文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doudi.sugw.mapper.UserMapper">
+<!--与对应接口匹配-->
+    <sql id="">
+    <!--id与抽象方法匹配-->
+        <!--SQLs-->
+    </sql>
+</mapper>
+```
+
+
+
 ## Spring
 
 &emsp;&emsp;Spring是一个开源（[Apache-2.0 License](https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt)）的**轻量级**的**控制反转**(IoC)和**面向切面**(AOP)的JavaEE框架。
