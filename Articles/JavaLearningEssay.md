@@ -1544,7 +1544,7 @@ public class SugwApplication {
 }
 ```
 
-### SpringBoot配置
+### SpringBoot配置文件
 
 &emsp;&emsp;SpringBoot的配置文件为resources/application.properties，可使用其他格式，建议为YAML
 
@@ -1580,4 +1580,40 @@ zml:
 > - 松散绑定：first-name == firstName
 > - JSR303数据校验：开启@Validated后可对某些字段开启数据类型/格式校验
 
+### 配置类
+
+&emsp;&emsp;Spring支持将xml配置文件中所有配置转移到配置类中，实现完全注解开发。
+
+```java
+@Configuration(proxyBeanMethods = true)	// 是否以单例模式获取组件
+public class MyConfig{
+    @Bean	// 以方法名为id创建Bean
+    public User user0(){
+        return new User();
+    }
+}
+```
+
+### 组件导入
+
 ### Web开发
+
+#### 静态资源
+
+&emsp;&emsp;SpringMVC会扫描/static，/public，/resources，/META-INF/rsources下的静态资源。
+
+> 注意请求优先级为动态资源>静态资源
+
+&emsp;&emsp;默认情况下静态资源“位于根目录下，若需要修改访问路径和扫描目录可以通过以下设置修改：
+
+```yaml
+spring: 
+	mvc: 
+		static-path-pattern: /static/**
+		# 修改访问路径
+	resources: 
+		static-locations: classpath:/res/
+		# 修改静态资源路径
+```
+
+&emsp;&emsp;还可访问/webjar/下的jar包
