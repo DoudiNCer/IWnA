@@ -2102,3 +2102,42 @@ spring:
 ```
 
 &emsp;&emsp;还可访问/webjar/下的jar包
+
+## JWT
+
+### JWT结构
+
+&emsp;&emsp;JWT令牌由三部分组成，结构为Header.Pay咯啊的。Signature，具体为：
+
+- 标头（Header）：由令牌类型（JWT）和加密方式（HS256/RS256）经Base64编码得到
+
+  ```json
+  {
+      "alg": "HS256",
+      "typ": "JWT"
+  }
+  ```
+
+- 荷载（Payload）：由有关实体（通常为用户）和其他数据经Base54编码得到
+
+- 签名（Signature）：由前两部分与随机盐（密钥）经标头中的加密方式加密得到
+
+### JWT原生使用
+
+0. 引入依赖com.auth0.java-jwt
+
+1. 生成token
+
+   ```java
+   String token = JWT.create()
+       .withHeader()	// 标头
+       .withClaim()	// 荷载
+       .sign()	// 签名
+       .withExpiresAt();	// 过期时间
+   ```
+
+2. 验证
+
+   ```java
+   JWTVerifier verifier = JWT.require().build();	// 创建验证对象
+   ```
