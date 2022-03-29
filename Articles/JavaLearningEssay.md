@@ -1648,7 +1648,7 @@ MyClass myClass = (MyClass) context.getBean("myClass");
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
        <context:annotation-config/>
-       <!--开启属性注解支持（该注视已被context:component-scan替代）-->
+       <!--开启属性注解支持（该注解已被context:component-scan替代）-->
        <context:component-scan base-package="com.springtest" use-default-filters="false">
        <!--默认扫描所有类，除非设置了use-default-filters="false"-->
               <context:exclude-filter type="" expression=""/>
@@ -1845,7 +1845,7 @@ MVC的工作流程：
 
 &emsp;&emsp;用户通过视图层发送请求到服务器，在服务器中请求被Controller接收，Controller调用相应的Model层处理请求，处理完毕将结果返回到Controller，Controller再根据请求处理的结果找到相应的View视图，渲染数据后最终响应给浏览器
 
-### 配置Servlet
+### 配置DispatcherServlet
 
 &emsp;&emsp;可以在web.xml中注册DispatcherServlet，并在每个Servlet对应的xml中配置Servlet。也可以通过以下方式配置：
 
@@ -1873,6 +1873,146 @@ MVC的工作流程：
 2. 在spring-mvc.xml中配置其他Servlet
 
 ### 编写Controller
+
+&emsp;&emsp;一个简单的Controller的样例如下：
+
+```java
+@Controller
+public class myController {
+    @RequestMapping(value = "/hello", method = RequestMethod.POST)
+    public String hello(){
+        System.out.println("There is a hello request");
+        return "Hello World --doudi";
+    }
+}
+```
+
+Controller的相关注解：
+
+```java
+// 绑定请求与方法
+@RequestMapping()
+// value/path：请求地址
+//     支持ant风格路径："?"（任意单个字符）、"*"（任意个任意字符）和"**"（任意层目录）
+//     路径占位符：使用{variable}作为占位符，访问时通过路径传参（restful风格），只能通过@PathVariable获取参数值
+// method：请求方法，默认匹配所有方法
+//     还可使用四个派生注解：@GetMapping @PostMapping @PutMapping和@DeleteMapping
+// params：请求参数
+//     支持"param"（含有某参数）、"!param"（不含有某参数）、"param=value"和"param!=value"
+// headers：请求头，使用方法类似params
+// consumes：ContentType（请求体数据格式）
+// produces：Accept（客户端支持的响应体数据格式）
+```
+
+### 获取请求参数
+
+0. 通过ServletAPI获取请求参数
+
+    ```java
+    @RequestMapping(value = "/hello", method = RequestMethod.POST)
+    public String hello(HttpServletRequest req, HttpServletResponse resp, HttpSession session){
+    // 然后都会了吧
+        return "Hello World --doudi";
+    }
+    ```
+
+1. 通过控制器方法获取参数：直接在形参列表添加请求参数（如有需要，可通过@RequestParam修改参数名）
+
+   ```java
+   @RequestParam(value="", required=false, defaultValue=0)
+   ```
+
+2. 三大注解
+
+   ```java
+   @RequestParam	// 请求参数
+   @RequiredHeader	// 请求头
+   @CookieValue	// Cookie
+   ```
+
+3. 通过POJO实体对象：形参直接写对象
+
+### 域对象共享数据
+
+0. 使用ModelAndView向request共享数据
+
+   ```java
+   // 这是个Contrller的方法
+   public ModelAndView modelAndView(){
+       ModelAndView mav = new ModelAndView();
+       // 添加属性
+       mav.addObject("name", "value");
+       // 设置视图
+       mav.setViewName("viewName");
+       return mav;
+   }
+   ```
+
+1. 使用Model/Map/ModelMap向request共享数据（将Model作为形参）
+
+2. 使用ServletAPI向Request/Response/Session共享数据
+
+### SpringMVC的视图
+
+> 这里不想学了，以后用到了再补吧
+
+### 静态资源
+
+开启mvc对静态资源的访问：
+
+```xml
+<mvc:defaultservvlet-handler />
+<!-- 开放静态资源 -->
+<mvc:annotation-driven />
+<!-- 开启注解驱动 -->
+```
+
+### HttpMessageConvert
+
+&emsp;&emsp;HttpMessageConvert，报文信息转换器，用于将请求报文/响应报文与Java对象相互转换。
+
+#### 请求报文
+
+&emsp;&emsp;@RequestBody可用于获得请求体，注解一个String形参可获得请求体：
+
+```java
+PostMapping("/helllo")
+    public String post( @RequestBody String requestBody){
+        return "Hello World" + requestBody;
+    }
+```
+
+&emsp;&emsp;RequestEntity封装了请求报文，添加此形参后可用于获取请求报文。
+
+#### 响应报文
+
+&emsp;&emsp;@ResponseBody注解一个方法可将该方法的返回值作为响应体。如果需要返回一个对象，需要使用jakson-databind将其转换成json格式的数据：
+
+> - 导入依赖
+> - 开启注解驱动
+> - 添加@ResponseBody注解
+
+&emsp;&emsp;ResponseEntity封装了响应报文，可用于将数据响应给用户。
+
+### 拦截器
+
+&emsp;&emsp;SpringMVC的拦截器用于拦截请求，位于DispatcherServlet与Controller之间。需要实现HandlerInterceptor接口或继承HandlerInterceptorAdapter类。
+
+#### 配置拦截器
+
+```xml
+<mvc:interceptors>
+    <bean class=""></bean>
+</mvc:interceptors>
+```
+
+#### 编写拦截器
+
+&emsp;&emsp;根据需要重写以下方法：
+
+> - preHandle()：执行Controller前
+> - postHandle()：执行Controller后生成视图前
+> - afterCompletion()：生成视图后
 
 ## SpringBoot
 
