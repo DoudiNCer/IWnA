@@ -284,18 +284,39 @@ docker network connect $network $container		# Connect a container to a network
 
 ```yaml
 version: '3'	# compose 版本，参照 https://docs.docker.com/compose/compose-file
-services:
-	serviceName:
-		build: .				# 指定build命令参数
-		ports:
+services: 
+	serviceName: 
+		build: 					# 指定build命令参数
+		image: imageName
+		container_name: cName	# 不指定的话为“目录名_服务名_1”
+		environment: 
+			KEY: "VAlue" 
+		ports: 
 			- "hostPort:clientPort"
-		depends_on:
+		volumes:
+			- hostDir: containerDir
+		networks: 
+			- docker network
+		depends_on: 
 			- anotherService	# 在启动该服务前启动以下服务
 		...						# 参考docker命令可用的参数
+networks:
+	neyworkName: 	
 ...		# 其他配置
 ```
 
+### 运行
 
+```shell
+docker-compose 
+				up (-d)		# 创建并启动服务（后台）
+				down		# 停止并删除服务
+				start
+				stop
+				restart
+				exec 		# 执行容器内程序
+				config (-q)	# 检查配置文件（仅输出错误）
+```
 
 ## Docker Swarm
 
