@@ -105,8 +105,9 @@ show tables (as $database);
 describe $table;							# 查看表的字段结构
 create table $tableNme($columnName $dataType $constraint);
 alter table $table 
-	add $column [first/after  $columnName];	# 添加字段
-	modify $column $columnName $type;		# 修改字段数据类型
+	add $column [first/after $columnName];	# 添加字段
+	modify $column $type;					# 修改字段数据类型
+	change $column $columnName $type;		# 修改字段属性
 	drop column $column;					# 删除字段 
 	rename to $tablename					# 重命名表
 delete from $tableName;						# 清空表
@@ -264,6 +265,16 @@ alter table $table add constraint $constraintName $constraint($columns);	# 添�
 
 临时表的作用域为当前语句
 
+### 范式
+
+&emsp;&emsp;在创建关系型数据库的数据表时，为了规范表的结构，形成了以下三条规定：
+
+> - 所有字段不可拆分
+> - 必须存在业务主键，且非主键字段依赖主键字段
+> - 非主键字段不能依赖除主键字段外的其他字段（避免数据冗余）
+
+&emsp;&emsp;当然，有时考录到实际需求的特殊性，会采用反范式的设计。
+
 ## 数据类型
 
 ### 数字
@@ -279,7 +290,7 @@ alter table $table add constraint $constraintName $constraint($columns);	# 添�
 |    DOUBLE    |                 8 Bytes                  | (-1.797 693 134 862 315 7 E+308，-2.225 073 858 507 201 4 E-308)，0，(2.225 073 858 507 201 4 E-308，1.797 693 134 862 315 7 E+308) | 0，(2.225 073 858 507 201 4 E-308，1.797 693 134 862 315 7 E+308) | 双精度 浮点数值 |
 |   DECIMAL    | 对DECIMAL(M,D) ，如果M>D，为M+2否则为D+2 |                        依赖于M和D的值                        |                        依赖于M和D的值                        |    定点小数     |
 
-### 日期
+### 日期时间
 
 |   类型    | 大小 ( bytes) |                             范围                             |        格式         |           用途           |
 | :-------: | :-----------: | :----------------------------------------------------------: | :-----------------: | :----------------------: |
@@ -323,6 +334,19 @@ alter table $table add constraint $constraintName $constraint($columns);	# 添�
 - set：n选m
 
 > 为了加速查找，将定长数据放在前面，变长数据放在后面
+
+### 数据类型的选择
+
+- 允许就用unsignd
+- 自增id用bi（bigint）
+- 身高体重int来
+- 整数括号表补齐
+- 定长储存小数据
+- varchar放到最后放
+- 浮点小数有误差
+- dc（decimal）左总右小数
+- datetime有点大
+- ts（timestamp）快要过期了
 
 ## 触发器
 
@@ -584,4 +608,3 @@ show grants for username@ip;
 grant permissions on databases.tables to username@ip;
 revoke permissions on databases.tables from username@ip;
 ```
-
