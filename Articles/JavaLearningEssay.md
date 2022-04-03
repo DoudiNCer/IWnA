@@ -1930,7 +1930,7 @@ Controller的相关注解：
    @CookieValue	// Cookie
    ```
 
-3. 通过POJO实体对象：形参直接写对象
+3. 通过POJO实体对象：形参直接写对象（仅限请求体）
 
 ### 域对象共享数据
 
@@ -2141,3 +2141,15 @@ spring:
    ```java
    JWTVerifier verifier = JWT.require().build();	// 创建验证对象
    ```
+
+## Spring Security
+
+>&emsp;&emsp;Spring Security is a powerful and highly customizable authentication and access-control framework. It is the de-facto standard for securing Spring-based applications.
+>
+>&emsp;&emsp;Spring Security is a framework that focuses on providing both **authentication** and **authorization** to Java applications. Like all Spring projects, the real power of Spring Security is found in  how easily it can be extended to meet custom requirements
+
+&emsp;&emsp;Spring Security 的前身为 Acegi，经不断迭代最终成为一个功能强大的重型身份认证和用户授权框架。当然，由于 Spring Security 过于庞大，有时会选用轻量级的 Shiro。即“SSM + Shiro”或“Spring Boot/Cloud + Spring Security”。
+
+### 过滤器链
+
+&emsp;&emsp;Spring Security本质为一个过滤器链
