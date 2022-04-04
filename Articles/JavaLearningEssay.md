@@ -1908,13 +1908,13 @@ Controller的相关注解：
 
 0. 通过ServletAPI获取请求参数
 
-    ```java
-    @RequestMapping(value = "/hello", method = RequestMethod.POST)
-    public String hello(HttpServletRequest req, HttpServletResponse resp, HttpSession session){
-    // 然后都会了吧
-        return "Hello World --doudi";
-    }
-    ```
+     ```java
+     @RequestMapping(value = "/hello", method = RequestMethod.POST)
+     public String hello(HttpServletRequest req, HttpServletResponse resp, HttpSession session){
+     // 然后都会了吧
+         return "Hello World --doudi";
+     }
+     ```
 
 1. 通过控制器方法获取参数：直接在形参列表添加请求参数（如有需要，可通过@RequestParam修改参数名）
 
@@ -1922,15 +1922,24 @@ Controller的相关注解：
    @RequestParam(value="", required=false, defaultValue=0)
    ```
 
-2. 三大注解
+2. 五大注解
 
    ```java
-   @RequestParam	// 请求参数
-   @RequiredHeader	// 请求头
-   @CookieValue	// Cookie
+   @RequestParam   // 请求参数
+   @RequiredHeader // 请求头
+   @RequestBody    // 请求体
+   @CookieValue    // Cookie
+   @RequestPart    // 用于文件上传的复合型请求体      
    ```
 
-3. 通过POJO实体对象：形参直接写对象（仅限请求体）
+3.   RESTFul风格的请求参数
+
+    ```java
+    @PathVariable      // RESTFul风格的请求参数
+    @MatrixVariable    // 矩阵变量，获取RESTFul风格请求参数中的附加请求字段
+    ```
+
+4. 通过POJO实体对象：形参直接写对象（仅限请求体）
 
 ### 域对象共享数据
 
@@ -2000,11 +2009,29 @@ PostMapping("/helllo")
 
 #### 配置拦截器
 
+&emsp;&emsp;可以在配置文件中配置拦截器：
+
 ```xml
 <mvc:interceptors>
     <bean class=""></bean>
 </mvc:interceptors>
 ```
+
+&emsp;&emsp;也可在配置类中配置拦截器
+
+```java
+@Configuration
+class configure implements WebMvcConfigurer{
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new myInterceptor)      // 所添加的拦截器
+                .addPathPatterns()                      // 拦截的请求
+                .excludePathPatterns();                 // 不拦截的请求
+    }
+}
+```
+
+
 
 #### 编写拦截器
 
@@ -2031,61 +2058,75 @@ public class SugwApplication {
 
 ### SpringBoot配置文件
 
-&emsp;&emsp;SpringBoot的配置文件为resources/application.properties，可使用其他格式，建议为YAML
+&emsp;&emsp;SpringBoot 的配置文件为 resources/application.properties ，可使用其他格式，建议为YAML
+
+&emsp;&emsp;要想获得完整的支持，需导入 spring-boot-configuration-processor 。
 
 > 建议参考[官方文档](https://docs.spring.io/spring-boot/docs/2.5.10/reference/html/application-properties.html#appendix.application-properties)，很短的
 
-&emsp;&emsp;YAML除了用来编写SpringBoot的主配置文件外，还可将属性注入到其他配置类中，如：
+&emsp;&emsp;YAML 除了用来编写 SpringBoot 的主配置文件外，还可将属性注入到其他配置类中，如：
 
 ```java
 @ConfigurationProperties(prefix = "zml")
-// 与application,yml中的类zml匹配
+// 与 application.yml 中的类 zml 匹配
 @PropertySources(value = "classpath:zml.yml")
-// 指定配置文件，且需要@value($(variable))取出变量值手动赋值
+// 指定配置文件，且需要 @value($(variable)) 取出变量值手动赋值
 public class zml{
     private String name;
     private Date birthday;
     private List hobby;
+    private map score;
     private boolean beautiful;
 }
 ```
 
 ```yaml
 zml:
-	name: Monroe
-	birthday: 1993/1/11
-	hobby:
-		- sing
-		- dance
-	beautiful: true
+    name: Monroe
+    birthday: 1993/1/11
+    # hobby: [sing, dance]
+    hobby:
+        - sing
+        - dance
+    # score: {Chinese: 128, Math: 72, English: 130}
+    score: 
+        Chinese: 128
+        Math: 72
+        English: 130
+    beautiful: true
 ```
 
-&emsp;&emsp;@ConfigurationProperties还支持其他功能：
+&emsp;&emsp;@ConfigurationProperties 还支持其他功能：
 
-> - 松散绑定：first-name == firstName
-> - JSR303数据校验：开启@Validated后可对某些字段开启数据类型/格式校验
+> - 松散绑定：first_name == firstName
+> - JSR303 数据校验：开启 @Validated 后可对某些字段开启数据类型/格式校验
 
 ### 配置类
 
-&emsp;&emsp;Spring支持将xml配置文件中所有配置转移到配置类中，实现完全注解开发。
+&emsp;&emsp;Spring 支持将 xml 配置文件中所有配置转移到配置类中，实现完全注解开发。
 
 ```java
 @Configuration(proxyBeanMethods = true)	// 是否以单例模式获取组件
+@ComponentScan							// 包扫描范围
+@Import									// 导入组件
+@Conditional*							// 根据条件装配组件
+@ImportResource							// 导入 XML 配置文件中的组件
+@EnableConfiguration					// 从配置文件自动注入并注册组件
 public class MyConfig{
-    @Bean	// 以方法名为id创建Bean
+    @Bean	// 以方法名为 id 创建 Bean
     public User user0(){
         return new User();
     }
 }
 ```
 
-### 组件导入
+> 除了编写自定义的配置类，还可将配置写在主程序类
 
 ### Web开发
 
 #### 静态资源
 
-&emsp;&emsp;SpringMVC会扫描/static，/public，/resources，/META-INF/rsources下的静态资源。
+&emsp;&emsp;SpringMVC 会扫描 /static，/public，/resources，/META-INF/rsources 下的静态资源。
 
 > 注意请求优先级为动态资源>静态资源
 
@@ -2101,7 +2142,7 @@ spring:
 		# 修改静态资源路径
 ```
 
-&emsp;&emsp;还可访问/webjar/下的jar包
+&emsp;&emsp;还可访问 /webjar 下的 jar 包
 
 ## JWT
 
