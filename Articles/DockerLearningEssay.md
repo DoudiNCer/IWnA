@@ -19,16 +19,16 @@
 
 ```shell
 paru -S docker
-sudo docker info				# 验证安装
-sudo gpasswd -a ${USER} docker	# 将当前用户加入到docker组，选做
+sudo docker info                # 验证安装
+sudo gpasswd -a ${USER} docker  # 将当前用户加入到docker组，选做
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo echo "
 {
-	"registry-mirrors": ["http://hub-mirror.c.163.com"]
+    "registry-mirrors": ["http://hub-mirror.c.163.com"]
 }
 " > /etc/docker/daemon.json
-								# 配置Docker仓库
+                                # 配置Docker仓库
 ```
 
 一些疑难杂症：
@@ -36,7 +36,7 @@ sudo echo "
 ### 启用IP转发
 
 ```shell
-sudo sysctl net.ipv4.ip_forward	# 如果输出结果为0，执行下面的操作
+sudo sysctl net.ipv4.ip_forward    # 如果输出结果为0，执行下面的操作
 sudo echo "
 net.ipv4.ip_forward=1
 " >> /etc/sysctl.d/99-net.conf
@@ -58,13 +58,13 @@ docker ($command) --help
 docker images:
 
 ```shell
-docker images -a 							# 显示所有镜像
-              -q 							# 仅显示镜像ID
+docker images -a                             # 显示所有镜像
+              -q                             # 仅显示镜像ID
 ```
 
 ```shell
-docker pull $imageName(:$imageTag)			# download a Image,default is the latest version
-docker rmi -f $imageName:$imageTag/$imageID	# delete inage(s)
+docker pull $imageName(:$imageTag)            # download a Image,default is the latest version
+docker rmi -f $imageName:$imageTag/$imageID   # delete inage(s)
 ```
 
 ### Container
@@ -72,13 +72,13 @@ docker rmi -f $imageName:$imageTag/$imageID	# delete inage(s)
 docker run:
 
 ```shell
-docker run --name=$containerName		# container name
-           -d							# Run container in background and print container ID
-           -it							# Interactive(STDIN avalible and a tty)
-(-p(($hostIP)$hostPort:))$containerPort	# Open container's port to the host
-           -P							# Publish all of the container's ports
-           --rm							# auto delete the container after stop
-           -e $envKey=$envValue			# add a environment variable
+docker run --name=$containerName         # container name
+           -d                            # Run container in background and print container ID
+           -it                           # Interactive(STDIN avalible and a tty)
+(-p(($hostIP)$hostPort:))$containerPort  # Open container's port to the host
+           -P                            # Publish all of the container's ports
+           --rm                          # auto delete the container after stop
+           -e $envKey=$envValue          # add a environment variable
 ```
 
 > Tips:"-d" need a running foreground program!!
@@ -86,25 +86,25 @@ docker run --name=$containerName		# container name
 docler ps:
 
 ```shell
-docler ps -a							# show all of the container(even if it's not running)
-          -n=$number					# show the latest $number container(s)
-          -q							# Only show the containers' ID
+docler ps -a                            # show all of the container(even if it's not running)
+          -n=$number                    # show the latest $number container(s)
+          -q                            # Only show the containers' ID
 ```
 
 ```shell
-docker rm (-f） $containerName/$containerID	# remove container(s) (force?)
+docker rm (-f） $containerName/$containerID    # remove container(s) (force?)
 docker start/stop/restart/kill $container
-docker attach $container					# show the background container
-docker exec $container $command				# exec a new command in the container
-docker cp $container:$srcPath $machinePath	# copy file(s)
-docker stats $container						# show container's resource usage
+docker attach $container                       # show the background container
+docker exec $container $command                # exec a new command in the container
+docker cp $container:$srcPath $machinePath     # copy file(s)
+docker stats $container                        # show container's resource usage
 ```
 
 ### Logs
 
 ```shell
-docker logs -tf --tail $number $container	# show logs with timestamps and fresh
-docker inspect $container					# show container's detail information
+docker logs -tf --tail $number $container    # show logs with timestamps and fresh
+docker inspect $container                    # show container's detail information
 ```
 
 累了？下个portainer玩玩吧
@@ -151,18 +151,18 @@ docker commit (-m=$commitMessage) (-a=$author) $container ($repository(:$tag))
 ```shell
 docker run -v ($localVolumnName:)$containerDirectory(:ro/rw)
 # Local data is /var/lib/docker/volumns/$localVolumnName/_data
-			-v $localDirectory:$containerDirectory
-			--volumes-from $container	# share another vontainer's file
+            -v $localDirectory:$containerDirectory
+            --volumes-from $container    # share another vontainer's file
 ```
 
 ### Volume operation
 
 ```shell
 docker volume create 
-			inspite		# show volume detail info
-			ls
-			prune		# clean unused volumes
-			rm
+            inspite        # show volume detail info
+            ls
+            prune          # clean unused volumes
+            rm
 ```
 
 ## Dockerfile
@@ -172,23 +172,23 @@ docker volume create
 ### Dockerfile语法
 
 ```dockerfile
-FROM scratch				# 基础镜像
-MAINTAINER auther<e-mail>	# 维护者信息
+FROM scratch                # 基础镜像
+MAINTAINER auther<e-mail>   # 维护者信息
 
-RUN exec					# 构建过程运行的命令，每个RUN会给镜像增加一层
-ADD src dest				# 提供镜像所需文件（可通过URL或tar包提供）
-COPY src dest				# 复制本地文件到docker镜像中
-VOLUME dir					# 添加数据卷
+RUN exec                    # 构建过程运行的命令，每个RUN会给镜像增加一层
+ADD src dest                # 提供镜像所需文件（可通过URL或tar包提供）
+COPY src dest               # 复制本地文件到docker镜像中
+VOLUME dir                  # 添加数据卷
 
-USER daemon					# 指定容器运行时使用的用户
-WORKDIR	dir					# 工作目录，给cd改了个名
-EXPOSE [ports...]			# 对外暴露端口
-CMD exec					# 容器运行时执行的命令，会被docker run覆盖，仅最后一个有效
+USER daemon                 # 指定容器运行时使用的用户
+WORKDIR    dir              # 工作目录，给cd改了个名
+EXPOSE [ports...]           # 对外暴露端口
+CMD exec                    # 容器运行时执行的命令，会被docker run覆盖，仅最后一个有效
 CMD ["executable",params...]
-ENTRYPOINT exec				# 容器运行时运行的命令，不会被docker run覆盖，仅最后一个有效，可追加参数
+ENTRYPOINT exec             # 容器运行时运行的命令，不会被docker run覆盖，仅最后一个有效，可追加参数
 ENTRYPOINT ["executable",param1...]
-ONBUILD	exec				# 被继承时触发执行
-ENV name value				# 添加环境变量
+ONBUILD    exec             # 被继承时触发执行
+ENV name value              # 添加环境变量
 ```
 
 ### 查看镜像/容器变更历史
@@ -248,17 +248,17 @@ docker load
 docker neiwork：
 
 ```shell
-docker network connect $network $container		# Connect a container to a network
-			disconnect (-f) $network $container	# Disconnect a container from a network
-			inspect $networks...				# Show details of neiwork(s)
-			ls
-			prune								# Clean unused network(s)
-			rm $neywork
+docker network connect $network $container         # Connect a container to a network
+            disconnect (-f) $network $container    # Disconnect a container from a network
+            inspect $networks...                   # Show details of neiwork(s)
+            ls
+            prune                                  # Clean unused network(s)
+            rm $neywork
 
-			create --drive $driver 
-			--subnet $subnet		# subnet address and mask
-			--getway $getway		# host address
-			$networkName						# Create a network
+            create --drive $driver 
+            --subnet $subnet                       # subnet address and mask
+            --getway $getway                       # host address
+            $networkName                           # Create a network
 ```
 
 ## Docker Compose
@@ -283,39 +283,39 @@ docker network connect $network $container		# Connect a container to a network
 ### docker-compose,yaml
 
 ```yaml
-version: '3'	# compose 版本，参照 https://docs.docker.com/compose/compose-file
+version: '3'    # compose 版本，参照 https://docs.docker.com/compose/compose-file
 services: 
-	serviceName: 
-		build: 					# 指定build命令参数
-		image: imageName
-		container_name: cName	# 不指定的话为“目录名_服务名_1”
-		environment: 
-			KEY: "VAlue" 
-		ports: 
-			- "hostPort:clientPort"
-		volumes:
-			- hostDir: containerDir
-		networks: 
-			- docker network
-		depends_on: 
-			- anotherService	# 在启动该服务前启动以下服务
-		...						# 参考docker命令可用的参数
+    serviceName: 
+        build:                     # 指定build命令参数
+        image: imageName
+        container_name: cName      # 不指定的话为“目录名_服务名_1”
+        environment: 
+            KEY: "VAlue" 
+        ports: 
+            - "hostPort:clientPort"
+        volumes:
+            - hostDir: containerDir
+        networks: 
+            - docker network
+        depends_on: 
+            - anotherService       # 在启动该服务前启动以下服务
+        ...                        # 参考docker命令可用的参数
 networks:
-	neyworkName: 	
-...		# 其他配置
+    neyworkName:     
+...        # 其他配置
 ```
 
 ### 运行
 
 ```shell
 docker-compose 
-				up (-d)		# 创建并启动服务（后台）
-				down		# 停止并删除服务
-				start
-				stop
-				restart
-				exec 		# 执行容器内程序
-				config (-q)	# 检查配置文件（仅输出错误）
+                up (-d)        # 创建并启动服务（后台）
+                down           # 停止并删除服务
+                start
+                stop
+                restart
+                exec           # 执行容器内程序
+                config (-q)    # 检查配置文件（仅输出错误）
 ```
 
 ## Docker Swarm

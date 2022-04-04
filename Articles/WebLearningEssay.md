@@ -79,11 +79,11 @@ Vary: Accept-Encoding
 Content-Type: text/plain
 
 <html>
-	<head>
-		<title>Hello World</title>
-	</head>
-	<body>
-	</body>
+    <head>
+        <title>Hello World</title>
+    </head>
+    <body>
+    </body>
 </html>
 ```
 
@@ -196,7 +196,7 @@ Content-Type: text/plain
 
 &emsp;&emsp;当需要使用多个相似的URL时，可以使用[]和/或{}来匹配这些URL。
 
-&emsp;&emsp;{str1,str2,str3}会依次匹配其中的么每个字符串，如：
+&emsp;&emsp;{str1,str2,str3}会依次匹配其中的每个字符串，如：
 
 ```shell
 curl "http:/localhost:8080/{1,2,3}.png"
@@ -216,63 +216,63 @@ curl "http:/localhost:8080/{1-50:2}.png"
 
 ```shell
 curl $url
-	--create-dirs			# 根据需要使用0750在本地创建文件夹
-	-o $fileDir
-	-O --output-dir $dir	# 使用服务器上的文件名并指定储存目录
+    --create-dirs            # 根据需要使用0750在本地创建文件夹
+    -o $fileDir
+    -O --output-dir $dir     # 使用服务器上的文件名并指定储存目录
 ```
 
 #### 查看
 
 ```shell
 curl $url
-	-I, --head			# 仅查看响应头
-	-s, --silent		# 屏蔽除响应数据外的标准输出和标准错误
-	-S, --show-error	# 屏蔽除响应数据外的标准输出，但保留标准错误
+    -I, --head          # 仅查看响应头
+    -s, --silent        # 屏蔽除响应数据外的标准输出和标准错误
+    -S, --show-error    # 屏蔽除响应数据外的标准输出，但保留标准错误
 ```
 
 ### 编辑请求头
 
 ```shell
 curl $url
-	-d, --data %key=$value				# HTTP POST 数据
+    -d, --data %key=$value                # HTTP POST 数据
      --data-ascii 
      --data-binary 
-     --data-raw 		# 可使用'@'
+     --data-raw         # 可使用'@'
      --data-urlencode 
-    -H, --header $key:$value/@$file		# 添加/修改/删除额外的请求头字段
+    -H, --header $key:$value/@$file       # 添加/修改/删除额外的请求头字段
 ```
 
 ### 认证/身份
 
 ```shell
 curl $url
-	-A, --user-agent $UA			# 指定UA
-	--anyauth						# 自动检查使用的认证方式（不推荐）
-	-b, --cookie $cookie/$filename	# 使用cookie
-	-c, --cookie-jar $file			# 保存cookie，用“-”做文件名以将Cookie输出到标准输出
-	-u, --user $user:$password		# 指定用户名、密码
+    -A, --user-agent $UA              # 指定UA
+    --anyauth                         # 自动检查使用的认证方式（不推荐）
+    -b, --cookie $cookie/$filename    # 使用cookie
+    -c, --cookie-jar $file            # 保存cookie，用“-”做文件名以将Cookie输出到标准输出
+    -u, --user $user:$password        # 指定用户名、密码
 ```
 
 ### 连接
 
 ```shell
 curl $url
-	-0, --http1.0            		# Use HTTP 1.0
-     --http1.1            			# Use HTTP 1.1
-     --http2              			# Use HTTP 2
-     --http2-prior-knowledge 		# Use HTTP 2 without HTTP/1.1 Upgrade
-     --http3              			# Use HTTP v3
-	--ssl							# 尝试SSL/TLS
-	-2, --sslv2              		# Use SSLv2
- 	-3, --sslv3              		# Use SSLv3
- 	-4, --ipv4						# Use IPv4
- 	-6, --ipv6
- 	-k, --insecure					# 忽略SSL证书
-	-L, --location           		# 自动跳转
-     --location-trusted   			# 自动跳转并继承授权
-	-m, --max-time $second			# 最长等待时间
-	--max-filesize $bytes 			# 下载文件大小限制
-    --max-redirs $num  				# 跳转次数限制
-	-x [$protocol://]$host[:$port]	# 使用代理
+    -0, --http1.0                    # Use HTTP 1.0
+     --http1.1                       # Use HTTP 1.1
+     --http2                         # Use HTTP 2
+     --http2-prior-knowledge         # Use HTTP 2 without HTTP/1.1 Upgrade
+     --http3                         # Use HTTP v3
+    --ssl                            # 尝试SSL/TLS
+    -2, --sslv2                      # Use SSLv2
+     -3, --sslv3                     # Use SSLv3
+     -4, --ipv4                      # Use IPv4
+     -6, --ipv6
+     -k, --insecure                  # 忽略SSL证书
+    -L, --location                   # 自动跳转
+     --location-trusted              # 自动跳转并继承授权
+    -m, --max-time $second           # 最长等待时间
+    --max-filesize $bytes            # 下载文件大小限制
+    --max-redirs $num                # 跳转次数限制
+    -x [$protocol://]$host[:$port]   # 使用代理
 ```
 

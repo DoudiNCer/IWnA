@@ -43,8 +43,8 @@ chown -R mysql:mysql /var/lib/mysql
 ```shell
 mysqld --initialize
 systemctl start mysqld
-systemctl enable mysqld		# 酌情使用
-mysqladmin --version		# 验证安装
+systemctl enable mysqld     # 酌情使用
+mysqladmin --version        # 验证安装
 ```
 
 或者用Docker：
@@ -80,13 +80,13 @@ mysql -h $serverLocate -P $port(default 3306) -u $username -p $password
 
 ```mysql
 show databases;
-show create database $database;		# 查看已创建数据库的信息
-select database() from dual;		# 查看正在使用的数据库
+show create database $database;       # 查看已创建数据库的信息
+select database() from dual;          # 查看正在使用的数据库
 create database if not exists $databaseName engine=$engineName character set $charSet;
-alter database $database $command;	# 修改数据库信息
+alter database $database $command;    # 修改数据库信息
 drop database if exists $databaseName;
 use $database;
-show status status;					# 查看库中表的属性信息
+show status status;                   # 查看库中表的属性信息
 ```
 
 > 注意：数据库一旦创建无法修改名称
@@ -94,26 +94,26 @@ show status status;					# 查看库中表的属性信息
 #### 数据库备份/恢复
 
 ```shell
-mysqldump -u $username (-d) $database > $file -p $password	# 备份（-d：仅备份结构）
-mysqldump -u $username $database < $file -p $password		# 恢复
+mysqldump -u $username (-d) $database > $file -p $password    # 备份（-d：仅备份结构）
+mysqldump -u $username $database < $file -p $password        # 恢复
 ```
 
 ### 表
 
 ```mysql
 show tables (as $database);
-describe $table;							# 查看表的字段结构
+describe $table;                              # 查看表的字段结构
 create table $tableNme($columnName $dataType $constraint);
 alter table $table 
-	add $column [first/after $columnName];	# 添加字段
-	modify $column $type;					# 修改字段数据类型
-	change $column $columnName $type;		# 修改字段属性
-	drop column $column;					# 删除字段 
-	rename to $tablename					# 重命名表
-delete from $tableName;						# 清空表
-rename table $table to $tableName;			# 重命名表
-truncate table $tableName;					# 重置自增，快速清空表（不支持rollback）
-drop table $tableName;						# 删除表
+    add $column [first/after $columnName];    # 添加字段
+    modify $column $type;                     # 修改字段数据类型
+    change $column $columnName $type;         # 修改字段属性
+    drop column $column;                      # 删除字段 
+    rename to $tablename                      # 重命名表
+delete from $tableName;                       # 清空表
+rename table $table to $tableName;            # 重命名表
+truncate table $tableName;                    # 重置自增，快速清空表（不支持rollback）
+drop table $tableName;                        # 删除表
 ```
 
 ### 记录
@@ -121,8 +121,8 @@ drop table $tableName;						# 删除表
 #### 增
 
 ```mysql
-insert into $tableName($columnNames) values($values);	# 逐行插入
-insert into $tableName($columnNames) select $columnNames from $sourceTable;	# 导入已有数据
+insert into $tableName($columnNames) values($values);    # 逐行插入
+insert into $tableName($columnNames) select $columnNames from $sourceTable;    # 导入已有数据
 ```
 
 #### 删
@@ -135,22 +135,22 @@ delete from $tableName where $条件;
 
 ```mysql
 update $tableName set $key=$value where $条件;
-replace $tableName set $key=$value where $条件;	# 增/改（慎用）
+replace $tableName set $key=$value where $条件;    # 增/改（慎用）
 ```
 
 #### 查
 
 ```mysql
 select 
-	distinct						# 对查询结果去重
-	function()
-	$column 
-	as $newColumnName 
-	from $table 
-	group by $columnName
-	having $条件						# 对聚合结果二次筛选，且having须位于group by之后
-	where $条件 
-	order by $columnName desc/asc;			
+    distinct                        # 对查询结果去重
+    function()
+    $column 
+    as $newColumnName 
+    from $table 
+    group by $columnName
+    having $条件                     # 对聚合结果二次筛选，且having须位于group by之后
+    where $条件 
+    order by $columnName desc/asc;            
 # Default,show them on screen
 ```
 
@@ -215,8 +215,8 @@ inner/full/nature/ /left/right(outer) join /union $tableB on $tableA.$columnA = 
 &emsp;&emsp;既可以在创建表时添加约束，又可以在创建表后添加、修改、删除约束。
 
 ```mysql
-alter table $table modify $column $constraints;								# 添加列约束
-alter table $table add constraint $constraintName $constraint($columns);	# 添加表约束
+alter table $table modify $column $constraints;                                # 添加列约束
+alter table $table add constraint $constraintName $constraint($columns);    # 添加表约束
 ```
 
 &emsp;&emsp;约束种类包括：
@@ -230,11 +230,11 @@ alter table $table add constraint $constraintName $constraint($columns);	# 添�
   > auto_increament：下一个记录中的值
 
   ```mysql
-  show session variables like "auto_increament%";		# 查看会话变量
-  set session auto_increament_increament = $value;	# 设置自增步长(会话)
-  set global auto_increament_increament = $value;		# 设置自增步长（全局）
-  set session auto_increament_offset = $value;		# 设置自增起始值(会话)
-  set global auto_increament_offset = $value;			# 设置自增起始值（全局）
+  show session variables like "auto_increament%";     # 查看会话变量
+  set session auto_increament_increament = $value;    # 设置自增步长(会话)
+  set global auto_increament_increament = $value;     # 设置自增步长（全局）
+  set session auto_increament_offset = $value;        # 设置自增起始值(会话)
+  set global auto_increament_offset = $value;         # 设置自增起始值（全局）
   ```
 
 - **unique**：值唯一（可为空且NULL不断重复），可加速查找
@@ -355,11 +355,11 @@ alter table $table add constraint $constraintName $constraint($columns);	# 添�
 ### 创建触发器
 
 ```mysql
-DELIMITER $str									# 为了输入多行SQL语句，暂时修改语句截止符
+DELIMITER $str                                    # 为了输入多行SQL语句，暂时修改语句截止符
 CREATE TRIGGER $triggerName
-	BEFORE/AFTER INSERT/DELETE/UPDATE ON $tablename FOR EACH ROW
+    BEFORE/AFTER INSERT/DELETE/UPDATE ON $tablename FOR EACH ROW
 BEGIN
-	$SQLs...
+    $SQLs...
 END
 DELIMITER ;
 # 可用NEW、OLD引用主动变化的数据
@@ -377,10 +377,10 @@ DROP TRIGGER $triggerName;
 
 ```mysql
 create 
-(algorithm = undefined/murge/temptable)	# 算法
-view $viewName as $sql;							# 创建视图
-alter view $viewName as $sql;					# 修改视图
-drop view $viewname								# 删除视图
+(algorithm = undefined/murge/temptable)            # 算法
+view $viewName as $sql;                            # 创建视图
+alter view $viewName as $sql;                      # 修改视图
+drop view $viewname                                # 删除视图
 ```
 
 ## 函数
@@ -555,10 +555,10 @@ CREATE FUNCTION $funcName (
 )
 RETURN $type
 BEGIN
-	declare $varName $type default $defvalue;
-	set $varName = $value;
-	return ($value);
-	# 函数内不支持SQL语句
+    declare $varName $type default $defvalue;
+    set $varName = $value;
+    return ($value);
+    # 函数内不支持SQL语句
 END
 ```
 
@@ -580,8 +580,8 @@ CREATE PROCEDURE $proceName (
     # in为参数，out为变量（通过set @$varName = $value定义）
 )
 BEGIN
-	$SQLs...
-	$fubctions...
+    $SQLs...
+    $fubctions...
 END
 ```
 
@@ -596,7 +596,7 @@ END
 #### 用户操作
 
 ```mysql
-create user username@ip identified by password;	# ip的通配符为%
+create user username@ip identified by password;    # ip的通配符为%
 drop user username@ip;
 rename user old_username@ip to new_username@ip;
 ```

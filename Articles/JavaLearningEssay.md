@@ -104,8 +104,8 @@
 > Java5开始的不定数量方法组成的重载：
 >
 > ```java
-> public void show(String ...str){}	// 新写法
-> public void show(String[] str){}	// 旧写法
+> public void show(String ...str){}   // 新写法
+> public void show(String[] str){}    // 旧写法
 > ```
 >
 
@@ -145,9 +145,9 @@
 
 #### 包装类
 
-> 基本数据类型如int,double,char等不是对象，这不符合Java“一切皆对象”的哲学思想。
+> 基本数据类型如 int, double, char 等不是对象，这不符合Java“一切皆对象”的哲学思想。
 >
-> 然后就有了Integer,Double,Character等包装类。
+> 然后就有了 Integer, Double, Character 等包装类。
 >
 > 虽然包装类可以像基本数据类型一样直接赋值，但某些时候就不灵了，比如判断两个Integer是否想等在数比较大的时候就不灵了。
 
@@ -169,11 +169,11 @@
 >
 > ```java
 > public class Singleton {  
->  	private static Singleton instance = new Singleton();  
->  	private Singleton (){}  
->  	public static Singleton getInstance() {  
->  		return instance;  
->  	}
+>      private static Singleton instance = new Singleton();  
+>      private Singleton (){}  
+>      public static Singleton getInstance() {  
+>          return instance;  
+>      }
 > }
 > // 优点：代码简单，线程安全
 > // 缺点：可能产生垃圾类
@@ -214,7 +214,7 @@ md，居家隔离14天
 > > >
 > > > ```java
 > > > if (b instanceof A){
-> > >    	A a = (A)b;
+> > >        A a = (A)b;
 > > > }
 > > > ```
 > > >
@@ -229,10 +229,10 @@ md，居家隔离14天
 >
 > ```java
 > new Thread(){
->  	@Override
-> 	public void run(){
->      	...
->  	}
+>      @Override
+>     public void run(){
+>          ...
+>      }
 > }.start();
 > ```
 >
@@ -324,7 +324,7 @@ Lambda表达式的基本形式如下：
 当 Lambda 表达式中的代码块**仅调用一个方法并且参数全部传递到该方法中**时可用方法引用代替，如
 
 ```java
-Func func1 = System.out::println;	// 没有括号诶！
+Func func1 = System.out::println;    // 没有括号诶！
 ```
 
 引用构造器：
@@ -444,11 +444,11 @@ Java 中泛型标记符：
 #### 创建运行时类对象
 
 ```java
-clazz.newInstance()；	// 调用空参构造器
+clazz.newInstance()；    // 调用空参构造器
 ```
 
 ```java
-Constructor<T> constructor = clazz.getDeclaredConstructor();	// 获取含参构造器
+Constructor<T> constructor = clazz.getDeclaredConstructor();    // 获取含参构造器
 constructor.setAccessible(true);
 T t = constructor.newInstance();
 ```
@@ -490,7 +490,7 @@ String name = field.getName();
 ```java
 Method[] methods = clazz.getMethods();
 Method[] declaredMethods = clazz.getDeclaredMethods();
-Method declaredMethod = clazz.getDeclaredMethod(methodName, parameterTypes[]);	// 没有参数可以不写
+Method declaredMethod = clazz.getDeclaredMethod(methodName, parameterTypes[]);    // 没有参数可以不写
 ```
 
 ~~然后慢慢get吧~~
@@ -500,16 +500,16 @@ Method declaredMethod = clazz.getDeclaredMethod(methodName, parameterTypes[]);	/
 ##### 调用属性
 
 ```java
-field.setAccessible(true);	// 启用访问非public属性
-field.get(obj);	
+field.setAccessible(true);    // 启用访问非public属性
+field.get(obj);    
 field.set(obj,value);
 ```
 
 ##### 调用方法
 
 ```java
-method.setAccessible(true);	// 启用访问非public方法
-method.invoke(obj, parameters[]);	// 没有参数可以不写
+method.setAccessible(true);          // 启用访问非public方法
+method.invoke(obj, parameters[]);    // 没有参数可以不写
 ```
 
 ## 以下为Java Web内容
@@ -521,7 +521,7 @@ method.invoke(obj, parameters[]);	// 没有参数可以不写
 ### 初始化File对象
 
 ```java
-String path = new String();			// 可使用java.io.File.separator代替分隔符
+String path = new String();            // 可使用java.io.File.separator代替分隔符
 File file = new File(path);
 File dir = new File(paraDir, dirName);
 File file = new File(dir,filename);
@@ -535,12 +535,12 @@ String absPath = file.getAbsolutePath();
 Long length = file.length();
 Long sec = file.getLastModified();
 String[] name = dir.list();
-File[] files = dir.listFiles();	
-file.renameTo(new File(newName));				// 重命名
-file.createNewFile();							// 新建
-dir.makedir();									// 创建文件夹
-dir.makedirs();									// 递归创建文件夹
-file.delete();									// 删除
+File[] files = dir.listFiles();    
+file.renameTo(new File(newName));                // 重命名
+file.createNewFile();                            // 新建
+dir.makedir();                                   // 创建文件夹
+dir.makedirs();                                  // 递归创建文件夹
+file.delete();                                   // 删除
 ```
 
 ### IO流基类
@@ -557,14 +557,14 @@ file.delete();									// 删除
 &emsp;&emsp;通过文件字符流可直接对文本文件进行操作：
 
 ```java
-File file = new File(path);							// 初始化文件
-FileReader fr = new FileReader(file);				// 初始化文件输入字符流
-fr.read();											// 迭代读取文件单个字符（以EOL表示文件结尾）
+File file = new File(path);                          // 初始化文件
+FileReader fr = new FileReader(file);                // 初始化文件输入字符流
+fr.read();                                           // 迭代读取文件单个字符（以EOL表示文件结尾）
 chrr[] cbuf = new char[len];
-fr.read(cbuf);										// 将读取内容写入字符数组
-fr.close();											// 关闭文件流（物理连接无法被GC）
-FileWriter fw = new FileWriter(file, true/false);	// 初始化文件写入字符流（指定是否为追加模式）
-fw.write(str);										// 写入（文件不存在会自动创建）
+fr.read(cbuf);                                       // 将读取内容写入字符数组
+fr.close();                                          // 关闭文件流（物理连接无法被GC）
+FileWriter fw = new FileWriter(file, true/false);    // 初始化文件写入字符流（指定是否为追加模式）
+fw.write(str);                                       // 写入（文件不存在会自动创建）
 fw.close();
 ```
 
@@ -578,15 +578,15 @@ fw.close();
 FileReader fr = new FileReader(file);
 BufferedReader bfr = new BufferedReader(fr);
 bfr.read();
-bfr.readLine();											// 不含换行符，以null表示文件结尾
+bfr.readLine();                                         // 不含换行符，以null表示文件结尾
 bfr.close();
 
 FileWriter fw = new FileWriter(file,true);
 BufferedWriter bfw = new BufferedWriter(fw);
 bfw.write(str);
-bfw.newLine();											// 插入换行符
-bfw.flush();											// 刷新缓冲区（强制写入）
-bfw.close();											// 关闭由外向内（自动关闭呢）
+bfw.newLine();                                          // 插入换行符
+bfw.flush();                                            // 刷新缓冲区（强制写入）
+bfw.close();                                            // 关闭由外向内（自动关闭呢）
 ```
 
 ### 转换流
@@ -597,7 +597,7 @@ bfw.close();											// 关闭由外向内（自动关闭呢）
 
 ```java
 FileInputStream frs = new FileInputStream(file);
-InputStreamReader fir = new InputStreamReader(frs, StandardCharsets.UTF_8);	// 指定彼岸
+InputStreamReader fir = new InputStreamReader(frs, StandardCharsets.UTF_8);    // 指定彼岸
 fir.read(cbuf);
 fir.close();
 FileOutputStream fws = new FileOutputStream(file,false);
@@ -624,20 +624,20 @@ fow.close();
 ```java
 // 反序列化
 ObjectInputStream ois = new ObjectInputStream(inputStream);
-ois.readObject();													// 需要强制类型转换
+ois.readObject();                                                   // 需要强制类型转换
 ois.close();
 // 序列化
 ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 oos.writeObject(obj);
-oos.flush();														// 需要手动flush
+oos.flush();                                                        // 需要手动flush
 oos.close();
 ```
 
 #### 序列化自定义类
 
 ```java
-class myClass implements Serializable{						// 实现Serializable接口
-    private static final long serialVersionUID = 42L;		// 提供序列化版本号
+class myClass implements Serializable{                       // 实现Serializable接口
+    private static final long serialVersionUID = 42L;        // 提供序列化版本号
 }
 ```
 
@@ -657,12 +657,12 @@ class myClass implements Serializable{						// 实现Serializable接口
 &emsp;&emsp;可通过RandomAccessFile对文件进行随机访问。
 
 ```java
-RandomAccessFile raf = new RandomAccessFile(file,mode);		// mode表示访问模式
+RandomAccessFile raf = new RandomAccessFile(file,mode);        // mode表示访问模式
 // r：只读
 // rw：读写
 // rwd：读写，同步文件内容
 // rws：读写，同步文件内容与元数据
-raf.seek(position);											// 修改访问指针位置
+raf.seek(position);                                            // 修改访问指针位置
 raf.read();
 raf.write(bytes);
 raf.close();
@@ -709,7 +709,7 @@ byte[] buffer = new byte[1024];
 while ((len = is.read(buffer)) != -1 ){
     baos.write(buffer, 0, len);
 }
-	// Close
+    // Close
 baos.close();
 is.close();
 s2client.close();
@@ -724,7 +724,7 @@ monitor.close();
 
 ```java
 URL url = new URL(urlstr);
-HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();	// 获取URL连接
+HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();    // 获取URL连接
 urlConnection.connect();
 InputStream is = urlConnection.getInputStream();
 is.read();
@@ -745,22 +745,22 @@ urlConnection.disconnect();
 ### 生成文档注解
 
 ```java
-@author			// 作者
-@version		// 版本
-@see			// 参考
-@since			// 首次出现的版本
-@param			// 参数说明
-@return			// 返回值说明
-@exception		// 异常说明
+@author         // 作者
+@version        // 版本
+@see            // 参考
+@since          // 首次出现的版本
+@param          // 参数说明
+@return         // 返回值说明
+@exception      // 异常说明
 ```
 
 ### 编译检查注解
 
 ```java
-@Override			// 重写超类方法
-@Deprecated			// 已过时
-@SuppressWarning	// 抑制编译期警告
-@SafeVarargs		// 忽略任何使用参数为泛型变量的方法或构造函数调用产生的警告。（J7）
+@Override           // 重写超类方法
+@Deprecated         // 已过时
+@SuppressWarning    // 抑制编译期警告
+@SafeVarargs        // 忽略任何使用参数为泛型变量的方法或构造函数调用产生的警告。（J7）
 ```
 
 ### 自定义注解
@@ -775,24 +775,24 @@ public @interface MyAnnotation {
 &emsp;&emsp;元注解是用来修饰注解的注解，Java提供的元注解包括以下四个：
 
 ```java
-@Retention		// 修饰注解生命期
-RetentionPolicy.SOURCE	// 源代码保留
-RetentionPolicy.CLASS	// class保留（默认）
-RetentionPolicy.RUNTIME	// 运行时保留
+@Retention               // 修饰注解生命期
+RetentionPolicy.SOURCE   // 源代码保留
+RetentionPolicy.CLASS    // class保留（默认）
+RetentionPolicy.RUNTIME  // 运行时保留
 
-@Target			// 限定修饰对象
-CONTRACTOR				// 构造器
-FIELD					// 属性
-LOCAL_VARIABLE			// 变量
-METHOD					// 方法
-PACKAGE					// 包
-PARAMETER				// 参数
-TYPE					// 类、接口、enum
-TYPE_PARAMETER			// 泛型类型的定义（J8）
-TYPE_USE				// 任何使用泛型类型的地方（J8）
+@Target                  // 限定修饰对象
+CONTRACTOR              // 构造器
+FIELD                   // 属性
+LOCAL_VARIABLE          // 变量
+METHOD                  // 方法
+PACKAGE                 // 包
+PARAMETER               // 参数
+TYPE                    // 类、接口、enum
+TYPE_PARAMETER          // 泛型类型的定义（J8）
+TYPE_USE                // 任何使用泛型类型的地方（J8）
 
-@Documented		// 该注解将被javadoc等工具读取（还要求RetentionPolicy.RUNTIME）
-@Inherited		// 该注解将被继承
+@Documented              // 该注解将被javadoc等工具读取（还要求RetentionPolicy.RUNTIME）
+@Inherited               // 该注解将被继承
 ```
 
 ### 	可重复注解
@@ -833,7 +833,7 @@ Connection conn = driver.connect(url, info);
 &emsp;&emsp;使用驱动管理器可以简化部分操作：
 
 ```java
-DriverManager.registerDriver(driver);						// 可省略，会随Driver加载自动完成
+DriverManager.registerDriver(driver);                        // 可省略，会随Driver加载自动完成
 Connection conn = DriverManager.getConnection(url, info);
 ```
 
@@ -878,10 +878,10 @@ conn.close();
 &emsp;&emsp;PreparedStatement对数据库的操作（增删改）基本符合以下的步骤：
 
 ```java
-String sql = "insert into Beauty(Name) values (?);";	// 以“?”作为占位符
+String sql = "insert into Beauty(Name) values (?);";    // 以“?”作为占位符
 PreparedStatement sm = conn.prepareStatement(sql);
-sm.setString(1, value);									// 填充占位符，从1开始
-sm.execute();											// 执行SQL语句
+sm.setString(1, value);                                 // 填充占位符，从1开始
+sm.execute();                                           // 执行SQL语句
 sm.close();
 ```
 
@@ -889,8 +889,8 @@ sm.close();
 
 ```java
 ResultSet rs = sm.executeQuery();
-ResultSetMetaData rsMetaData = rs.getMetaData();	// 回去结果集的元数据
-rs.close();											// 需要手动关闭
+ResultSetMetaData rsMetaData = rs.getMetaData();       // 回去结果集的元数据
+rs.close();                                            // 需要手动关闭
 ```
 
 &emsp;&emsp;对结果集的访问可以使用迭代器，对结果集数据的存储一般使用ORM（Object Relational Mopping）：
@@ -953,17 +953,17 @@ rs.close();											// 需要手动关闭
 &emsp;&emsp;对于用户发送的请求（Request）可以通过以下方式处理：
 
 ```java
-req.setCharacterEncoding("UTF-8");			// 设置编码（默认为ISO-8859-1）
-req.getParameter("key");					// 根据名称获取请求头的值
+req.setCharacterEncoding("UTF-8");            // 设置编码（默认为ISO-8859-1）
+req.getParameter("key");                      // 根据名称获取请求头的值
 ```
 
 &emsp;&emsp;发送给用户的响应（Response）可以通过以下方式处理：
 
 ```java
-resp.setHeader("key", "value");					// 设置响应头
-resp.setContentType("text/html;charset=utf-8");	// 设置响应体格式
-resp.setCharacterEncoding("UTF-8");	
-PrintWriter respWriter = resp.getWriter();		// 获取输出流
+resp.setHeader("key", "value");                    // 设置响应头
+resp.setContentType("text/html;charset=utf-8");    // 设置响应体格式
+resp.setCharacterEncoding("UTF-8");    
+PrintWriter respWriter = resp.getWriter();         // 获取输出流
 ```
 
 ### 配置Servlet服务
@@ -1001,9 +1001,9 @@ PrintWriter respWriter = resp.getWriter();		// 获取输出流
 &emsp;&emsp;有时需要多个Servlet共同完成一次请求，此时可以通过**服务器**的**请求转发**完成：
 
 ```java
-req.setAttribute("key", value);				// 重写请求头（添油加醋）
-req.getRequestDispatcher("/path")			// 获取转发器
-    .requestDispatcher.forward(req,resp);	// 转发请求
+req.setAttribute("key", value);              // 重写请求头（添油加醋）
+req.getRequestDispatcher("/path")            // 获取转发器
+    .requestDispatcher.forward(req,resp);    // 转发请求
 ```
 
 &emsp;&emsp;除了转发，还可通过**客户端**的**重定向**来完成：
@@ -1048,28 +1048,28 @@ resp.sendRedirect("uri");
 
 ```java
 // 创建Cookie
-Cookie cookie = new Cookie("key", "value");	// 创建Cookie
-cookie.setPath("/path");					// 设置Cookie作用范围
-cookie.setMaxAge(second);					// 有效期，单位秒，0表示浏览器关闭，-1表示储存在内存中
-resp.addCookie(cookie);						// 将Cookie返回给客户端
+Cookie cookie = new Cookie("key", "value");    // 创建Cookie
+cookie.setPath("/path");                       // 设置Cookie作用范围
+cookie.setMaxAge(second);                      // 有效期，单位秒，0表示浏览器关闭，-1表示储存在内存中
+resp.addCookie(cookie);                        // 将Cookie返回给客户端
 // 相同名称和路径的Cookie会相互覆盖
 // 获取Cookies
 Cookie[] cookies = req.getCookies();
 // Cookie编解码
-URLEncoder.encode("name", str);				// 编码
-URLDEcoder.decode("name", str);				// 解码
+URLEncoder.encode("name", str);                // 编码
+URLDEcoder.decode("name", str);                // 解码
 ```
 
 #### Session
 
 ```java
-HttpSession session = req.getSession();		// 获取Session
-session.setAttribute("name", value);		// 设置属性
-session.getAttribute("name");				// 读取属性
-session.removeAttribute("name");			// 移除属性
-session.setMaxInactiveInterval(second);		// 设置存活时间
-session.invalidate();						// 立刻注销
-resp.encodeRedirectURL("/url");				// 追加Session的URL
+HttpSession session = req.getSession();        // 获取Session
+session.setAttribute("name", value);           // 设置属性
+session.getAttribute("name");                  // 读取属性
+session.removeAttribute("name");               // 移除属性
+session.setMaxInactiveInterval(second);        // 设置存活时间
+session.invalidate();                          // 立刻注销
+resp.encodeRedirectURL("/url");                // 追加Session的URL
 ```
 
 ### ServletContext
@@ -1078,16 +1078,16 @@ resp.encodeRedirectURL("/url");				// 追加Session的URL
 
 ```java
 // 获取ServletContext
-ServletContext servletContext = this.getServletContext();	// 推荐
+ServletContext servletContext = this.getServletContext();    // 推荐
 ServletContext servletContext = req.getServletContext();
 ServletContext servletContext = req.getSession().getServletContext();
 // 获取信息
-servletContext.getRealPath("contextPath");		// 获取某上下文的全局路径
-servletContext.getContextPath();				// 获取当前应用的上下文路径
+servletContext.getRealPath("contextPath");        // 获取某上下文的全局路径
+servletContext.getContextPath();                  // 获取当前应用的上下文路径
 // 操作属性
-servletContext.setAttribute("name", value);		// 添加属性
-servletContext.getAttribute("name");			// 获取属性
-servletContext.removeAttribute("name");			// 删除属性
+servletContext.setAttribute("name", value);       // 添加属性
+servletContext.getAttribute("name");              // 获取属性
+servletContext.removeAttribute("name");           // 删除属性
 ```
 
 ### 过滤器
@@ -1101,7 +1101,7 @@ public class myfilter implements Filter{
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        chain.doFilter(request,response);		// 将请求传递到下一个过滤器或Servlet
+        chain.doFilter(request,response);        // 将请求传递到下一个过滤器或Servlet
     }
 }
 ```
@@ -1229,7 +1229,7 @@ public class myfilter implements Filter{
 <!--与对应接口匹配-->
     <insert id="" resultType="com.doudi.sugw.pojo.User">
     <!--id与抽象方法匹配
-	resultType根据字段名匹配所给类的属性名，并返回所给类的对象作为结果-->
+    resultType根据字段名匹配所给类的属性名，并返回所给类的对象作为结果-->
         <!--SQLs-->
     </insert>
 </mapper>
@@ -1292,7 +1292,7 @@ sqlSession.close();
 &emsp;&emsp;或多步查询：
 
 ```xml
-<association property="proName"	
+<association property="proName"    
              select="" 
              column=""
              fatchType="lazy/eager"/>
@@ -1478,9 +1478,9 @@ sqlSession.close();
            "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
    <generatorConfiguration>
        <!--
-       targetRuntime: 执行生成的逆向工程的版本
-       MyBatis3Simple: 生成基本的CRUD（清新简洁版）
-       MyBatis3: 生成带条件的CRUD（奢华尊享版）
+         targetRuntime: 执行生成的逆向工程的版本
+         MyBatis3Simple: 生成基本的CRUD（清新简洁版）
+         MyBatis3: 生成带条件的CRUD（奢华尊享版）
        -->
        <context id="DB2Tables" targetRuntime="MyBatis3Simple">
            <!-- 数据库的连接信息 -->
@@ -1533,7 +1533,6 @@ sqlSession.close();
    // 查询前开启
    ```
 
-   
 
 ## Spring
 
@@ -1616,10 +1615,10 @@ sqlSession.close();
 ```xml
 <bean id="myObj" class="com.example.MyObj" autowire="no">
 <!--通过autowire属性指定自动装配行为：
-	no：不自动装配（默认行为）
-	byName：根据属性名装配符合条件的bean
-	byType：根据属性类型装配符合条件的bean
-	constructor：自动装配构造器参数
+    no：不自动装配（默认行为）
+    byName：根据属性名装配符合条件的bean
+    byType：根据属性类型装配符合条件的bean
+    constructor：自动装配构造器参数
 -->
 </bean>
 ```
@@ -1660,20 +1659,20 @@ MyClass myClass = (MyClass) context.getBean("myClass");
 创建对象
 
 ```java
-@Component	// 普通组件
-@Service	// 业务层组件
-@Controller	// 控制器
-@Repository	// 持久层
+@Component    // 普通组件
+@Service      // 业务层组件
+@Controller   // 控制器
+@Repository   // 持久层
 // 四选一，默认以类名首字母小写作为id
 ```
 
 自动装配
 
 ```java
-@Autowired					// 自动装配对象，默认byType
-@Qualifier(value = "")		// 使@Autowired以byName自动装配对象
-@Resource					// 默认byType自动装配对象，给定name后byName自动装配
-@Value						// 注入普通类型
+@Autowired                    // 自动装配对象，默认byType
+@Qualifier(value = "")        // 使@Autowired以byName自动装配对象
+@Resource                     // 默认byType自动装配对象，给定name后byName自动装配
+@Value                        // 注入普通类型
 ```
 
 > 0. 此处不需要set()方法
@@ -2106,14 +2105,14 @@ zml:
 &emsp;&emsp;Spring 支持将 xml 配置文件中所有配置转移到配置类中，实现完全注解开发。
 
 ```java
-@Configuration(proxyBeanMethods = true)	// 是否以单例模式获取组件
-@ComponentScan							// 包扫描范围
-@Import									// 导入组件
-@Conditional*							// 根据条件装配组件
-@ImportResource							// 导入 XML 配置文件中的组件
-@EnableConfiguration					// 从配置文件自动注入并注册组件
+@Configuration(proxyBeanMethods = true)   // 是否以单例模式获取组件
+@ComponentScan                            // 包扫描范围
+@Import                                   // 导入组件
+@Conditional*                             // 根据条件装配组件
+@ImportResource                           // 导入 XML 配置文件中的组件
+@EnableConfiguration                      // 从配置文件自动注入并注册组件
 public class MyConfig{
-    @Bean	// 以方法名为 id 创建 Bean
+    @Bean    // 以方法名为 id 创建 Bean
     public User user0(){
         return new User();
     }
@@ -2134,12 +2133,12 @@ public class MyConfig{
 
 ```yaml
 spring: 
-	mvc: 
-		static-path-pattern: /static/**
-		# 修改访问路径
-	resources: 
-		static-locations: classpath:/res/
-		# 修改静态资源路径
+    mvc: 
+        static-path-pattern: /static/**
+        # 修改访问路径
+    resources: 
+        static-locations: classpath:/res/
+        # 修改静态资源路径
 ```
 
 &emsp;&emsp;还可访问 /webjar 下的 jar 包
@@ -2171,16 +2170,16 @@ spring:
 
    ```java
    String token = JWT.create()
-       .withHeader()	// 标头
-       .withClaim()	// 荷载
-       .sign()	// 签名
-       .withExpiresAt();	// 过期时间
+       .withHeader()        // 标头
+       .withClaim()         // 荷载
+       .sign()              // 签名
+       .withExpiresAt();    // 过期时间
    ```
 
 2. 验证
 
    ```java
-   JWTVerifier verifier = JWT.require().build();	// 创建验证对象
+   JWTVerifier verifier = JWT.require().build();    // 创建验证对象
    ```
 
 ## Spring Security
