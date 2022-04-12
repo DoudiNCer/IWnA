@@ -2019,6 +2019,55 @@ public void publicPintcut(){}
 </aop:config>
 ```
 
+### JDBCTemplate
+
+&emsp;&emsp;JDBCTemplate是Spring对JDBC的封装
+
+#### 依赖
+
+> - druid
+> - mysql-connector-java
+> - spring-jdbc
+
+#### 配置数据库连接池与JDBCTemplate类
+
+```xml
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+      destroy-method="close">
+    <property name="url" value="" />
+    <property name="username" value="" />
+    <property name="password" value="" />
+    <property name="driverClassName" value="" />
+</bean>
+<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="dataSource" />
+</bean>
+```
+
+#### 编写DAO
+
+&emsp;&emsp;DAO的基本结构与增删改查的实现方法如下：
+
+```java
+public class userDaoImpl implements userDao{
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    public int xxxUsers(){
+        String sql;
+        int update = jdbcTemplate.update(sql, objs);    // 增删改
+        String name = jdbcTemplate.queryForObject(sql, String.class, args); // 查询单个数据
+       User user = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<User>(User.class), args); // 查询对象或对象列表
+        return update;
+    }
+}
+```
+
+&emsp;&emsp;JdbcTemplate提供了一个批量处理的函数：
+
+```java
+batchUpdate(String sql, List<Object[]> batchArgs);
+```
+
 ## SpringMVC
 
 ### MVC
