@@ -1955,8 +1955,8 @@ execution(Permission ReturnType Class.Method(args...))
           xmlns:context="http://www.springframework.org/schema/context"
           xmlns:aop="http://www.springframework.org/schema/aop"
           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/beans/spring-comtext.xsd
-                           http://www.springframework.org/schema/aop  http://www.springframework.org/schema/beans/spring-aop.xsd">
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd">
        <context:component-scan base-package="com.springtest"></context:component-scan>
        <!--开启注解扫描-->
        <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
@@ -2067,6 +2067,135 @@ public class userDaoImpl implements userDao{
 ```java
 batchUpdate(String sql, List<Object[]> batchArgs);
 ```
+
+### 事务操作
+
+&emsp;&emsp;Spring对JDBC事务操作也进行了封装，一般将事务管理添加到Service层中。
+
+&emsp;&emsp;Spring事务管理方式包括编程式事务管理和式事务管理，现普遍使用的为后者。
+
+#### 注解声明式事务管理
+
+0. 在Spring配置文件中配置事务管理器、开启事务注解
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:context="http://www.springframework.org/schema/context"
+           xmlns:aop="http://www.springframework.org/schema/aop"
+           xmlns:tx="http://www.springframework.org/schema/tx"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/context http://www.springframework.org/schema/beans/spring-comtext.xsd
+                            http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd
+                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    
+        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+              destroy-method="close">
+        <!-- 线程池 -->
+            <property name="url" value="" />
+            <property name="username" value="" />
+            <property name="password" value="" />
+            <property name="driverClassName" value="" />
+        </bean>
+        <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+            <property name="dataSource" ref="dataSource" />
+        </bean>
+        <bean id="transationManager" class="org.springframework.jdbc.datasouece.DataSourceTransationManager">
+        <!-- 事务管理器 -->
+            <property name="dataSource" ref="dataSource" />
+        </bean>
+    
+        <tx:annotation-driven transaction-manager="transationManager" />
+    </beans>
+    ```
+
+    或者使用以下配置类：
+
+    ```java
+    @Configuration
+    @ComponentScan(basePackage="")
+    @EnableTransactionManagement    // 开启事务
+    public class TxConfig{
+        @Bean
+        public DruidDataSource getDruidDataSource(){
+            DruidDataSource dataSource = new DruidDataSource();
+            dataSource.setDriverClassName("");
+            dataSource.setUrl("");
+            dataSource.setUsername("");
+            dataSource.setPassword("");
+            return dataSource;
+        }
+        @Bean
+        public JdbcTemplate getJdbcTemplate(DataSource dataSource){
+            JdbcTemplate jdbcTemplate = new JdbcTemplate();
+            jdbcTemplate.setDataSource(dataSource);
+            return jdbcTemplate;
+        }
+        @Bean
+        public DataSourceTransationManager getDataSourceTransationManager(DataSource dataSource){
+            DataSourceTransationManager transationManager = new DataSourceTransationManager();
+            transationManager.setDataSource(dataSource);
+            return transationManager;
+        }
+    }
+    ```
+
+1. 在Service类或方法上添加@Transactional注解
+
+   ```java
+   @Transactional
+   /** 常用属性（可选）
+     * propagation：事务传播行为
+     * isolation：事务隔离级别
+     * timeout：超时时间，单位秒，默认-1，不提交就回滚
+     * readOnly：是否只读，默认false
+     * rollBackFor：出现哪些异常就回滚
+     * noRollBackFor：出现哪些异常不回滚
+   **/
+   ```
+
+#### 配置文件声明式事务管理
+
+0. 在Spring配置文件中配置事务管理器
+
+1. 配置通知、切入点和切面
+
+   ```xml
+   <tx:advice id=“txAdvice”>
+   <!-- 配置通知 -->
+       <tx:attributes>
+       <!-- 配置事务参数 -->
+           <tx:method name="account*" />
+           <!-- 添加事务的规则，Transactional的参数写在这里 -->
+       </tx:attributes>
+   </tx:advice>
+   <aop:config>
+       <aop:pointcut id="pt" expression="" />
+       <!-- 配置切入点 -->
+       <aop:advisor advice-ref="txAdvice" pointcut-ref="pt" />
+       <!-- 配置切面 -->
+   </aop:config>
+   ```
+
+   
+
+#### 事务传播行为
+
+&emsp;&emsp;事务传播行为（propagation behavior）指的就是当一个事务方法被另一个事务方法调用时，这个事务方法应该如何进行。
+
+|          名称           |                             解释                             |
+| :---------------------: | :----------------------------------------------------------: |
+|   ROPAGATION_REQUIRED   |  当前方法必须运行在一个事务的中，若不存在事务则新建一个事务  |
+| ROPAGATION_REQUIRED_NEW | 当前方法必须运行在自己的新事务中。若当前正在运行事务，则挂起该事务；若使用JTATransactionManager，则需要访问TransactionManager |
+|   ROPAGATION_SUPPORTS   |         当前方法可以运行在当前事务中或不运行在事务中         |
+| ROPAGATION_NOT_SUPPORTS | 当前方法不能运行在事务中。若当前正在运行事务，则将其挂起；若使用JTATransactionManager，则需要访问TransactionManager |
+|  ROPAGATION_MANDATORY   | 当前方法必须运行在事务内部，否则抛出异常IllegalTransactionStateException |
+|    ROPAGATION_NEVER     | 当前方法不应该运行在事务中，若当前正在运行事务，则会抛出异常 |
+|  ROPAGATION_MANDATORY   | 若当前存在事务，则在嵌套事务中运行该方法，否则新建一个事务。 |
+|                         |                                                              |
+
+
 
 ## SpringMVC
 
