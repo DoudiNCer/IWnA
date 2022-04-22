@@ -34,9 +34,9 @@ set(CMAKE_CXX_STANDARD 14)                      # 用于设置变量
 message($type $str)                             # 向控制台发送的信息
 #[[
     信息的等级有三种：
-		SEND_ERROR：错误信息，会跳过生成过程
-		SATUS：一般提示信息
-		FATAL_ERROR：严重错误信息，会立刻终止cmake运行
+        SEND_ERROR：错误信息，会跳过生成过程
+        SATUS：一般提示信息
+        FATAL_ERROR：严重错误信息，会立刻终止cmake运行
 ]]
 
 include_directories($headerPath)                # 头文件搜索路径
