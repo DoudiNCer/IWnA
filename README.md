@@ -8,7 +8,6 @@ C/C++开发
 + [Training Essay](Articles/TrainingEssay.md)：科协&机器人培训笔记
 + [C++_Learning_Essay](Articles/CppLearningEssay.md)：C++学习笔记
 + [Qt_Learning_Essay](Articles/QtLearningEssay.md)：Qt学习笔记
-+ [CMake_Essay](Articles/CMake.md)：CMake学习笔记
 
 Java后端开发
 
@@ -20,5 +19,6 @@ Java后端开发
 
 + [Web_Learning_Essay](Articles/WebLearningEssay.md)：Web学习笔记
 
+编译构建/代码管理工具
 
-
+- [CMake_Essay](Articles/CMake.md)：CMake学习笔记
