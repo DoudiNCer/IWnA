@@ -62,3 +62,135 @@ int &b = a;
 cout << a==b;
 ```
 
+## 面向对象
+
+&emsp;&emsp;在以前，我们直接操作各种基本数据类型，一步一步达到我们的目的。后来发现操作大量的基本类型不太方便，就有了各种复合类型，比如数组、结构体……我们能不能把某些操作结构体的函数打包进结构体，并且限制对其内部变量的操作呢？于是，类与对象出现惹！~~好惹，以后没对象就自己new一个。~~
+
+### 封装
+
+#### 类的定义
+
+&emsp;&emsp;为了限制对对象属性的访问、保护数据、降低代码耦合性，我们将一个类的属性和方法封装起来，并加上访问修饰符以限制访问，如：
+
+```c++
+// Circle.h
+class Circle{
+    private:
+        static const double Pi = 3.14159;   // const和static貌似不用考虑顺序
+        double Radius;
+    public:
+        Circle();
+        Circle(int);        // 构造函数
+        void setRadius(double);
+        double getCircumference(void);
+        double getSize(void);
+        ~Circle();          // 析构函数
+}
+// Circle.cpp
+Circle::Circle(){
+    Radius = 1;
+}
+Circle::Circle(double Radius){
+    this->Radius = Radius;
+}
+void Circle::setRadius(double Radius){
+    this->Radius = Radius;   // 为了避免歧义，此处使用this指针代表当前对象
+}
+double Circle::getSize(void){
+    return Size * Size * Pi;
+}
+double Circle::getCircumference(void){
+    return Size * Pi * 2.0;
+}
+Circle::~Circle(){}
+```
+
+&emsp;&emsp;若不显式定义构造函数和析构函数，会自动生成无参构造函数和析构函数；若提供了含参构造函数，需要提供无参构造函数。
+
+#### 访问修饰符
+
+- public：在任何地方都可见
+- protected：在类外不可见，在子类中可见
+- private：仅在类内函数可见
+
+> 若不提供访问修饰符，则为private
+
+#### 友元
+
+&emsp;&emsp;类的友元函数是定义在类外部，但有权访问类的所有私有（private）成员和保护（protected）成员。尽管友元函数的原型有在类的定义中出现过，但是友元函数并不是成员函数。
+
+&emsp;&emsp;我们可以在类内使用friend声明一个友元函数：
+
+```c++
+friend void getSize();
+```
+
+&emsp;&emsp;或将一个类声明为另一个类的友元类，此时该类的所有方法都属于该类的友元函数：
+
+```c++
+friend class CircleUtils;   // 此时CircleUtils类的所有方法均可操作该类
+```
+
+### 继承
+
+&emsp;&emsp;继承是面向对象编程的重要内容之一，阐述了类与类之间的逻辑关系。
+
+```c++
+class Flower :: public Plants{}
+```
+
+&emsp;&emsp;C++ 的继承有公有（ public ）继承、保护继承（ protected ）继承和私有（ private ）继承，简单来说，公有继承中子类“原封不动”获得父类属性和方法（“is-a”），保护继承中父类公有属性和方法在子类变为保护，私有继承中父类的属性和方法在子类中全部为私有（“has-a”）。
+
+&emsp;&emsp;C++允许多继承（即子类可继承多个超类），但这也导致了可能的命名冲突，此时可通过显式指明属性或方法或使用虚基类（使用virtual修饰继承的类）。
+
+### 多态
+
+&emsp;默认情况下，超类与子类出现重名属性或方法时，会根据对象指针的类型决定使用的是哪个属性或方法：
+
+```c++
+sub *subClass = new sub();
+super *superClass = subClass;   
+superClass->func();             // 调用超类方法
+subClass->func();               // 调用子类方法
+subClass->super::func();        // 调用超类方法
+```
+
+&emsp;&emsp;这种现象是由于编译时就确定了方法指针。
+
+#### 虚函数与方法重写
+
+&emsp;&emsp;有时我们希望根据对象本身的类型调用方法，即让子类覆盖超类的方法，这时可以将超类需要被重写的方法变为虚函数（使用 **virtual** 关键字修饰）。
+
+```c++
+virtual void paintEvent(QPaintEvent *event);
+```
+
+> - 当超类的一个函数被标记为虚函数时，其子类的该函数也为虚函数且无法取消该属性。
+> - 方法重写属于运行时多态。
+
+#### 接口与抽象类
+
+&emsp;&emsp;接口用于描述类是行为和功能，接口不需要实现这些功能。
+
+&emsp;&emsp;C++没有接口类型，C++通过抽象类实现接口的效果。抽象类指含有纯虚函数的类，不可被直接实例化。纯虚函数指没有函数体的函数：
+
+```c++
+class StudentService{
+    public:
+        virtual Student* checkInfo(int id) = 0;
+        virtual bool addStudent(Student* stu) = 0;
+}
+class StudentServiceImpl : public StudentService{}
+```
+
+> 不能创建抽象类的对象，但可以声明抽象类的指针。
+
+#### 方法重载
+
+&emsp;&emsp;广义的多态还包括方法重载和运算符重载，方法重载是指一组名称和返回值类型相同，参数（形参的类型数量排列顺序，不包括形参名）和函数体不同的函数，此时可根据传入参数不同调用不同的方法。
+
+```c++
+void func(int arga, char argb);
+void func(int arga);
+void func();
+```
