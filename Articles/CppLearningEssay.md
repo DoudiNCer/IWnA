@@ -221,3 +221,152 @@ class Double{
 > - 箭头运算符`->`、下标运算符`[ ]`、函数调用运算符`( )`、赋值运算符`=`只能以成员函数的形式重载
 > - 重载自增（++)、自减（--）运算符时，为了区分
 
+## IO
+
+### IO基本概念
+
+- IO：输入输出。以程序的视角看，程序获取数据即为“输入”，程序将数据传输到外部即为“输出”。
+- 流：输入/输出操作可以看作是数据的有向流动，即数据从一个设备（源）流向另一个设备（目标）。在 C++ 中进行输入输出的是流对象，如 cin/cout 都是内置的输入输出对象。
+
+### C++流类库
+
+&emsp;&emsp;C++ 的流类库提供了大量的IO流，所有的流类都继承自 ios 。
+
+#### 缓冲区
+
+&emsp;&emsp;在某些情况下，为了提高效率，并不需要立刻读取所有输入或立刻输出需要输出的数据，便将数据放到缓冲区内。缓冲区类的基类为 streambuf ，用于文件的缓冲区为继承自 streambuf 的 filebuf ，用于字符流的缓冲区为 strstreambuf 。
+
+#### 字节流类
+
+&emsp;&emsp;实际上，所有的流都是对字节流的扩展。基本流类 istream 、 ostream 继承自 ios 基类， iostream 继承自istream 和 ostream ，支持对字节数据进行读写操作。
+
+#### 文件流类
+
+&emsp;&emsp;fstreambase 类继承自 ios 基类，提供了文件读写的基础功能，是文件操作流的公共基类。 ifstream （ ofstream ）继承自 istream （ ostream ）和 emsp;fstreambase，fstream 继承自 ifstream 和 ofstream ，可对文件进行读写操作。
+
+#### 字符流
+
+&emsp;&emsp;strstreambase 继承自 ios 基类，提供了对字符流的操作……（同上）
+
+### 格式化输入输出
+
+#### 使用ios成员方法格式化输入/输出
+
+&emsp;&emsp;ios使用格式化标志字_M_flags存储格式化标志，相关格式化标志定义在bits/ios_base.h中，包括：
+
+| 枚举            | 含义                                                       |
+| --------------- | ---------------------------------------------------------- |
+| ios::left       | 输出数据在本域宽范围内向左对齐                             |
+| ios::right      | 输出数据在本域宽范围内向右对齐                             |
+| ios::internal   | 数值的符号位在域宽内左对齐，数值右对齐，中间由填充字符填充 |
+| ios::dec        | 设置整数的基数为10                                         |
+| ios::oct        | 设置整数的基数为8                                          |
+| ios::hex        | 设置整数的基数为16                                         |
+| ios::showbase   | 强制输出整数的基数(八进制数以0打头，十六进制数以0x打头)    |
+| ios::showpoint  | 强制输出浮点数的小点和尾数0                                |
+| ios::uppercase  | 在以科学记数法格式E和以十六进制输出字母时以大写表示        |
+| ios::showpos    | 对正数显示“+”号                                            |
+| ios::scientific | 浮点数以科学记数法格式输出                                 |
+| ios::fixed      | 浮点数以定点格式(小数形式)输出                             |
+| ios::unitbuf    | 每次输出之后刷新所有的流                                   |
+| ios::stdio      | 每次输出之后清除stdout, stderr                             |
+
+&emsp;&emsp;使用这些格式化标志的方法如下：
+
+```c++
+fmtflags setf(flags);            // 设置指定的格式化标志flags
+fmtflags unsetf(flags);          // 取消指定的格式化标志flags
+fmtflags setf(flags,filed);      // 先清除filed、然后设置flags和filed的交集
+fmtflags flags(flags);           // 将_M_flags设置为flags
+int width(int len);     // 修改_M_width的值，设置改数据字段宽度为len
+char fill(char ch);     // 修改_M_fill，设置填充字符为ch
+int percision(int num); // 修改_M_percision，修改定点数精度为num
+// 以及四者的同名无参方法，用于获取当前值
+```
+
+> - 以上方法在`bits/ios_base.h`中定义
+> - 格式化标志字使用类似掩码的原理，多个标志使用按位或（“|”）连接，类似的还有接下来的文件打开方式。
+
+#### 使用操纵算子格式化输入输出
+
+&emsp;&emsp;除了使用ios基类提供的方法，还可使用操纵符（操纵算子）进行输入输出的格式化。
+
+- showbase（noshowbase）：显示（不显示）数值的基数前缀
+- showpoint（noshowpoint）：显示小数点（存在小数部分时才显示小数点）
+- showpos（noshowpos）：在非负数中显示（不显示）+
+- skipws（noskips）：输入数据时，跳过（不跳过）空白字符
+- uppercase（nouppercase）：十六进制显示为0X（0x），科学计数法显示E(e)
+- dec / oct / hex：十进制/八进制/十六进制
+- left / right：设置数据输出对齐方式为：左/右 对齐
+- fixed：以小数形式显示浮点数
+- scientitific：用科学计数法显示浮点数
+- flush：刷新输出缓冲区
+- ends：插入空白字符，然后刷新ostream缓冲区
+- endl：插入换行字符，然后刷新ostream缓冲区
+- ws：跳过开始的空白
+
+> 以上操纵算子在`bits/ios_base.h`中定义
+
+- setfill(ch)：设置ch为填充字符
+- setprecision(n)：设置精度为n位有效数字
+- setw(w)：设置数据的输出宽度为w个字符
+- setbase(b)：基数设置为b（b=8，16等）进制
+
+> 以上操纵符函数在`iomanip`中定义
+
+#### 自定义输入输出行为
+
+&emsp;&emsp;可通过类外友元函数重载运算符“<<”和“>>”自定义对某些类的输入输出，如：
+
+```c++
+friend ostream& operator <<(ostream& stream, COMPLEX& obj);
+```
+
+&emsp;&emsp;还可自定义操作符，如：
+
+```c++
+istream& operaSign(istream& stream){
+  ….;
+  return stream;
+}
+```
+
+### 标准输入输出
+
+&emsp;&emsp;C++定义了八个用于标准输入输出的对象，即 cin（标准输入）、cout （标准输出）、cerr（标准错误输出）、clog（也属于标准错误输出，但有缓冲区）及其对应的支持宽字符的 wcin 、wcout 、 wcerr 和 wclog 。其中 cin 、 cout 和 clog 均使用了缓冲区，cerr无缓冲区。
+
+### 文件操作
+
+&emsp;&emsp;在C++中使用文件流来操作文件：
+
+```c++
+fstream file;
+file.open(filename, mode, access);
+file.close();
+```
+
+#### 文件打开方式
+
+| 文件打开方式   | **说  明**                                                   |
+| -------------- | ------------------------------------------------------------ |
+| ios::in        | 以输入方式打开文件，即读文件（ifstream类对象默认方式）       |
+| ios::out       | 以输出方式打开文件，即写文件（ofstream类对象默认方式）       |
+| ios::app       | 以添加方式打开文件，新增加的内容添加在文件尾                 |
+| ios::ate       | 以添加方式打开文件，新增加的内容添加在文件尾，但下次添加时则添加在当前位置 |
+| ios::trunc     | 如文件存在就打开并清除其内容，如不存在就建立新文件           |
+| ios::binary    | 以二进制方式打开文件（默认为文本文件）                       |
+| ios::nocreate  | 打开已有文件，若文件不存在，则打开失败                       |
+| ios::noreplace | 若打开的文件已经存在，则打开失败                             |
+
+### 文件访问隔离
+
+- filebuf::openport ：共享方式
+- filebuf::sh_none：独占方式，不允许共享
+- filebuf::sh_read：允许读共享
+- filebuf::sh_write：允许写共享
+
+### 文件操作函数
+
+&emsp;&emsp;对于文本文件流，使用`get()`和`put()`读取单个字符；对于二进制文件流，使用`read()`和`write()`读写指定字节长度的数据。
+
+&emsp;&emsp;使用`tellg()`/`tellp()`获取文件流读/写指针位置，使用`seekp()`/`seekg()`修改文件流读写指针的位置。
