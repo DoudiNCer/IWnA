@@ -154,3 +154,37 @@ virtual void mouseNoveEvent(QMouseEvent *e);
 virtual void keyPressEvent(QKeyEvent e);
 virtual void keyReleaseEvent(QKeyEvent e);
 ```
+
+## Qt数据库操作
+
+&emsp;&emsp;Qt 封装了常见数据库的操作，引入 QSqlDatabase 头文件并在 Qt 项目中添加`Qt += sql`可开启对数据库的支持。
+
+### 数据库连接
+
+&emsp;&emsp;QSqlDatabase 类用于建立数据库连接：
+
+```c++
+QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+// 有JDBC内味了，还是四大参数：驱动、数据库地址、用户名、密码。
+db.open();
+db.close();
+```
+
+### 执行SQL语句
+
+&emsp;&emsp;使用 QSqlQuery 编写执行 SQL 语句并获取查询结果，使用 QSqlQueryModel 执行SQL语句并获取只读的查询结果集。
+
+```c++
+QSqlQuery query("SELECT name FROM Student");
+// 字符串拼接
+QSqlQuery query;
+query.prepare("select * from Student where id = :stuId");
+// 占位符替换
+query.bindValue(":stuId", 3);
+query.exec();
+while (query.next()) {
+    QString stuName = query.value(1).toString();
+    QDebug() << stuName;
+}
+```
+
