@@ -94,7 +94,7 @@ emit mySignal(str);
 
 ## Qt Designer
 
-&emsp;&emsp;为了简化设计UI的步骤，我们可以使用Qt Designer来完成UI设计。
+&emsp;&emsp;为了简化设计UI的步骤，我们可以使用Qt Designer来完成UI设计。生成的ui文件可通过uic转换成对应的头文件，且该头文件的setupUI()方法可根据名称自动装配槽函数。
 
 &emsp;&emsp;Qt Designer生成的ui文件本质上是一个XML文件，可通过uic命令转换为对应的头文件或由make进行手动转换。
 
@@ -112,12 +112,45 @@ emit mySignal(str);
 
 #### 绘图事件
 
-&emsp;&emsp;通过绘图事件（ QPaintEvent ）可自定义图像绘制，绘图事件的触发条件有：
+&emsp;&emsp;通过重写绘图事件（ QPaintEvent ）的 paintEvent() 方法可自定义图像绘制，绘图事件的触发条件有：
 
 - 启动程序后窗口第一次显示
 - 窗口由隐蔽变为看见
 - 窗口最小化/正常/最大化之间的切换
 - 窗口尺寸改变
-- QWidget的update或repaint方法被调用
+- QWidget 的 update 或 repaint 方法被调用
 
 #### 定时器事件
+
+&emsp;&emsp;Qt 中实现定时执行某操作可通过 QObject 提供的定时器事件或 QTimer 提供的定时器信号实现。通过定时器事件实现定时器的方法如下：
+
+```c++
+virtual void mousePressEvent(QMouseEvent *e);virtual void mousePressEvent(QMouseEvent *e);int timerId = startTimer(interval, timerType);   // 开启定时器
+/* 
+    以interval毫秒为周期执行事件，返回值为定时器ID，0表示定时器开启失败
+    可选参数timerType表示定时器精确度：
+        PreciseTimer为精确到毫秒
+        CoarseTimer为误差在5%内virtual void mousePressEvent(QMouseEvent *e);virtual void mousePressEvent(QMouseEvent *e);
+        VeryCoarseTimer为四舍五入到秒
+ */
+void QObject::timerEvent(QTimerEvent*);        // 要重写的定时器处理函数
+kullTimer(timerId);                            // 关闭定时器
+```
+
+#### 键盘鼠标事件
+
+&emsp;&emsp;QWidget 定义了以下鼠标事件（ QMouswEvent ）处理函数：
+
+```c++
+virtual void mousePressEvent(QMouseEvent *e);
+virtual void mouseReleaseEvent(QMouseEvent *e);
+virtual void mouseDoubleClickEvent(QMouseEvent *e);
+virtual void mouseNoveEvent(QMouseEvent *e);
+```
+
+&emsp;&emsp;和以下的键盘事件处理函数：
+
+```c++
+virtual void keyPressEvent(QKeyEvent e);
+virtual void keyReleaseEvent(QKeyEvent e);
+```
