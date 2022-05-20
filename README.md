@@ -13,6 +13,13 @@ Java后端开发
 
 + [Java_Learning_Essay](Articles/JavaLearningEssay.md)：后端组Java培训&自学笔记
 + [MySQL_Learning_Essay](Articles/MySQLLearningEssay.md)：MySQL学习笔记
++ [JDBC_Learning_Essay](Articles/JDBCLearningEssay.md)：JDBC学习笔记
++ [Tomcat_Learning_Essay](Articles/TomcatLearningEssay.md)：Tomcat学习笔记
++ [MyBatis_Learning_Essay](Articles/MyBatisLearningEssay.md)：MyBatis学习笔记
++ [Spring_Learning_Essay](Articles/SpringLearningEssay.md)：Spring全家桶学习笔记
+
+操作系统/运维
+
 + [Docker_Learning_Essay](Articles/DockerLearningEssay.md)：Docker学习笔记
 
 通用基础知识
