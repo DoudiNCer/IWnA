@@ -3,9 +3,9 @@ Some of my interesting and useful programming works and articles.
 
 ## Articles
 
-C/C++开发
+C/C++
 
-+ [Training Essay](Articles/TrainingEssay.md)：科协&机器人培训笔记
++ [Training Essay](Articles/TrainingEssay.md)：科协&机器人培训笔记（C/算法入门）
 + [C++_Learning_Essay](Articles/CppLearningEssay.md)：C++学习笔记
 + [Qt_Learning_Essay](Articles/QtLearningEssay.md)：Qt学习笔记
 
@@ -25,6 +25,7 @@ Java后端开发
 通用基础知识
 
 + [Web_Learning_Essay](Articles/WebLearningEssay.md)：Web学习笔记
++ [Linux_Learning_Essay](Articles/LinuxLearningEssay.md)：Linux学习笔记
 
 编译构建/代码管理工具
 
