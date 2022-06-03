@@ -19,9 +19,80 @@
 
 &emsp;&emsp;多数可执行程序、库、系统函数和规范等都有自己的手册（ manual ），可以通过`man`命令查看。比如查看 man 的使用手册，可以使用：
 
-```shell
+```bash
 man man
 ```
+
+## 用户与权限
+
+### 文件与目录的权限
+
+&emsp;&emsp;通过`ls -l`可查看到文件与目录的权限信息，如 `/bin`的权限为`drwxr-xr-x`，第一位为文件类型，其余九位分三组，分别对应文件所有者（ u ）、文件所在组（ g ）和其他用户（ o ）的读（ r ）、写（ w ）和执行（ x ）权限。为了更方便的表示权限，可将权限信息用一个三位八进制数表示，如上述的`rwxr-xr-x`为`755`。
+
+> - 目录的“执行”权限指可以“进入”该目录并获得其内容的属性信息
+
+&emsp;&emsp;可通过`chmod`修改文件或目录的权限，可通过上述权限代码覆盖文件的权限或使用`+`或`-`设置每一位权限，如：
+
+```bash
+# 设置权限
+chmod 400 ~/.ssh/id_rsa
+# 修改权限
+chmod go-r,a-w ~/.ssh/id_rsa.pub
+```
+
+> - 命令`lsmod`用于查看内核启用模块的信息
+
+&emsp;&emsp;除此之外，还有三位不常用的特殊权限 SUID 、 SGID 和 SBIT：
+
+> - SUID： Set UID ，文件所有者和执行者对该文件有 r 和 x 权限且时，设置 SUID 的文件被执行时执行者暂时取得文件所有者的权限（仅对二进制文件有效）
+> - SGID： Set GID ，与 SUID 类似，使用者可暂时进入该文件所在组（可用于目录）
+> - SBIT： Sticky Bit ，仅对目录有效，sypher对该目录有 w 和 x 权限时，可在该目录下创建属于自己的文件和目录且仅自己和root有权删除。
+
+&emsp;&emsp;SUID 和 SGID 为设置在文件所有者和文件所在组 x 位上的的 s 权限， SBIT 为设置在其他用户 x 位上的 t 权限。
+
+&emsp;&emsp;创建文件（0666）或目录（0777）时使用`umask`来确定默认权限，umask表示创建目录或文件时“拿掉”的权限，如当前的 umask 为022，则创建一个普通文件时权限为`0666 & (0666 ^ 0022) = 0644`。
+
+&emsp;&emsp;使用`umask`命令来查看或修改当前的 umask 。
+
+### ACL
+
+&emsp;&emsp;ACL （Access Control Lists），访问控制列表，提供了一套针对单一用户、单一文件的权限控制系统。
+
+&emsp;&emsp;使用`gerfacl`查看文件或目录的 ACL 权限配置信息，如：
+
+```bash
+getfacl ./test
+# OUTPUT 
+1:  # file: somedir/
+2:  # owner: lisa
+3:  # group: staff
+4:  # flags: -s-
+5:  user::rwx
+6:  user:joe:rwx               #effective:r-x
+7:  group::rwx                 #effective:r-x
+8:  group:cool:r-x
+9:  mask::r-x
+10:  other::r-x
+11:  default:user::rwx
+12:  default:user:joe:rwx       #effective:r-x
+13:  default:group::r-x
+14:  default:mask::r-x
+15:  default:other::---
+```
+
+&emsp;&emsp;其中前四行为文件名称、所有者、所在组及三个特殊权限；5、7、10为上一节中的权限；6、8为针对某一用户或组的权限；9为该文件或目录的最高权限；11-15行为配置了默认权限的目录中文件或目录的默认权限。
+
+&emsp;&emsp;使用`setfacl`修改文件或目录的 ACL 权限配置信息：
+
+```bash
+setfacl
+        -m|-x   # 添加/删除指定的ACL配置
+        -b|-k   # 删除所有/默认的ACL配置
+        -R      # 递归设置
+        -d      # 设置默认的ACL配置
+```
+
+&emsp;&emsp;ACL 参数的格式为`[d[efault]:]类型:[对象:]权限`，“类型”包括`u`[ser]（针对用户）、`g[roup]`（针对用户组）、`m[ask]`（最大权限）和`o[ther]`。
 
 ## SSH
 
@@ -37,14 +108,14 @@ man man
 
 &emsp;&emsp;客户端登录较为简单，这里介绍使用`ssh`命令登录，当然你可以使用其他工具进行登录，如 putty 等。
 
-```shell
+```bash
 ssh [username]@hostname[:port]
 # ssh 默认使用 22 端口
 ```
 
 &emsp;&emsp;客户端的配置文件为`~/.ssh/config`，在这里，可以配置常用的服务器和全局信息，如：
 
-```ssh
+```bash
 # global options
 User user
 
@@ -77,14 +148,14 @@ Host myserver
 
 &emsp;&emsp;使用`ssh-keygen`生成密钥对，如：
 
-```shell
+```bash
 ssh-keygen -t rsa -b 4096 -C "$(whoami)@$(uname -n)-$(date -I)"
 # 默认为2048位的rsa
 ```
 
 &emsp;&emsp;生成密钥对后，将私钥（默认为`~/.ssh/id_rsa`）放到自己的电脑上相同位置或使用客户端配置文件为要连接的服务器指定私钥；将公钥（默认为`~/.ssh/id_rsa.pub`追加到服务器要登录的用户的`~/.ssh/authorized_keys`文件中并确保其权限大于等于600：
 
-```shell
+```bash
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
