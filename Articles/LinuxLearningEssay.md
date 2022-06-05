@@ -59,6 +59,19 @@ man man
 
 &emsp;&emsp;可使用`newgrp`命令以一个已经加入的组的身份登录到另一个 shell 中。
 
+### 用户和组的管理
+
+&emsp;&emsp;可以使用`useradd`来添加用户，用`userdel`来删除用户，使用`usermod`修改创建用户时指定的信息，用`passwd`修改密码，用`chage`修改密码相关配置：
+
+```bash
+  useradd -s /usr/bin/zsh -mG wheel,audio,video,optical,storage doudi
+  passwd doudi
+```
+
+&emsp;&emsp;创建用户时的默认参数由`/etc/default/useradd`提供，可使用`useradd -D`查看；用户家目录的模板为`/etc/skel`，可通过`-k`参数指定；用户密码的默认参数由`/etc/login.defs`提供。
+
+&emsp;&emsp;类似用户，管理用户组可以使用`groupadd`、`groupdel`、`groupmod`、`gpasswd`，还可由组管理员使用`groupmems`管理用户组。
+
 ### 文件与目录的权限
 
 &emsp;&emsp;通过`ls -l`可查看到文件与目录的权限信息，如 `/bin`的权限为`drwxr-xr-x`，第一位为文件类型，其余九位分三组，分别对应文件所有者（ u ）、文件所在组（ g ）和其他用户（ o ）的读（ r ）、写（ w ）和执行（ x ）权限。为了更方便的表示权限，可将权限信息用一个三位八进制数表示，如上述的`rwxr-xr-x`为`755`。
@@ -127,6 +140,27 @@ setfacl
 ```
 
 &emsp;&emsp;ACL 参数的格式为`[d[efault]:]类型:[对象:]权限`，“类型”包括`u`[ser]（针对用户）、`g[roup]`（针对用户组）、`m[ask]`（最大权限）和`o[ther]`。
+
+### 用户切换
+
+&emsp;&emsp;为了安全起见，一般使用低权限用户登录系统，执行某些操作时才切换到 root ，su和sudo就是用来切换用户的。
+
+#### su
+
+&emsp;&emsp;`su`是一个很普通的切换用户的命令，默认为使用非登录 shell 切换到root账户，低权限到高权限需要输入目标账户的密码。
+
+#### sudo
+
+&emsp;&emsp;为了提高效率，可将一些用户指定为系统管理员，允许 TA 们使用sudo来获取root权限。直接使用`sudo command`并输入当前用户的密码即可。
+
+&emsp;&emsp;sudo 的配置文件为`/etc/sudoers`和`/etc/sudoers.d/`，为了保证配置文件格式正确，建议使用`visudo`来编辑配置文件：
+
+```shell
+# 用户名 登录主机=（可切换的用户） 可执行的命令
+root ALL=(ALL) ALL
+# %组名 登录主机=（可切换的用户）无需密码 可执行的命令
+%wheel ALL=(ALL) NOPASSWD: ALL
+```
 
 ## SSH
 
