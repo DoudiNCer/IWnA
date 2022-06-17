@@ -162,6 +162,96 @@ root ALL=(ALL) ALL
 %wheel ALL=(ALL) NOPASSWD: ALL
 ```
 
+## Systemd
+
+### System V
+
+&emsp;&emsp;在 Linux 系统上，有一些需要始终在后台运行的提供服务（service）的进程，叫做守护进程（daemon），通常以服务名+d命名，如`sshd`等。
+
+&emsp;&emsp;在早期，这些守护进程由纯粹的 system V 管理，每个守护进程通过`/etc/init.d`下的启动脚本（rc）来启动（`start`）、停止（`stop`）、重新启动（`restart`）和查看状态（`status`）。或将这些 daemon 交给超级守护进程`inied`或`xinted`，在需要的时候启动。
+
+### Systemd
+
+&emsp;&emsp;从 CentOS 7 和 RHEL 7 开始，红帽（Red Hat）大力推行 systemd 以取代 System V，现在 systemd 已被多数 Linux 发行版采用。
+
+### systemctl
+
+&emsp;&emsp;操作 systemd 的主要命令是`systemctl`，其常见用法如下：
+
+```bash
+systemctl                   
+            status			# 系统状态，后加单元可查看单元状态，使用 --failed 参数查看系统中失效的单元
+            list-units      # 列出正在运行的但愿（也可直接 systemctl ）
+            list-unit-files # 查看已安装的单元
+            status          # 后接 pid ，查看该pid对应的进程的状态
+            help            # 后接单元，查看该单元的帮助
+            # 操作单元
+            is-enabled
+            is-active
+            is-failed
+            start
+            stop
+            restart
+            try-restart         # 仅重启正在运行的单元
+            reload
+            kill                # 发送 kill 信号
+            daemon-reload       # 重新加载 systemd 配置
+            list-dependencies   # 查看依赖关系，使用 --reverse 参数反向查找（依赖该单元的单元）
+            # 自动启动管理
+            enable
+            disable
+            enable --now    # 相当于 enable + start
+            reenable        # 相当于 disable + enable
+            # 拉黑/取消拉黑
+            mask
+            unmask
+            # 电源管理
+            reboot
+            poweroff
+            susbend         # 休眠到内存
+            hibernate       # 休眠到硬盘
+            hybrid-sleep    # 混合休眠
+```
+
+> - 可通过`-H user@host`借助 ssh 管理远程主机/
+> - 默认为管理当前系统，可通过`--user`管理用户态的 systemd
+
+### 单元文件
+
+&emsp;&emsp;Systemd 使用带元（unit）来管理每个事务，单元文件存储在`/run/systemd/`、`/usr/lib/systemd/system/`（软件包提供的）或`/etc/systemd/system/`（管理员创建的单元文件）中，具体可参考 [systemd.unit(5)](https://man.archlinux.org/man/systemd.unit.5) 。
+
+&emsp;&emsp;根据行为的不同，单元文件有不同的类型，通过其扩展名区分。以下为一些常用的单元文件扩展名：
+
+- service：一般的服务
+- socket：内部程序数据交换使用的套接字，如让一个服务在需要时才启动。
+- target：执行环境类型，即下一界中提到的目标，是一组 unit 的集合
+- mount / automount：处理文件系统挂载的服务
+- path：由特定目录变化触发的服务
+- timer：systemd 提供的定时运行服务
+
+> &emsp;&emsp;有一些单元的名称包含一个 `@` 符号（例如：`name@*string*.service` ），这意味着它是模板单元 `name@.service` 的一个 [实例](http://0pointer.net/blog/projects/instances.html)，实际文件名中不包括 `*string*` 部分（如 `name@.service`）。`*string*` 被称作实例标识符，在 *systemctl* 调用模板单元时，会将其当作一个参数传给模板单元，模板单元会使用这个传入的参数代替模板中的 `%I` 指示符。在实例化之前，*systemd* 会先检查 `name@string.suffix` 文件是否存在。如果存在，就直接使用这个文件，而不是模板实例化。大多数情况下，包含 `@` 标记都意味着这个文件是模板。如果一个模板单元没有实例化就调用，该调用通常返回失败，除非是某些例如 `cat` 之类的命令。
+
+&emsp;&emsp;可参考 [systemd.service(5)](https://man.archlinux.org/man/systemd.service.5) 或其他类型的单元文件对应的手册编写单元文件，或选择下面的方案修改软件包提供的单元文件：
+
+0. 在`/etc/systemd/system/`创建同名的单元文件以覆盖`/usr/lib/systemd/system`中的单元文件并手动重新加载单元文件。可通过`systemctl edit --full unit`快速完成。mask 就是在`/etc/systemd/system/`创建同名的单元文件的指向`/dev/null`的软链接。
+1. 先创建名为 `/etc/systemd/system/<单元名>.d/` 的目录，然后放入 `*.conf` 文件， conf 文件中的内容会追加到单元文件中，然后手动重新加载单元文件。可通过`systemctl edit unit`快速完成。
+
+### 目标
+
+&emsp;&emsp;Systemd 使用目标实现 SystemV 运行级别的效果，其大概的对应关系如下：
+
+| SysV 运行级别 |                     Systemd 目标                      |                          注释                           |
+| :-----------: | :---------------------------------------------------: | :-----------------------------------------------------: |
+|       0       |           runlevel0.target, poweroff.target           |                    中断系统（halt）                     |
+| 1, s, single  |            runlevel1.target, rescue.target            |                       单用户模式                        |
+|     2, 4      | runlevel2.target, runlevel4.target, multi-user.target |          用户自定义运行级别，通常识别为级别3。          |
+|       3       |          runlevel3.target, multi-user.target          |    多用户，无图形界面。用户可以通过终端或网络登录。     |
+|       5       |          runlevel5.target, graphical.target           | 多用户，图形界面。继承级别3的服务，并启动图形界面服务。 |
+|       6       |            runlevel6.target, reboot.target            |                          重启                           |
+|   emergency   |                   emergency.target                    |               急救模式（Emergency shell）               |
+
+&emsp;&emsp;使用`systemctl isolate target`在不同目标之间切换
+
 ## SSH
 
 > &emsp;&emsp;Secure Shell (SSH) is a cryptographic network protocol for operating network services securely over an unsecured network. Typical applications include remote command-line login and remote command execution, but any network service can be secured with SSH.
