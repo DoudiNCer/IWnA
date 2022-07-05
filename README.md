@@ -9,7 +9,7 @@ C/C++
 + [C++_Learning_Essay](Articles/CppLearningEssay.md)： C++ 学习笔记
 + [Qt_Learning_Essay](Articles/QtLearningEssay.md)： Qt 学习笔记
 
-Java后端开发
+后端开发
 
 + [Java_Learning_Essay](Articles/JavaLearningEssay.md)：后端组 Java 培训&自学笔记
 + [MySQL_Learning_Essay](Articles/MySQLLearningEssay.md)： MySQL 学习笔记
@@ -17,8 +17,9 @@ Java后端开发
 + [Tomcat_Learning_Essay](Articles/TomcatLearningEssay.md)： Tomcat 学习笔记
 + [MyBatis_Learning_Essay](Articles/MyBatisLearningEssay.md)： MyBatis 学习笔记
 + [Spring_Learning_Essay](Articles/SpringLearningEssay.md)： Spring 全家桶学习笔记
++ [Go_Learning_Essay](Articles/GoLearningEssay.md)： Go 学习笔记
 
-操作系统/运维
+运维
 
 + [Docker_Learning_Essay](Articles/DockerLearningEssay.md)： Docker 学习笔记
 + [Linux_Learning_Essay](Articles/LinuxLearningEssay.md)： Linux 学习笔记
