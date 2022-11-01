@@ -917,6 +917,17 @@ spring:
 
 &emsp;&emsp;Spring Security 的前身为 Acegi，经不断迭代最终成为一个功能强大的重型身份认证和用户授权框架。当然，由于 Spring Security 过于庞大，有时会选用轻量级的 Shiro。即“SSM + Shiro”或“Spring Boot/Cloud + Spring Security”。
 
+### 依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
 ### 过滤器链
 
 &emsp;&emsp;Spring Security本质为一个过滤器链
+
+### Web权限
