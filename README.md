@@ -24,6 +24,7 @@ C/C++
 
 + [Docker_Learning_Essay](Articles/DockerLearningEssay.md)： Docker 学习笔记
 + [Linux_Learning_Essay](Articles/LinuxLearningEssay.md)： Linux 学习笔记
++ [Nginx_Learning_Essay](Articles/NginxLearningEssay.md)： Nginx 学习笔记
 
 通用基础知识
 
