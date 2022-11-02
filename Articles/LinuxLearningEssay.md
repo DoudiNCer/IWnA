@@ -8,7 +8,7 @@
 
 - Troubleshooting any problem without the error log is like driving with your eyes closed.
 - Remember, a few hours of trial and error can save your several minutes of looking at the README.
-- 执行从其他地方看到的命令前，问问自己，这是在干啥？
+- Do not just copy paste those commands without making sure you know what you are doing.
 
 ## 找男人
 
@@ -162,6 +162,20 @@ root ALL=(ALL) ALL
 %wheel ALL=(ALL) NOPASSWD: ALL
 ```
 
+## Shell 与 Shell 脚本
+
+### Shell 、 Bash 与命令
+
+
+
+### 变量与转义
+
+### 重定向与管道
+
+### 正则表达式与文件处理
+
+### Shell 脚本
+
 ## Systemd
 
 ### System V
@@ -256,11 +270,11 @@ systemctl
 
 > &emsp;&emsp;Secure Shell (SSH) is a cryptographic network protocol for operating network services securely over an unsecured network. Typical applications include remote command-line login and remote command execution, but any network service can be secured with SSH.
 
-&emsp;&emsp;对于 Linux 运维，SSH 一般用于远程登录。
+&emsp;&emsp;对于 Linux 运维，SSH 一般用于远程登录，当然还有其他用法。
 
 &emsp;&emsp;SSH 协议有多种实现，这里介绍常用的 OpenSSH 。
 
-> 关于 OpenSSH 和 SSH Keys ，可参考ArchWiki相关页面 [OpenSSH](https://wiki.archlinux.org/title/OpenSSH) 和 [SSH Keys](https://wiki.archlinux.org/title/SSH_keys) 。
+> 关于 OpenSSH 和 SSH Keys ，可参考 ArchWiki 相关页面 [OpenSSH](https://wiki.archlinux.org/title/OpenSSH) 和 [SSH Keys](https://wiki.archlinux.org/title/SSH_keys) 。
 
 ### 客户端
 
@@ -315,5 +329,24 @@ ssh-keygen -t rsa -b 4096 -C "$(whoami)@$(uname -n)-$(date -I)"
 
 ```bash
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+&emsp;&emsp;或者使用以下命令一键安装：
+
+```bash
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@remote-host
+```
+
+### 其他应用
+
+#### 端口转发
+
+```bash
+ssh -L 9090:remote-secret.com:8080 my-remote-host.com
+# 在本地开放 9090 端口，发送到该端口的数据会由 my-remote-host.com 发送至 remote-secret.com:8080 
+ssh -R 9090:local-secret.com:8080 my-remote-host.com
+# 在 my-remote-host.com 开放 9090 端口，访问该端口相当于使用本机访问 local-secret.com:8080 
+ssh -D 6789 user@proxy.server
+# 在本地开启 6789 端口作为 SOCKS 代理端口
 ```
 
