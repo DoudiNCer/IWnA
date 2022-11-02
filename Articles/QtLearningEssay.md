@@ -106,7 +106,7 @@ emit mySignal(str);
 
 ### 事件的处理流程
 
-&emsp;&emsp;在 Qt 中，所有事件会被封装成对象，所有的事件继承自 QEvent 抽象类。当当事件发生时，会调用 QObject 的虚函数event()并将事件作为参数传入。
+&emsp;&emsp;在 Qt 中，所有事件会被封装成对象，所有的事件继承自 QEvent 抽象类。当事件发生时，会调用 QObject 的虚函数event()并将事件作为参数传入。
 
 ### 常用事件
 

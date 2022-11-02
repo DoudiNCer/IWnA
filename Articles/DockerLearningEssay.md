@@ -301,7 +301,7 @@ services:
             - anotherService       # 在启动该服务前启动以下服务
         ...                        # 参考docker命令可用的参数
 networks:
-    neyworkName:     
+    networkName:     
 ...        # 其他配置
 ```
 
