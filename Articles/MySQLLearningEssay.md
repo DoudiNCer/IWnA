@@ -50,7 +50,10 @@ mysqladmin --version        # 验证安装
 或者用Docker：
 
 ```shell
-docker run -itd --name=$containerName -p $hostPort:3306 -e MYSQL_ROOT_PASSWORD=$rootPassword mysql:5
+docker run -itd --name=$containerName -p $hostPort:3306 -e MYSQL_ROOT_PASSWORD=$rootPassword mysql:5     \
+     -v /home/mysql-docker/conf:/etc/mysql/ \
+     -v /home/mysql-docker/logs:/logs \
+     -v /home/mysql-docker/mysql:/var/lib/mysql 
 ```
 
 用户登录：
@@ -74,7 +77,12 @@ mysql -h $serverLocate -P $port(default 3306) -u $username -p $password
 
 ## 数据操作
 
-> 这里有几个坑：表名、列名用反引号“``”，数据用单引号“''”，NULL不要用引号。
+> - 这里有几个坑：表名、列名用反引号“``”，数据用单引号“''”，NULL不要用引号。
+> - SQL语言共分为四大类：数据查询语言**DQL**，数据操纵语言**DML**，数据定义语言**DDL**，数据控制语言**DCL**。
+>   - DQL：查询数据
+>   - DML：对记录的增删改
+>   - DDL：对表、视图、索引等的造作
+>   - DCL：用来授予或回收访问数据库的某种特权，并控制数据库操纵事务发生的时间及效果，对数据库实行监视等。
 
 ### 库
 
