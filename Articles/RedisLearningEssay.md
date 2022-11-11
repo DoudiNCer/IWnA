@@ -426,7 +426,13 @@ del lock
 &emsp;&emsp;ACL（Access Control List, 访问控制列表）可用于控制不同账户的权限：
 
 ```redis
-acl list
-
+acl list            # 查看 ACL 配置
+acl whoami
+acl setuser user0   # 设置用户权限
 ```
 
+&emsp;&emsp;`acl list`结果默认为`"user default on nopass ~* &* +@all"`，分别对应用户名、是否启用、密码、可操作的 key、可使用的命令。
+
+### IO多线程
+
+&emsp;&emsp;从 Redis 6.0 开始，Redis 除核心读写操作外，其他部分（与客户端交流等）采用了多线程。
