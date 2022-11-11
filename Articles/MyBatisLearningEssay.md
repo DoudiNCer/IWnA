@@ -183,7 +183,7 @@ sqlSession.close();
 <select id="selectUser" resultType="User">
     select * from t_user 
     <where><!-- 可动态生成where并自动清理if前面的and/or-->
-        <if test="uName != null and uName != ">
+        <if test="uName != null and uName != ''">
             and user_name = #{}
         </if>
     </where>
@@ -394,6 +394,3 @@ sqlSession.close();
    PageHelper.startPage(int pageNum, int PageSize);
    // 查询前开启
    ```
-
-
-## 
