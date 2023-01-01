@@ -187,3 +187,123 @@ myMap["code"] = 1
 delete(myMap, "code")
 ```
 
+## 面向对象编程
+
+&emsp;&emsp;GoLang 的 OOP 有亿点原始……
+
+### 结构体
+
+&emsp;&emsp;结构体的定义方法如下：
+
+```go
+type double float64
+type Cat struct {
+	name   string
+	age    int
+	height double
+	weight double
+	gender bool
+}
+func main(){
+    var monroe Cat
+	monroe.age = 29
+	monroe.name = "Monroe"
+	monroe.height = 180
+	monroe.weight = 60
+	monroe.gender = false
+	fmt.Println(monroe)
+}
+```
+
+### 封装与继承
+
+&emsp;&emsp;Go 使用以下格式将方法“绑定”到类上：
+
+```go
+func (this Cat) getName() string {
+	return this.name
+}
+
+func (this *Cat) setName(newName string) {
+	this.name = newName
+}
+
+func (this Cat) show() {
+	fmt.Println("喵喵喵")
+}
+```
+
+> 对对象进行修改操作的方法要使用指针，否则修改的是对象的拷贝
+
+&emsp;&emsp;Go 中没有“类”一级的可见性，包内小写字母开头的属性和方法在包外可见，小写字母开头的包外不可见。
+
+&emsp;&emsp;Go 真正践行了“extend”的含义——扩充，Go 中“继承”的表示方式如下：
+
+```go
+type JavaCat struct {
+	Cat
+	score int
+}
+
+func (this JavaCat) show() {
+	fmt.Println("Java喵Java喵Java喵")
+}
+```
+
+&emsp;&emsp;使用方法如下：
+
+```
+maomao := JavaCat{Cat{"猫猫", 19, 1.80, 80, true}, 80}
+maomao.show()
+maomao.Cat.show()
+```
+
+### 多态
+
+&emsp;&emsp;Go 中接口的定义方式如下：
+
+```go
+type Animal interface {
+	show()
+	getName() string
+	setName(newName string)
+}
+```
+
+&emsp;&emsp;Go 中实现一个接口无需显式声明，重写其所有函数即可。
+
+&emsp;&emsp;Go 真正实现了“一切皆对象”——就连所谓“基本数据类型”也实现了空接口`interface{}`。为了判断一个变量`arg`的类型是否为`string`，可使用“类型断言”：
+
+```go
+value, ok := arg.(string)
+if ok {
+	fmt.Println("arg 是 string, arg = ", value)
+} else {
+	fmt.Println("arg 不是 string")
+}
+```
+
+### 反射
+
+&emsp;&emsp;Go 中一个对象包括其值和实例类型两个部分，Go 的变量类型分为 static type 和 concrete type，前者指 GoLang 内置的变量类型；后者为 interface 可以指向的类型。
+
+&emsp;&emsp;`reflect`包提供的`TypeOf()`和`ValueOf()`方法可以在运行时获取一个变量的类型和值：
+
+```go
+zml := "朱孟璐"
+fmt.Println("Type: ", reflect.TypeOf(zml))
+fmt.Println("Value: ", reflect.ValueOf(zml))
+```
+
+### 结构体标签
+
+&emsp;&emsp;可以给结构体的属性添加键值对类型的标签：
+
+```go
+type double float64
+type Cat struct {
+	name   string `info:"name"`
+	age    int    `info:"age" min:"0"`
+}
+```
+
