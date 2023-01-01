@@ -35,7 +35,7 @@ func main() {
 
 ### 变量
 
-&emsp;&emsp;Go 是一门强类型静态语言，声明变量的方式如下：
+&emsp;&emsp;Go 是一门静态强类型语言，声明变量的方式如下：
 
 ```go
 // 显式声明，不初始化赋值0
@@ -63,6 +63,8 @@ const (
     g, h                           // 30, 60
 )
 ```
+
+> 0. GoLang 是一门静态强类型语言，因此已经赋值的变量的类型已经确定，无法赋予其他类型的值。
 
 ### 函数
 
@@ -112,14 +114,76 @@ func main(){
 
 &emsp;&emsp;可为包设置别名，如上面的“lib”，或设置别名为`.`将该包内的函数作用域改为当前包。
 
-&emsp;&emsp;导入包时会自动调用其`init()`函数，有时我们只需要这个初始化函数，可将其报名设置为`_`来抑制错误。
+&emsp;&emsp;导入包时会自动调用其`init()`函数，有时我们只需要这个初始化函数，可将其包名设置为`_`来抑制包未使用的错误。
 
 ### 数据类型
 
-#### 基本数据类型
+#### slice
 
+&emsp;&emsp;Go 中普通数组的使用方法如下：
 
+```go
+var myArray [10]int
+myArray = [10]int{1, 2, 3, 4}
+for i := 0; i < len(myArray); i++ {
+	println(myArray[i])
+}
+for index, value := range myArray {
+	println("index = ", index, ", value = ", value)
+}
+```
 
-#### 切片
+&emsp;&emsp;将这种数组作为函数实参时，函数必须指定数组长度，且为深拷贝传递，非常不适合开发，因此我们需要“动态数组”——切片（slice）：
 
-## 面向对象编程
+```go
+var mySlice = []int{1, 2, 3, 4}
+mySlice = append(mySlice, 5, 6)
+for _, value := range mySlice {
+	println("value = ", value)
+}
+var slice0 = make([]int, 3, 5)
+// 类型、初始化范围、容量，可不指定容量
+slice0[2] = 2
+fmt.Printf("len = %d, cap = %d, value = %v\n", len(slice0), cap(slice0), slice0)
+slice0 = append(slice0, 5)
+// slice0[3] = 5 不可行，因为未初始化
+fmt.Printf("len = %d, cap = %d, value = %#v\n", len(slice0), cap(slice0), slice0)
+slice0 = append(slice0, 1, 9, 5)
+// 昂会增加到原来的两倍，可用范围不翻倍
+fmt.Printf("len = %d, cap = %d, value = %#v\n", len(slice0), cap(slice0), slice0)
+```
+
+&emsp;&emsp;类似 Python的列表（List），Go 的 slice 也可以“切片”（名称怪怪的）:
+
+```go
+var slice = []int{1, 2, 3, 4, 5}
+fmt.Printf("slice[1:3] = %v\n", slice[1:3])
+// slice[1:3] = [2 3]
+fmt.Printf("slice[:3] = %v\n", slice[:3])
+// slice[:3] = [1 2 3]
+fmt.Printf("slice[1:] = %v\n", slice[1:])
+// slice[1:] = [2 3 4 5]
+```
+
+> 0. slice[start:end]：参数表示下标，左开右闭区间
+> 1. 可以使用大于最大下标的参数来截取到末尾
+
+&emsp;&emsp;对 slice 的操作是操作引用，可以使用`copy(slice2, slice)`将 slice 的内容拷贝给 slice2
+
+#### map
+
+&emsp;&emsp;GoLang 的 map 就是个 map，使用方法如下：
+
+```go
+myMap := make(map[string]int, 3)
+myMap2 := map[string]int{
+	"code":   1,
+	"height": 180,
+	"weight": 60,
+}
+// 赋值
+myMap["code"] = 1
+// 删除
+delete(myMap, "code")
+```
+
