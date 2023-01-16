@@ -66,6 +66,79 @@ const (
 
 > 0. GoLang 是一门静态强类型语言，因此已经赋值的变量的类型已经确定，无法赋予其他类型的值。
 
+### 分支循环
+
+#### 条件判断
+
+&emsp;&emsp;GoLang 的 `if else`和 C++ 的类似，但 GoLang 的条件语句不需要括号，如：
+
+```go
+if 3 % 2 == 0 {
+    fmt.Println("3 是偶数")
+} else if 3 % 2 == 1 {
+    fmt.Println("3 是奇数")
+} else {
+    fmt.Println("3 是啥？猫猫不造诶")
+}
+```
+
+#### 循环
+
+&emsp;&emsp;GoLang 没有`while`循环和 `do while`循环，只有各式各样的`for`循环：
+
+&emsp;&emsp;没有任何其他条件的是死循环：
+
+```go
+i := 0
+for {
+    fmt.Println("i = ", i)
+    i++
+}
+```
+
+&emsp;&emsp;可以使用类似 C++ 的 for 循环结构：
+
+```go
+for i := 0; i < 5 i++ {
+    fmt.Println("i = ", i)
+}
+```
+
+实际生产中起始条件和循环后置操作常常省略，可以使用类似`while`循环的循环：
+
+```go
+i := 0
+for i < 5 {
+    fmt.Println("i = ", i)
+    i++
+}
+```
+
+&emsp;&emsp;与 C++ 相同，GoLang 也可以使用 `continue`和`break`。
+
+#### switch case
+
+&emsp;&emsp;GoLang 的 `switch case`与 C++ 类似：
+
+```go
+switch score / 10 {
+    case 10:
+        fmt.Println("恭喜你考了100分，等级为A！")
+    case 9:
+        fmt.Println("你的等级为A")
+    case 8:
+        fmt.Println("你的等级为B")
+    case 7:
+        fmt.Println("你的等级为C")
+    case 6:
+        fmt.Println("你的等级为D")
+    case 5, 4, 3, 2, 1, 0:
+        fmt.Println("很遗憾，你没有及格")
+}
+```
+
+&emsp;&emsp;GoLang 的`switch case`可以使用任意的变量类型，也可以省略 switch 后的变量，每个 case 作为一个独立的分支判断（但只执行第一个符合条件的）。
+
 ### 函数
 
 &emsp;&emsp;与多数编程语言不同， Go 支持具有多个返回值的函数。函数的定义格式如下：
@@ -167,6 +240,7 @@ fmt.Printf("slice[1:] = %v\n", slice[1:])
 
 > 0. slice[start:end]：参数表示下标，左开右闭区间
 > 1. 可以使用大于最大下标的参数来截取到末尾
+> 2. 不支持负数下标
 
 &emsp;&emsp;对 slice 的操作是操作引用，可以使用`copy(slice2, slice)`将 slice 的内容拷贝给 slice2
 
@@ -186,6 +260,9 @@ myMap["code"] = 1
 // 删除
 delete(myMap, "code")
 ```
+
+> 0. map 中的数据不会自动排列，其顺序是随机的
+> 1. 也可以使用 range 来遍历 map
 
 ## 面向对象编程
 
@@ -306,4 +383,3 @@ type Cat struct {
 	age    int    `info:"age" min:"0"`
 }
 ```
-
