@@ -383,3 +383,37 @@ type Cat struct {
 	age    int    `info:"age" min:"0"`
 }
 ```
+
+## 并发
+
+&emsp;&emsp;GoLang 原生支持并发。
+
+### Goroutine
+
+&emsp;&emsp;`GoRoutine`是一种轻量化的线程，由GoLang运行时调度。是只需在调用函数前添加`go`关键字便可创建一个 goroutine 来运行该函数：
+
+```go
+func hello(s string) {
+	fmt.Println("Hello ", s, "!")
+}
+func main() {
+	animal := []string{"可爱的狗狗", "猫猫", "熊熊", "鼠鼠(努力学习版)", "鲨鲨", "鼠鼠(仓鼠版)"}
+	for _, name := range animal {
+		go hello(name)
+	}
+	time.Sleep(time.Second)
+}
+```
+
+### 线程通信
+
+&emsp;&emsp;GoLang建议“通过通信实现共享内存”而不是“通过共享内存进行通信”，因为使用共享内存进行通信难免需要枷锁，这回降低程序性能。GoLang 通过“通道”（`channel`）进行 goroutine之间的通信。
+
+&emsp;&emsp;创建 channel 使用`make`：
+
+```go
+ch := make(chan int)        // 无缓冲区
+ch1 := make(chan int, 2)    // 有缓冲区
+```
+
+&emsp;&emsp;使用`<-`将数据写入 channel 或，使用`range`遍历 channel 中的数据：
