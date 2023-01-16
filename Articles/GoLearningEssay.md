@@ -417,3 +417,36 @@ ch1 := make(chan int, 2)    // 有缓冲区
 ```
 
 &emsp;&emsp;使用`<-`将数据写入 channel 或，使用`range`遍历 channel 中的数据：
+
+## 依赖管理
+
+&emsp;&emsp;GoLang 的依赖管理大致经历了 `GOPATH`、`Go Vender`和`Go Module`三个阶段：
+
+&emsp;&emsp;在早期，使用`$GOPATH`环境变量来表示系统级项目的工作目录，其下有`bin`（存储编译好的二进制文件）、`pkg`（存储中间产物）和`src`（项目源码）。
+
+&emsp;&emsp;后来，在每个项目的根目录下添加`vender`文件夹用于存储依赖，在`vender`下找不到的依赖再到`GOPATH`下寻找。
+
+&emsp;&emsp;如今，我们采用"Go Module"来管理依赖，在项目根目录下或每个`package`下添加`go.mod`文件来定义项目依赖的库及其版本。`go.mod`的大致结构如下：
+
+```go
+module DoudiNCer/GoLearning
+go 1.15
+require (
+    cats/cat v1.0.1
+    cat/monroe v1.0.0-19930111030830-5pyx5a2f55KQCg // indirect
+)
+```
+
+> 0. 常见的版本号有语义化版本号和基于commit的伪版本号
+>
+>    语义化版本号的结构为`主版本号.次版本号.修订版本号`
+>
+>    伪版本号的格式为`语义化版本号前缀-tag的时间戳-tag的12位哈希值`
+>
+> 1. `// indirect`字面意思，表示间接依赖
+>
+>    `+incomputable`用于兼容 Go Module 出现以前版本号过高的依赖
+
+&emsp;&emsp;下载依赖时，首先会依次到`$GOPROXY`定义的镜像站下载，如果找不到，才会到原始项目托管平台下载。
+
+&emsp;&emsp;下载依赖使用`go get`，管理项目使用`go mod`，集体用法可参照`go help get `和`go help mod`，此处不再赘述。
