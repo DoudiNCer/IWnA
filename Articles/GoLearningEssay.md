@@ -390,7 +390,7 @@ type Cat struct {
 
 ### Goroutine
 
-&emsp;&emsp;`GoRoutine`是一种轻量化的线程，由GoLang运行时调度。是只需在调用函数前添加`go`关键字便可创建一个 goroutine 来运行该函数：
+&emsp;&emsp;`GoRoutine`是一种轻量化的线程，由GoLang运行时调度，同一个程序中的所有 goroutine 共享同一个地址空间。只需在调用函数前添加`go`关键字便可创建一个 goroutine 来运行该函数：
 
 ```go
 func hello(s string) {
@@ -412,11 +412,38 @@ func main() {
 &emsp;&emsp;创建 channel 使用`make`：
 
 ```go
-ch := make(chan int)        // 无缓冲区
-ch1 := make(chan int, 2)    // 有缓冲区
+ch := make(chan int)        // 无缓冲区双向
+ch1 := make(chan int, 2)    // 有缓冲区双向
+chi := make(<-chan int)     // 只读
+cho := make(chan<- int)     // 只写
 ```
 
-&emsp;&emsp;使用`<-`将数据写入 channel 或，使用`range`遍历 channel 中的数据：
+&emsp;&emsp;使用`<-`将数据写入 channel 或从 channel 读取数据，使用`range`遍历 channel 中的数据
+
+> 0. 对于不带缓冲区的通道，接受方获取数据前发送方会阻塞
+> 1. 对于带缓冲区的通道，缓冲区满后发送方写入数据会导致写入线程阻塞
+
+&emsp;&emsp;通道不再使用后，可通过`close()`函数来关闭，从而避免通道已空但接收方尝试读取导致阻塞的问题。
+
+> 0. 在通道未初始化时关闭、重复关闭、关闭后发送共和发送时关闭会导致 panic
+
+### 线程同步
+
+&emsp;&emsp;`sync`包提供了基础的线程同步锁，创建一个互斥锁的方式如下：
+
+```go
+var lock sync.Mutex
+```
+
+&emsp;&emsp;该互斥锁使用`Lock()`和`Unlock()`方法对编辑共享内存的代码块加锁，保证线程同步。
+
+&emsp;&emsp;有时候我们需要在主线程执行到某个位置时开启多个子线程执行其他任务，且在这些子线程全部结束前阻塞主线程，这时我们就需要`WaitGroup`：
+
+```go
+var wg sync.WaitGroup
+```
+
+&emsp;&emsp;WaitGroup有三个方法：`Add(delta int)`用于计数器增加 delta ；`Done()`用于表示一个线程完成；`Wait()`用于阻塞主线程。
 
 ## 依赖管理
 
