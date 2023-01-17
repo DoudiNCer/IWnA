@@ -169,6 +169,26 @@ func main(){
 
 &emsp;&emsp;在 Go 中可在函数任意位置使用`defer`关键字指定函数执行完毕后（return后）要做的事情，这些操作会按从后向前的顺序执行，类似压栈与弹栈。
 
+&emsp;&emsp;GoLang 也支持匿名函数，常用于下面要讲的`GoRoutine`：
+
+```go
+func(q int){
+    result := 1
+    for i := 1; i <= q; i++{
+        result *= i
+    }
+    fmt.Println(i, "! = ", result)
+}(5)
+```
+
+&emsp;&emsp;也可以将匿名函数赋值给一个变量，如：
+
+```go
+f := func(i int){
+    fmt.Println(i)
+}
+```
+
 ### 包与模块
 
 &emsp;&emsp;在 Go 中使用`import`导入包，导入后可使用`包名.函数名`调用包内的函数，如：
