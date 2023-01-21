@@ -556,3 +556,162 @@ require (
 &emsp;&emsp;内联（Inline）是指将被调用函数的函数体（callee）的副本替换到被调用的位置上，GoLang编译器默认对简短的函数进行了内联。对简短的函数进行内联可减少函数调用的开销，提高程序运行效率；但是函数内联会增大程序体积、降低 instruction cache 效率。
 
 &emsp;&emsp;逃逸分析是指代码中指针的动态作用域。对于没有逃逸的对象（作用范围在函数内）可直接在 stack 为其分配内存，降低 GC 压力。
+
+## Web三件套
+
+&emsp;&emsp;GoLang 的 Web 三件套包括`Gorm`、`Kitex`和`Hertz`。其中 Gorm 是一个拥有众多扩展的 ORM 框架；Kitex 是一个高性能的微服务框架；Hertz是一个 HTTP 框架。
+
+### Gorm
+
+> 官方文档/网站：https://gorm.cn/
+
+#### 连接&初始化
+
+&emsp;&emsp;目前 Gorm 支持 MySQL 、 SQLite 、 SQL Server 、PostgreSQL 四种数据库系统，下面以MySQL为例进行介绍：
+
+&emsp;&emsp;导入依赖&数据库连接：
+
+```go
+import (
+  "gorm.io/driver/mysql"
+  "gorm.io/gorm"
+)
+
+func main() {
+  // refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
+  dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+  db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+}
+```
+
+&emsp;&emsp;定义表的结构（Gorm model）：
+
+```go
+type UserInfo struct{
+    ID      uint    `gorm:"primaryKey;column:id"`
+    Name    string  `gorm:"column:name"`
+    Phone   string  `gorm:"default:12345678901"`
+}
+// 自定义表明
+func (ui UserInfo) TableName() string {
+    return "user_info"
+}
+```
+
+> 0. 默认使用名为 ID 的键作为主键
+> 1. 默认使用结构体名蛇形复述作为表名
+> 2. 字段名的蛇形命名作为列名
+> 3. 使用`CreatedAt`、`UpdatedAt`作为创建时间、修改时间
+> 4. 上述结构体标签用于覆盖上述约定
+
+#### CRUD
+
+##### Create
+
+&emsp;&emsp;使用`Create()`方法插入新数据，如：
+
+```go
+// 插入一条数据
+db.Create(&UserInfo{
+    ID:    1,
+    Name:  "Maomao",
+    Phone: "12345678901",
+})
+// 插入多条数据时可直接传入一个切片
+```
+
+> 0. 使用`db.Select().Create()`指定要插入的列
+>
+>     使用`db.Omit().Create()`跳过要插入的列
+>
+> 1. 支持使用`map[string]interface{}`或`map[string]interface{}{}`插入
+>
+> 2. 不填写主键且设置主键自增后可从原结构体获取主键值
+>
+> 3. 可使用`Clauses(clause.OnConflict{DoNothing: true})`指定主键冲突时不进行操作（与`Save()`相反）
+
+##### Read
+
+&emsp;&emsp;可以使用`First()`（主键升序）、`Take()`（数据库内存储顺序）或`Last()`（主键降序）根据条件查询一条数据（`LIMIT 1`），如：
+
+```go
+var ui UserInfo
+// 查询主键升序第一条
+db.First(&ui)
+// 对整型主键进行查询（不安全）
+db.First(&db, 2)
+// 对主键外的字段进行条件查询（不能查主键）
+db.First(&ui, "name = ?", "Maomao")
+```
+
+&emsp;&emsp;若需要查询的所有结果，使用`Find()`，用法与`First()`类似，如：
+
+```go
+var uis []UserInfo
+db.Find(&uis, "`name` like ?", "%M%")
+```
+
+&emsp;&emsp;查询条件也可拆成多个函数，如上述`Find()`的例子可拆成如下形式：
+
+```go
+db.Where("`name` like ?", "%M%").Find(&uis)
+```
+
+> 0. `First()`在查询不到数据时会产生`ErrRecondNotFound`错误，`Find()`不会。
+> 1. 使用 struct 作为查询条件，会忽略零值
+
+&emsp;&emsp;除了`Where()`，还有`Not()`、`Or()`可对查询结果行添加筛选条件；`Select()`可对查询列添加筛选条件；`Limit()`和`Offset()`对结果条数添加条件等。
+
+##### Update
+
+&emsp;&emsp;可使用`Save()`根据主键更新（包括零值）或插入记录：
+
+```go
+newUi := UserInfo{
+    ID:    4,
+    Name:  "齐大",
+    Phone: "12345678901",
+}
+db.Save(newUi)
+```
+
+&emsp;&emsp;更新部分列使用`Update()`，使用`Where()`添加限制条件，使用`Table()`指定表名或使用`Model()`指定表名和主键：
+
+```go
+db.Table("user_info").Where("id = ?", "4").Update("name", "齐大大")
+```
+
+> 0. 更新多列可使用`struct`或`map[string]interface{}`，但前者之更新非零列。
+>
+> 1. 可使用`Select()`强制指定要更新的列
+>
+> 2. 可使用`gorm.Expr()`编写表达式更新，如：
+>
+>     ```go
+>     db.Model(&User{ID: 4,}).Update("age", gorm.Expr("age + ?"), 1)
+>     ```
+>
+>     
+
+##### Delete
+
+&emsp;&emsp;使用`Delete()`来删除记录：
+
+```go
+// 根据主键删除
+db.Delete(&UserInfo{}, 4)
+// 根据传入对象的主键删除
+db.Delete(&ui)
+// 根据附加条件删除
+db.Where("name = ?", "齐大").Delete(&UserInfo{})
+db.Delete(&UserInfo{}, "name = ?", "齐大")
+```
+
+&emsp;&emsp;Gorm 拒绝通过不加限制条件来删库，需要添加一些添加条件，如：
+
+```go
+// Wrong
+db.Delete(&UserInfo{})
+//Right
+db.Where("1 = 1").Delete(&UserInfo{})
+```
