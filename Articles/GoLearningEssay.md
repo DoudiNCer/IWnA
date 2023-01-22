@@ -592,7 +592,7 @@ type UserInfo struct{
     Name    string  `gorm:"column:name"`
     Phone   string  `gorm:"default:12345678901"`
 }
-// 自定义表明
+// 自定义表名
 func (ui UserInfo) TableName() string {
     return "user_info"
 }
@@ -752,7 +752,7 @@ db.Transaction(func(tx *gorm.DB) error {
 ```go
 func (u *UserInfo) BeforeCreate(tx *gorm.DB) (err error) {
 	if len(u.Phone) != 11 {
-		return error("Invalid data")
+		return errors.New("Invalid data")
 	}
 	return nil
 }
