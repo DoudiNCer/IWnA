@@ -690,8 +690,6 @@ db.Table("user_info").Where("id = ?", "4").Update("name", "齐大大")
 >     ```go
 >     db.Model(&User{ID: 4,}).Update("age", gorm.Expr("age + ?"), 1)
 >     ```
->
->     
 
 ##### Delete
 
@@ -712,6 +710,92 @@ db.Delete(&UserInfo{}, "name = ?", "齐大")
 ```go
 // Wrong
 db.Delete(&UserInfo{})
-//Right
+// Right
 db.Where("1 = 1").Delete(&UserInfo{})
 ```
+
+#### 事务
+
+&emsp;&emsp;在 Gorm 开启一个事务使用`Begin()`，提交使用`Commit()`，回滚使用`Rollback()`，一个简单的示例如下：
+
+```go
+tx := db.Begin()
+if err = tx.Create(&UserInfo{Name: "Maomao", Phone: "13261534257"}).Error; err != nil {
+    tx.Rollback()
+    return
+}
+if err = tx.Create(&UserInfo{Name: "Monroe", Phone: "13261634257"}).Error; err != nil {
+    tx.Rollback()
+    return
+}
+tx.Commit()
+```
+
+&emsp;&emsp;上述操作可使用`Transaction()`函数简化：
+
+```go
+db.Transaction(func(tx *gorm.DB) error {
+    if err = tx.Create(&UserInfo{Name: "Maomao", Phone: "13261534257"}).Error; err != nil {
+        return err
+    }
+    if err = tx.Create(&UserInfo{Name: "Monroe", Phone: "13261634257"}).Error; err != nil {
+        return err
+    }
+    return nil
+})
+```
+
+#### Hook
+
+&emsp;&emsp;可通过实现 Hook 函数在 CRUD 前后进行自动化操作，如：
+
+```go
+func (u *UserInfo) BeforeCreate(tx *gorm.DB) (err error) {
+	if len(u.Phone) != 11 {
+		return error("Invalid data")
+	}
+	return nil
+}
+```
+
+&emsp;&emsp;Gram会使用默认事务执行 Hook 和单条语句，在 Hook 中返回异常会使事务回滚。对于不同的操作，Hook的调用顺序如下：
+
+- Create:
+    - 开始事务
+    - BeforeSave
+    - BeforeCreate
+    - 关联前的 save
+    - 插入记录至 db
+    - 关联后的 save
+    - AfterCreate
+    - AfterSave
+    - 提交或回滚事务
+
+- Read
+    - 从 db 中加载数据
+    - Preloading (eager loading)
+    - AfterFind
+
+- Update
+    - 开始事务
+    - BeforeSave
+    - BeforeUpdate
+    - 关联前的 save
+    - 更新 db
+    - 关联后的 save
+    - AfterUpdate
+    - AfterSave
+    - 提交或回滚事务
+
+- Delete
+    - 开始事务
+    - BeforeDelete
+    - 删除 db 中的数据
+    - AfterDelete
+    - 提交或回滚事务
+
+#### 性能提升&补充
+
+&emsp;&emsp;为了保证数据安全，Gorm 对于单独的操作开启了默认事务，若不需要关联操作和 Hook 可考虑关闭默认事务，即在创建连接时添加`SkipDefaultTransaction: true`。
+
+&emsp;&emsp;可通过开启 SQL 语句预编译来提升性能，即在创建连接时添加`PrepareStmt: true`
