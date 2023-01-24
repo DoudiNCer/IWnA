@@ -799,3 +799,91 @@ func (u *UserInfo) BeforeCreate(tx *gorm.DB) (err error) {
 &emsp;&emsp;为了保证数据安全，Gorm 对于单独的操作开启了默认事务，若不需要关联操作和 Hook 可考虑关闭默认事务，即在创建连接时添加`SkipDefaultTransaction: true`。
 
 &emsp;&emsp;可通过开启 SQL 语句预编译来提升性能，即在创建连接时添加`PrepareStmt: true`
+
+### Hertz
+
+&emsp;&emsp;Hertz 是一个 Golang 微服务 HTTP 框架，下面使用`hertz v0.5.1`为例介绍其用法。
+> 0. 官方文档：https://www.cloudwego.io/zh/docs/hertz/overview
+> 1. 官方代码示例：https://github.com/cloudwego/hertz-examples
+
+#### 安装&配置
+&emsp;&emsp;安装`hertz`：
+```bash
+go install github.com/cloudwego/hertz/cmd/hz@latest
+```
+
+&emsp;&emsp;创建项目：
+
+```bash
+hz new -mod $ModuleName # 和Kitex一样，在$GOPATH下可不指定 ModuleName
+go mod tidy
+```
+
+&emsp;&emsp;生成的项目目录结构大致如下：
+
+```
+.
+├── biz
+│   ├── handler
+│   │   └── ping.go
+│   └── router
+│       └── register.go
+├── go.mod
+├── go.sum
+├── main.go
+├── router_gen.go
+└── router.go
+```
+
+#### 路由与处理器
+
+&emsp;&emsp;服务端通过定义路由（router）来分类处理接收到的请求，建议在项目根目录下`router.go`中的`customizedRegister()`函数中定义路由。
+
+&emsp;&emsp;一个简单的 GET 路由示例如下：
+
+```go
+r.GET("/ping", handler.Ping)
+```
+
+&emsp;&emsp;Hertz 支持静态路由、参数路由和通配路由。静态路由即全字符匹配，如上述示例所示；参数路由指形如`/cat/:name`的路由，匹配到的参数可用于后续处理；通配路由指形如`/image/*path`的路由。其优先级顺序为静态路由 > 命名路由 > 通配路由。
+
+&emsp;&emsp;Hertz 提供了路由分组的功能，通过`Group()`生成分组，如：
+
+```go
+userR := r.Group("/user")
+adminR := r.Group("admin")
+userR.GET("/info", handler.user.GetInfo)
+adminR.GET("/info", handler.admin.GetInfo)
+```
+
+> 0. 除了常见的`GET`、`POST`、`PUT`、`DELETE`等请求方式，Hertz还提供了`Handle`来自定义请求方式，`Any()`来注册所有请求方式，`StaticFile/Static/StaticFS`来注册静态文件。
+> 1. 使用匿名函数注册路由时，若需要处理器名称，需要使用形如`GETEX()`的路由注册函数来指定处理器名称。
+> 2. Hertz 提供了 `NoRoute` 与 `NoMethod` 方法用于全局处理 HTTP 404 与 405 请求，使用`NoRoute`需开启`WithHandleMethodNotAllowed`
+
+&emsp;&emsp;Hertz 注册路由时传入的函数即为用于处理业务的处理器（Handler），一个简单的处理器函数如下所示：
+
+```go
+func Ping(ctx context.Context, c *app.RequestContext) {
+    c.JSON(consts.StatusOK, utils.H{
+        "message": "pong",
+    })
+}
+```
+
+#### 参数获取与校验
+
+&emsp;&emsp;Hertz 使用` go-tagexpr `进行参数校验，可使用`RequestContext.BindAndValidate()`对参数进行绑定和校验，也可调用单独的方法进行绑定或校验。
+
+> 0. go-tagexpr 的项目地址：https://github.com/bytedance/go-tagexpr
+> 1. 参数校验语法：https://github.com/bytedance/go-tagexpr/tree/master/validator
+
+&emsp;&emsp;首先要定义用于接收参数的结构体，如：
+
+```go
+type request struct {
+    ver int `path:"version"`
+    id  int `query:"id"`
+}
+```
+
+&emsp;&emsp;用于绑定的 tag 包括`path`、`form`、`query`、`header`、`json`、`raw_body`，校验参数写在`vd`参数中
