@@ -319,5 +319,3 @@ docker-compose
 ```
 
 ## Docker Swarm
-
-## CI/CD Jenkins
