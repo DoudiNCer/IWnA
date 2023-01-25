@@ -800,9 +800,122 @@ func (u *UserInfo) BeforeCreate(tx *gorm.DB) (err error) {
 
 &emsp;&emsp;可通过开启 SQL 语句预编译来提升性能，即在创建连接时添加`PrepareStmt: true`
 
+### Kitex
+
+&emsp;&emsp;Kitex 是 GoLang Web 开发中~~常用~~的 RPC框架，本文以`Kitex v0.4.4`为例介绍 Kitex 的使用方法。
+
+> 0. Kitex 的官方文档为：https://www.cloudwego.io/zh/docs/kitex/overview/
+> 1. Kitex 当今对 Windows 支持不完善，建议使用 Linux
+
+#### RPC
+
+&emsp;&emsp;RPC（Remote Procedure Call，远程过程调用）是使在调用方不知情的情况下让调用者像调用本地资源一样调用网络资源，是微服务重要的技术之一。
+
+#### 安装配置
+
+&emsp;&emsp;安装 Kitex 和 Thrift Go：
+
+```bash
+go install github.com/cloudwego/kitex/tool/cmd/kitex@latest
+go install github.com/cloudwego/thriftgo@latest
+```
+
+&emsp;&emsp;使用以下命令生成代码
+
+```bash
+kitex -module $ModuleName -service $ServiceName $ThriftFile
+```
+
+&emsp;&emsp;生成的目录结构大致如下：
+
+```
+.
+├── build.sh                // 构建脚本
+├── go.mod
+├── handler.go              // 用于实现接口
+├── kitex_gen
+│   └── api
+│       ├── hello
+│       │   ├── client.go
+│       │   ├── hello.go
+│       │   ├── invoker.go
+│       │   └── server.go
+│       ├── k-consts.go
+│       ├── k-zml.go
+│       └── zml.go
+├── kitex.yaml
+├── main.go                  // 程序入口
+├── script
+│   └── bootstrap.sh
+└── zml.thrift
+```
+
+&emsp;&emsp;使用`build.sh`进行项目编译。
+
+#### IDL
+
+&emsp;&emsp;IDL（Interface Description Language，接口定义语言）是用于定义、描述接口的语言。在接下来的开发中，将使用 `Thrift IDL`生成代码来辅助开发。
+
+&emsp;&emsp;一个简单的 Thrift IDL 的示例如下：
+
+```idl
+namespace go api
+
+struct Request{
+    1: string message
+}
+
+struct Response{
+    1: string message
+}
+
+service Echo {
+    Response echo(1: Request req)
+}
+```
+
+> 0. Thrift IDL 语法 https:/thrift.apache.org/docs/idl
+> 1. Proto3 IDL 语法 https://developers.google.com/protocol-buffers/docs/proto3
+
+#### 服务端与客户端
+
+&emsp;&emsp;Kitex 自动生成的服务端的启动代码（main.go下的主函数）如下：
+
+```go
+svr := zml.NewServer(new(RemoteMonroeImpl))
+err := svr.Run()
+if err != nil {
+    log.Println(err.Error())
+}
+```
+
+&emsp;&emsp;此部分可操作的部分为`NewServer()`的后续参数，可通过`server.WithXXX()`的形式指定各种服务端参数（Server Option），如：
+
+```go
+addr, _ := net.ResolveTCPAddr("tcp", "0.0.0.0:38080")
+svr := zml.NewServer(new(RemoteMonroeImpl), server.WithServiceAddr(addr))
+```
+
+&emsp;&emsp;但是我们需要自己编写客户端的调用程序555。获取客户端的方式与获取服务端类似，调用`NewClient()`即可，如：
+
+```go
+cli, err := zml.NewClient("zml.remoteMonroe", client.WithHostPorts("127.0.0.1:8888"))
+```
+
+&emsp;&emsp;除了像服务端添加服务端参数那样添加客户端参数（Client Option），客户端还支持在每次调用时添加调用参数（Call Option），如：
+
+```go
+req := zml.Request{Name: "猫猫"}
+hello, err := cli.Hello(context.Background(), &req, callopt.WithConnectTimeout(time.Duration(time.Second)))
+```
+
+> 0. Call Option 优先级高于 Client Option
+
+&emsp;&emsp;使用 Thrift 等生成的服务器端逻辑实现代码在`handler.go`中编写。
+
 ### Hertz
 
-&emsp;&emsp;Hertz 是一个 Golang 微服务 HTTP 框架，下面使用`hertz v0.5.1`为例介绍其用法。
+&emsp;&emsp;Hertz 是一个 GoLang 微服务 HTTP 框架，下面使用`hertz v0.5.1`为例介绍其用法。
 > 0. 官方文档：https://www.cloudwego.io/zh/docs/hertz/overview
 > 1. 官方代码示例：https://github.com/cloudwego/hertz-examples
 
