@@ -219,10 +219,10 @@ func main(){
 var myArray [10]int
 myArray = [10]int{1, 2, 3, 4}
 for i := 0; i < len(myArray); i++ {
-	println(myArray[i])
+    println(myArray[i])
 }
 for index, value := range myArray {
-	println("index = ", index, ", value = ", value)
+    println("index = ", index, ", value = ", value)
 }
 ```
 
@@ -232,7 +232,7 @@ for index, value := range myArray {
 var mySlice = []int{1, 2, 3, 4}
 mySlice = append(mySlice, 5, 6)
 for _, value := range mySlice {
-	println("value = ", value)
+    println("value = ", value)
 }
 var slice0 = make([]int, 3, 5)
 // 类型、初始化范围、容量，可不指定容量
@@ -271,9 +271,9 @@ fmt.Printf("slice[1:] = %v\n", slice[1:])
 ```go
 myMap := make(map[string]int, 3)
 myMap2 := map[string]int{
-	"code":   1,
-	"height": 180,
-	"weight": 60,
+    "code":   1,
+    "height": 180,
+    "weight": 60,
 }
 // 赋值
 myMap["code"] = 1
@@ -295,20 +295,20 @@ delete(myMap, "code")
 ```go
 type double float64
 type Cat struct {
-	name   string
-	age    int
-	height double
-	weight double
-	gender bool
+    name   string
+    age    int
+    height double
+    weight double
+    gender bool
 }
 func main(){
     var monroe Cat
-	monroe.age = 29
-	monroe.name = "Monroe"
-	monroe.height = 180
-	monroe.weight = 60
-	monroe.gender = false
-	fmt.Println(monroe)
+    monroe.age = 29
+    monroe.name = "Monroe"
+    monroe.height = 180
+    monroe.weight = 60
+    monroe.gender = false
+    fmt.Println(monroe)
 }
 ```
 
@@ -318,15 +318,15 @@ func main(){
 
 ```go
 func (this Cat) getName() string {
-	return this.name
+    return this.name
 }
 
 func (this *Cat) setName(newName string) {
-	this.name = newName
+    this.name = newName
 }
 
 func (this Cat) show() {
-	fmt.Println("喵喵喵")
+    fmt.Println("喵喵喵")
 }
 ```
 
@@ -338,12 +338,12 @@ func (this Cat) show() {
 
 ```go
 type JavaCat struct {
-	Cat
-	score int
+    Cat
+    score int
 }
 
 func (this JavaCat) show() {
-	fmt.Println("Java喵Java喵Java喵")
+    fmt.Println("Java喵Java喵Java喵")
 }
 ```
 
@@ -361,9 +361,9 @@ maomao.Cat.show()
 
 ```go
 type Animal interface {
-	show()
-	getName() string
-	setName(newName string)
+    show()
+    getName() string
+    setName(newName string)
 }
 ```
 
@@ -374,9 +374,9 @@ type Animal interface {
 ```go
 value, ok := arg.(string)
 if ok {
-	fmt.Println("arg 是 string, arg = ", value)
+    fmt.Println("arg 是 string, arg = ", value)
 } else {
-	fmt.Println("arg 不是 string")
+    fmt.Println("arg 不是 string")
 }
 ```
 
@@ -399,8 +399,8 @@ fmt.Println("Value: ", reflect.ValueOf(zml))
 ```go
 type double float64
 type Cat struct {
-	name   string `info:"name"`
-	age    int    `info:"age" min:"0"`
+    name   string `info:"name"`
+    age    int    `info:"age" min:"0"`
 }
 ```
 
@@ -414,14 +414,14 @@ type Cat struct {
 
 ```go
 func hello(s string) {
-	fmt.Println("Hello ", s, "!")
+    fmt.Println("Hello ", s, "!")
 }
 func main() {
-	animal := []string{"可爱的狗狗", "猫猫", "熊熊", "鼠鼠(努力学习版)", "鲨鲨", "鼠鼠(仓鼠版)"}
-	for _, name := range animal {
-		go hello(name)
-	}
-	time.Sleep(time.Second)
+    animal := []string{"可爱的狗狗", "猫猫", "熊熊", "鼠鼠(努力学习版)", "鲨鲨", "鼠鼠(仓鼠版)"}
+    for _, name := range animal {
+        go hello(name)
+    }
+    time.Sleep(time.Second)
 }
 ```
 
@@ -556,6 +556,114 @@ require (
 &emsp;&emsp;内联（Inline）是指将被调用函数的函数体（callee）的副本替换到被调用的位置上，GoLang编译器默认对简短的函数进行了内联。对简短的函数进行内联可减少函数调用的开销，提高程序运行效率；但是函数内联会增大程序体积、降低 instruction cache 效率。
 
 &emsp;&emsp;逃逸分析是指代码中指针的动态作用域。对于没有逃逸的对象（作用范围在函数内）可直接在 stack 为其分配内存，降低 GC 压力。
+
+## RedisGo
+
+&emsp;&emsp;Redis 是 常用的非关系型数据库系统之一，常用于缓存、分布式系统、消息系统等。关于 Redis 的使用可查看[Redis 学习笔记](Articles/RedisLearningEssay.md)
+
+&emsp;&emsp;GoLang 中操作 Redis 的常用工具有`redigo`和`go-redis`，接下来以 redisgo 为例讲述 Redis 的操作。
+
+> 0. 官方文档：http://godoc.org/github.com/gomodule/redigo/redis
+> 1. 项目地址：https://github.com/gomodule/redigo
+
+### 安装&连接 Redis
+
+&emsp;&emsp;安装 redisgo 模块：
+
+```bash
+go install github.com/gomodule/redigo/redis@latest
+```
+
+&emsp;&emsp;创建连接：
+
+```go
+conn, err := redis.Dial("tcp", "127.0.0.1:6379", redis.DialPassword("123456"))
+if err != nil {
+    fmt.Println("Connect to redis error", err)
+    return
+}
+defer conn.Close()
+```
+
+### 数据操作
+
+&emsp;&emsp;使用`Do()`方法执行 Redis 操作，该方法的参数为操作和参数数组，如：
+
+```go
+_, err := conn.Do("set", "name", "猫猫")
+do, err := conn.Do("get", "name")
+```
+
+&emsp;&emsp;该方法的第一个返回值为`interface{}`，需要手动转换：
+
+```go
+name, _:= redis.String(do, err)
+fmt.Println(name)
+```
+
+> 0. 上述转换可简化为`name, _:= redis.String(conn.Do("get", "name"))`
+> 1. 返回值类型转换方法第二个参数的原理是：若其不为空`err != err`，则返回`nil. err`，反之进行后续处理
+
+### 事务操作
+
+&emsp;&emsp;除了使用`Do()`操作 Redis，还可以使用`Send()`、`Flush()`和`Receive()`更灵活地操作。
+
+&emsp;&emsp;`Send()`将操作写入客户端输出缓冲区；`Flush()`将输出缓冲区中的操作发往服务端执行；`Receive()`依次从客户端输入缓冲区取出服务端发送的结果：
+
+```go
+conn.Send("get", "name")
+conn.Send("get", "age")
+conn.Flush()
+name, _ := redis.String(conn.Receive())
+age, _ := redis.Int(conn.Receive())
+fmt.Printf("name: %s, age: %d", name, age)
+```
+
+&emsp;&emsp;`Do()`结合了上述三个方法，首先将传入操作写入输出缓冲区，然后刷新输出缓冲区，最后获取输出缓冲区最后一个返回值作为方法返回值。
+
+&emsp;&emsp;因此，使用事务的一个例子如下：
+
+```go
+conn.Send("MULTI")
+conn.Send("set", "name", "Monroe")
+conn.Send("set", "age", 30)
+conn.Send("incr", "num")
+do, err := conn.Do("EXEC")
+```
+
+> 0. 输入缓冲区为空时`Receive()`会导致阻塞
+
+### Redis 连接池
+
+&emsp;&emsp;在上述示例中，每次创建一个连接，完成操作后便将其关闭，极大浪费了系统资源。为了提高连接利用率，我们引入连接池来管理与 Redis 的连接，在需要时取出已经存在的未使用连接，实现连接复用。
+
+&emsp;&emsp;创建连接池的方法如下：
+
+```go
+pool := &redis.Pool{
+    MaxIdle:     5,   // 最大空闲连接数
+    MaxActive:   0,   // 最大连接数，0表示无限制
+    IdleTimeout: 100, // 最大空闲时间
+    Dial: func() (redis.Conn, error) {
+        return redis.Dial("tcp", "127.0.0.1:6379")
+    },
+}
+```
+
+&emsp;&emsp;获取连接使用连接池的`Get()`方法：
+
+```go
+conn := pool.Get()
+```
+
+&emsp;&emsp;关闭连接池使用`Close()`方法：
+
+```go
+pool.Close()
+```
+
+> 0. 关闭连接池后获取连接不会返回异常，但在进行后续操作时会产生异常
+> 1. 从连接池获取的连接应使用`Close()`方法关闭以归还连接
 
 ## Web三件套
 
@@ -751,10 +859,10 @@ db.Transaction(func(tx *gorm.DB) error {
 
 ```go
 func (u *UserInfo) BeforeCreate(tx *gorm.DB) (err error) {
-	if len(u.Phone) != 11 {
-		return errors.New("Invalid data")
-	}
-	return nil
+    if len(u.Phone) != 11 {
+        return errors.New("Invalid data")
+    }
+    return nil
 }
 ```
 
