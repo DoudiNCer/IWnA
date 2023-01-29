@@ -25,10 +25,10 @@ package main    // 当前文件所在的包
 import "fmt"    // 导入外部包
 
 func main() {
-   /* 
+    /* 
        这是多行注释
-   */
-   fmt.Println("Hello, World!")
+    */
+    fmt.Println("Hello, World!")
     // 介是单行注释
 }
 ```
@@ -561,7 +561,7 @@ require (
 
 &emsp;&emsp;Redis 是 常用的非关系型数据库系统之一，常用于缓存、分布式系统、消息系统等。关于 Redis 的使用可查看[Redis 学习笔记](Articles/RedisLearningEssay.md)
 
-&emsp;&emsp;GoLang 中操作 Redis 的常用工具有`redigo`和`go-redis`，接下来以 redisgo 为例讲述 Redis 的操作。
+&emsp;&emsp;GoLang 中操作 Redis 的常用工具有`redisgo`和`go-redis`，接下来以 redisgo 为例讲述 Redis 的操作。
 
 > 0. 官方文档：http://godoc.org/github.com/gomodule/redigo/redis
 > 1. 项目地址：https://github.com/gomodule/redigo
