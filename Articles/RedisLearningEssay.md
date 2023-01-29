@@ -38,11 +38,7 @@ redis-server /etc/redis.conf
 redis-cli -h $host -p $port -a $password
 ```
 
-
-
 ## 数据类型与数据操作
-
-&emsp;&emsp;key
 
 ### key&database
 

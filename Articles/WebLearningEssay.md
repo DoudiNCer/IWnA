@@ -105,7 +105,7 @@ Content-Type: text/plain
 </html>
 ```
 
->  注意：HTTP报文中换行采用<CR><LF>
+>  注意：HTTP报文中换行采用CRLF（`\r\n`）
 
 ### HTTP请求方法
 
