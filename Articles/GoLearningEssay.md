@@ -189,6 +189,20 @@ f := func(i int){
 }
 ```
 
+&emsp;&emsp;GoLang 函数也支持可变参数，如
+
+```go
+func sum(vals ...int) int {
+    total := 0
+    for _, val := range vals {
+        total += val
+    }
+    return total
+}
+```
+
+
+
 ### 包与模块
 
 &emsp;&emsp;在 Go 中使用`import`导入包，导入后可使用`包名.函数名`调用包内的函数，如：
@@ -403,6 +417,55 @@ type Cat struct {
     age    int    `info:"age" min:"0"`
 }
 ```
+
+### JSON
+
+&emsp;&emsp;JavaScript 对象表示法（JSON）是一种广泛用于发送和接收结构化信息的标准协议。GoLang 标准库提供了对 JSON 和其他标准（如 XML）的编解码支持。
+
+&emsp;&emsp;为了自定义对象和 JSON 之间的相互转换，需要给结构体加上结构体标签，如：
+
+```
+type Cat struct {
+    Name string     `json:"name"`
+    Age  int        `json:"age"`
+    Height double   `json:"height"`
+    Weight double   `json:"weight"`
+    Gender bool     `json:"gender"`
+}
+```
+
+&emsp;&emsp;将结构体或结构体 slice 转换成 json 的过程称为编组（marshaling），通过`json.Marshal()`对对象进行编组：
+
+```go
+data, err := json.Marshal(cat)
+if err != nil {
+    log.Fatalf("JSON marshaling failed: %s", err)
+    return
+}
+fmt.Printf("%s\n", data)
+```
+
+&emsp;&emsp;或者使用`json.MarshalIndent()`获取格式化后的 json：
+
+```go
+marshal, err := json.MarshalIndent(cat, "", "    ")
+// 其第二个和第三个参数表示每行的前缀和缩进
+```
+
+&emsp;&emsp;使用`json.Unmarshal()`将 json 解组为对象：
+
+```go
+var cat Cat
+err = json.Unmarshal(marshal, &cat)
+if err != nil {
+    log.Fatalf("JSON unmarshaling failed: %s", err)
+    return
+}
+```
+
+> 0. 只能编组/解构导出的属性
+> 1. 若不提供 json 结构体标签，将使用属性名作为 key
+> 2. 在结构体标签中添加`omitempty`可在值为零时不编组该属性
 
 ## 并发
 
