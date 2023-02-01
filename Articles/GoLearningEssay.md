@@ -298,6 +298,37 @@ delete(myMap, "code")
 > 0. map 中的数据不会自动排列，其顺序是随机的
 > 1. 也可以使用 range 来遍历 map
 
+### 系统与进程
+
+&emsp;&emsp;GoLang 的 `os`包提供了许多与操作系统与进程有关的功能，如：
+
+- 获取命令行参数，请用`os.Args`
+
+    ```go
+    for arg := range os.Args {
+        println(arg)
+    }
+    ```
+
+- 操作环境变量，请用`os.Getenv()`和`os.Setenv()`:
+
+    ```go
+    println(os.Getenv("LANG"))
+    os.Setenv("USER", "朱孟璐")
+    ```
+
+- 运行终端命令，要这样做：
+
+    ```go
+    output, err := exec.Command("curl", "127.0.0.1").CombinedOutput()
+    if err != nil {
+        println("exec error", err)
+    }
+    println(string(output))
+    ```
+
+- 还有什么`Getuid()`、`Chmod()`之类的……
+
 ## 面向对象编程
 
 &emsp;&emsp;GoLang 的 OOP 有亿点原始……
@@ -527,6 +558,8 @@ var wg sync.WaitGroup
 ```
 
 &emsp;&emsp;WaitGroup有三个方法：`Add(delta int)`用于计数器增加 delta ；`Done()`用于表示一个线程完成；`Wait()`用于阻塞主线程。
+
+
 
 ## 依赖管理
 
