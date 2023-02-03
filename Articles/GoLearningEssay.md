@@ -559,7 +559,119 @@ var wg sync.WaitGroup
 
 &emsp;&emsp;WaitGroup有三个方法：`Add(delta int)`用于计数器增加 delta ；`Done()`用于表示一个线程完成；`Wait()`用于阻塞主线程。
 
+## 原生网络编程
 
+### Socket
+
+&emsp;&emsp;Socket 连接可用于应用与应用（同一设备或不同设备）之间的通信
+
+#### Server
+
+&emsp;&emsp;服务端使用`net.Listen()`开启端口监听，该方法有两个参数：网络类型和监听地址：
+
+```go
+listener, err := net.Listen("tcp", "0.0.0.0:38080")
+if err != nil {
+    panic(err)
+}
+```
+
+&emsp;&emsp;获取 Listener 后，使用其`Accept()`开启监听，该操作和后续操作一般写在无限循环中：
+
+```go
+for {
+    conn, err := listener.Accept()
+    if err != nil {
+        log.Printf("Accept fail: %v", err)
+        continue
+    }
+    go processor(conn)
+}
+```
+
+#### Client
+
+&emsp;&emsp;客户端使用`net.Dial()`或更加具体的方法建立连接：
+
+```go
+conn, err := net.Dial("tcp4", "127.0.0.1:38080")
+if err != nil {
+    panic(err)
+}
+defer conn.Close()
+```
+
+&emsp;&emsp;接下来的操作和服务端一样，使用`Read()`或`Write()`进行通信
+
+### HTTP
+
+&emsp;&emsp;包`net/http`提供了 HTTP 协议的相关功能：
+
+#### 简单请求
+
+&emsp;&emsp;GoLang 提供了对简单请求的封装`http.Get()`、`http.Post()`和`http.PostForm`，若不需要自定义请求头等，可直接使用：
+
+```go
+// GET Request
+resp, err := http.Get("http://localhost:8080/get?id=1")
+// POST Request
+resp, err := http.Post("http://localhost:8080/post",
+        "application/json",
+        strings.NewReader("{\"username\": \"admin\",\"password\": \"J\"}"))
+```
+
+&emsp;&emsp;若 err 为空，可得到对响应报文的封装，即上述代码中的 `resp`。它包括状态码`resp.StatusCode`、响应头`resp.Header`、响应体`resp.Body`等。
+
+#### 自定义请求
+
+&emsp;&emsp;若需要自定义请求头等信息或使用其他请求方式，可创建自定义的请求：
+
+```go
+targetUrl := "http://localhost:8080/put"
+payload := strings.NewReader("{\"name\":\"Monroe\"}")
+// 创建请求报文
+req, _ := http.NewRequest("PUT", targetUrl, payload)
+// 自定义请求头
+req.Header.Add("Content-Type", "application/json")
+// 发送请求
+resp, err := http.DefaultClient.Do(req)
+```
+
+#### HTTP 客户端
+
+&emsp;&emsp;上述请求始终在使用默认的 HTTP 客户端，我们也可以自己自定义一个 HTTP 客户端：
+
+```go
+client := &http.Client{
+    CheckRedirect: redirectPolicyFunc,
+}
+```
+
+&emsp;&emsp;我们可以自定义传输（`Transport`）、重定向处理函数（`CheckRedirect`）、Cookie 存储机制（`Jar`）和请求超时（`Timeout`）。
+
+#### HTTP 服务器
+
+&emsp;&emsp;可以使用“默认”服务器提供 HTTP 服务，只需使用`http.HandleFunc()`绑定路由和处理函数：
+
+```go
+http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+})
+log.Fatal(http.ListenAndServe(":8080", nil))
+```
+
+&emsp;&emsp; 也可自定义 HTTP 服务器：
+
+```go
+s := &http.Server{
+    Addr:           ":8080",
+    Handler:        myHandler,
+    ReadTimeout:    10 * time.Second,
+    WriteTimeout:   10 * time.Second,
+    MaxHeaderBytes: 1 << 20,
+}
+log.Fatal(s.ListenAndServe())
+```
 
 ## 依赖管理
 
