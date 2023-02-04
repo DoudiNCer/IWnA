@@ -36,3 +36,7 @@ C/C++
 编译构建/代码管理工具
 
 - [CMake_Essay](Articles/CMake.md)： CMake 学习笔记
+
+Just For Fun
+
+- [FFmpeg_Learning_Essay](Articles/FFmpegLearningEssay.md)： FFmpeg 学习笔记
