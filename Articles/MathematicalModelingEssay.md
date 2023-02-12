@@ -286,3 +286,126 @@ $$
 ### 动态规划
 
 > 没学算法，呜呜呜
+
+## 微分方程与差分方程
+
+### 微分方程
+
+&emsp;&emsp;一元函数的微分：
+$$
+\Delta y = f(x + \mathrm{d} x) - f(x)\\
+\mathrm{d} y = F(x) + a \mathrm{d} x
+$$
+&emsp;&emsp;一元函数的导数：
+$$
+f^{'} (x) = \lim_{\mathrm{d} x \to 0} \frac{f(x + \mathrm{d} x) - f(x)}{\mathrm{d} x} 
+$$
+&emsp;&emsp;泰勒公式：
+$$
+f(x) = \sum_{i = 0}^{n} \frac{f^{(i)}(x_0)}{i!}(x - x_0)^i + R(n)
+$$
+&emsp;&emsp;常微分方程是指仅含自变量、函数和函数导数的方程。
+
+### 常微分方程求解
+
+&emsp;&emsp;对于微分方程，其解分为符号解与数值解。符号解准确描述解的代数性，数值解是对解的近似刻画，许多微分方程没有符号解。
+
+&emsp;&emsp;`sympy`是一个数学符号运算库，可求解积分、微分方程等。`sympy.dsolve`是求解微分方程符号解的一种良好方式。
+
+> e.g.
+> $$
+> {y}'' + 2 {y}' + y = x^2
+> $$
+>
+> ```python
+> from sympy import *
+> 
+> y = symbols('y', cls=Function)
+> x = symbols('x')
+> eq = Eq(y(x).diff(x, 2) + 2 * y(x).diff(x, 1) + y(x), x * x)
+> res = dsolve(eq, y(x))
+> ```
+
+&emsp;&emsp;求解数值解使用`scipy.odeint`。
+
+> e.g.
+> $$
+> {y}' = x^2 + y^2
+> $$
+>
+> ```python
+> from numpy import arange
+> from scipy.integrate import odeint
+> 
+> dy = lambda y, x: x**2 + y**2
+> x = arange(0, 10.5, 0.5)
+> sol = odeint(dy, 0, x)
+> print("x={}\n对应的数值解为y={}".format(x, sol.T))
+> ```
+
+&emsp;&emsp;对于高阶微分方程，需要做变量替换，化成一阶微分方程再进行计算。
+
+### 偏微分方程
+
+&emsp;&emsp;对于多元函数，其偏微分是对一个变量进行微分，其他变量按常数处理（等会儿，这不偏导数吗）。如对于$f(x, y, z)$，它的三个偏微分记作：
+$$
+\frac{\partial f}{\partial x} 和 \frac{\partial f}{\partial y}
+$$
+&emsp;&emsp;其全微分为：
+$$
+\mathrm{d} f = \frac{\partial f}{\partial x} \mathrm{d} x + \frac{\partial f}{\partial y} \mathrm{d} y
+$$
+&emsp;&emsp;含有偏微分的方程叫做偏微分方程。计算机求解偏微分方程的思路是使用差分代替微分。可使用`ode`包方便地求解。
+
+> e.g.
+> $$
+> \begin{cases}
+> \frac{\mathrm{d} x}{\mathrm{d} t} = 2x - 3y + 3z \\
+> \frac{\mathrm{d} y}{\mathrm{d} t} = 4x - 5y + 3z \\
+> \frac{\mathrm{d} z}{\mathrm{d} t} = 4x - 4y + 23z \\
+> x(0) = 1, y(0) = 2, z(0) = 1
+> \end{cases}
+> $$
+>
+> ```python
+> import matplotlib.pyplot as plt
+> from scipy.integrate import solve_ivp
+> import numpy as np
+> # 设置中文字体
+> plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+> 
+> def fun(t, w):
+>     x = w[0]
+>     y = w[1]
+>     z = w[2]
+>     return [2*x - 3*y + 3*z,
+>             4*x - 5*y + 3*z,
+>             4*x - 4*y + 2*z]
+> # 初始条件
+> y0=[1, 2, 1]
+> 
+> yy = solve_ivp(fun, (0, 10), y0, method='RK45', t_eval=np.arange(1, 10, 1))
+> t = yy.t
+> data = yy.y
+> plt.plot(t, data[0, :])
+> plt.plot(t, data[1, :])
+> plt.plot(t, data[2, :])
+> plt.xlabel("时间s")
+> plt.show()
+> ```
+
+### 差分方程
+
+&emsp;&emsp;差分方程是对微分方程的离散化，用于问题本身离散的情况下。差分方程相比微分方程建模较复杂，但求解迅速。
+
+### 数字计算方法
+
+&emsp;&emsp;怎么又是我没上过的课啊，555。数值计算方法是研究并解决数学问题的数值近似解方法，是在计算机上解决数学问题的方法。
+
+#### 梯度下降
+
+#### 牛顿法
+
+#### 欧拉法
+
+#### 龙格库塔法

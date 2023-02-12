@@ -39,4 +39,4 @@ C/C++
 
 Just For Fun
 
-- [Mathematical_Modeling_Essay](Articles/MathematicalModelingEssay.md)： FFmpeg 学习笔记
+- [Mathematical_Modeling_Essay](Articles/MathematicalModelingEssay.md)： 数学建模学习笔记
