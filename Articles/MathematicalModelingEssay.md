@@ -398,7 +398,7 @@ $$
 
 &emsp;&emsp;差分方程是对微分方程的离散化，用于问题本身离散的情况下。差分方程相比微分方程建模较复杂，但求解迅速。
 
-### 数字计算方法
+### 数值计算方法
 
 &emsp;&emsp;怎么又是我没上过的课啊，555。数值计算方法是研究并解决数学问题的数值近似解方法，是在计算机上解决数学问题的方法。
 
@@ -409,3 +409,117 @@ $$
 #### 欧拉法
 
 #### 龙格库塔法
+
+## 数据处理
+
+### 数据预处理
+
+&emsp;&emsp;现实问题中得到的数据往往混乱、不全面，需要预处理，比如对冗余数据进行删除、对空缺数据进行补全或删除这些数据。
+
+&emsp;&emsp;若数据缺失5%以内，可直接删除；缺失10%以内常数填充（-1，0，）；30%以内使用机器学习填充；30%以上删除数据列。
+
+&emsp;&emsp;对于明显异常的数据，应对其进行置空或删除。
+
+&emsp;&emsp;数据规约也是一种重要的预处理方式。对非重点数据进行剔除，对数据分布范围进行调整。比如 min-max 规约可将数据控制在`[0, 1]`内：
+$$
+x_j^{new} =\frac{x_j - min(X)}{max(X) - min(X)}
+$$
+&emsp;&emsp;Z-score 规约可使数据服从正态分布：
+$$
+x_j^{new} = \frac{x_j - mean(X)}{std(X)}
+$$
+&emsp;&emsp;其中$mean(X)$表示 X 的均值；$std(X)$表示 X 的标准差
+
+### 插值
+
+&emsp;&emsp;常见的插值方法有：
+
+- 常数插值（0插值、均值插值、中位数插值等）
+
+- 前向后向插值（常用于按时间排布的数据）
+
+- 线性插值：让待补充数据落在已知数据所在直线上
+
+- 拉格朗日插值：若 n 次多项式$l_j(x),j\in\{0, 1, 2, \cdots, n\}$在$n+1$个节点$x_0<x_1<\cdots<x_n$上满足：
+    $$
+    l_j(x_k)=
+    \begin{cases}
+        1, k = j \\
+        0, k \neq j
+    \end{cases}
+    $$
+    则这$n+1$个 n 次多项式为节点$x_0, x_1, \cdots, x_n$上的**插值基函数**：
+    $$
+    l_k(x) = \prod_{i = 0, i \neq k}^{n} \frac{x - x_i}{x_k - x_i}
+    $$
+    那么：
+    $$
+    L_n(x) = \sum_{k = 0}^{n}y_kl_k(x)
+    $$
+
+- 三次样条插值：在每个插值区间上用三次多项式$I_k$连接，所有三次多项式组成的分段函数$S(x)$满足插值条件，在插值节点上相邻两个三次多项式的一阶导数$I_k^{'}$和二阶导数$I_k^{''}$相等，即在每个区间上
+    $$
+    I_k(x) = a_kx^3 + b_kx^2 + c_kx + d, k\in \{0, 1, 2, \cdots, n - 1\}
+    $$
+    满足：
+    $$
+    \begin{cases}
+        S(x_i) = f_i, i \in \{0, 1, 2, \cdots, n\}\\
+        I_k(x_{k+1}) = I_{k+1}(x_{k+1})\\
+        I_k^{'}(x_{k+1}) = I_{k+1}^{'}(x_{k+1})\\
+        I_k^{''}(x_{k+1}) = I_{k+1}^{''}(x_{k+1})\\
+    \end{cases}
+    $$
+
+- SMOTE 插值
+
+### 拟合
+
+&emsp;&emsp;一元线性回归方程：
+$$
+y = \omega x + b \\
+s.t.
+\begin{cases}
+    \omega = \frac{\sum_{i = 1}^{n}x_iy_i - n\overline{x}\overline{y}}
+             {\sum_{i = 1}^{n}x_i^2 - n\overline{x}^2} \\
+    b = \overline{y} - \omega \overline{x} \\
+\end{cases}
+$$
+&emsp;&emsp;对于多项式函数，也可对其使用最小二乘法进行拟合。
+
+> e.g.
+>
+> ```python
+> import numpy as np
+> 
+> x = np.arange(-1.5, 1.6, 0.5)    # 开始，结束， 步幅
+> y = [-4.45, -0.45, 0.55, 0.05, -0.44, 0.54, 4.55]
+> an = np.polyfit(x, y, 3)
+> print(an)
+> p1 = np.poly1d(an)
+> print(p1)
+> ```
+>
+> ```python
+> import statsmodels.api as sm
+> import numpy as np
+> 
+> np.random.seed(1993)    # 随机数种子
+> x1 = np.random.normal(0, 0.4, 100) #生成符合正态分布的随机值（均值，标准差，随机数个数）
+> x2 = np.random.normal(0, 0.6, 100)
+> x3 = np.random.normal(0, 0.2, 100)
+> eps = np.random.normal(0, 0.5, 100) # 噪声数据
+> c = np.array([1, 2, 3])
+> x = np.c_[x1, x2, x3]
+> y = x.dot(c) + eps
+> x_model = sm.add_constant(x)
+> model = sm.OLS(y, x_model)
+> results = model.fit()
+> print(results.summary())
+> ```
+
+### 数据可视化
+
+- matplotlib.pyplot：统计图
+- mpl_toolkits：三维绘图
+- seaborn：美观绘图
