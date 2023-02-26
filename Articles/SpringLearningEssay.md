@@ -476,7 +476,7 @@ batchUpdate(String sql, List<Object[]> batchArgs);
 
 #### 整合日志框架
 
-&emsp;&emssp;Spring5框架自带了通用的日志封装，移除了Log4JConfigListener，不再默认支持Log4J,建议使用Log4J2。
+&emsp;&emsp;Spring5框架自带了通用的日志封装，移除了Log4JConfigListener，不再默认支持Log4J,建议使用Log4J2。
 
 &emsp;&emsp;Spring5使用Log4J2的步骤：
 
