@@ -40,3 +40,4 @@ C/C++
 Just For Fun
 
 - [Mathematical_Modeling_Essay](Articles/MathematicalModelingEssay.md)： 数学建模学习笔记
+- [Charm_Learning_Essay](Articles/CharmLearningEssay.md)： Charm 学习笔记
