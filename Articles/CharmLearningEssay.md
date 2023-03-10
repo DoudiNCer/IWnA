@@ -111,4 +111,38 @@ case tea.KeyCtrlC.String(), "q":
 
 &emsp;&emsp;`tea.Cmd`是一类参数列表为空、返回值为`tea.Msg`的函数，用于生成消息。`type BatchMsg []Cmd`是一组 Cmd，可传输批量执行的 Cmd，但不保证顺序。
 
-&emsp;&emsp;可使用`tea.Batch()`函数不保证顺序地发送 Cmd，也可使用`tea.Sequence()`保证顺序地发送 Cmd。
+&emsp;&emsp;可使用`tea.Batch()`函数不保证顺序地并发发送 Cmd，也可使用`tea.Sequence()`保证顺序地依次发送 Cmd。
+
+### 视图
+
+#### 视图函数
+
+&emsp;&emsp;视图函数（`View()`）用于根据当前 Model 的状态生成用户界面，对于 TUI/CLI程序，我们只需生成一段字符串即可：
+
+```go
+func (m model) View() string {
+    s := "请选择你的猫猫："
+    // 遍历每个选项
+    for i, choice := range m.choices {
+        // 初始状态的光标
+        cursor := " "
+        // 对于光标所在行，改用">"作为光标
+        if m.cursor == i {
+			cursor = ">"
+		}
+        
+        // 初始状态的勾选框
+        checked := " "
+        // 对于已选中的勾选框，使用"x"
+        if _, ok := m.selected[i]; ok {
+			checked = "x"
+		}
+        // 生成该行显示信息
+        s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+    }
+    s += "\n按 q 键退出\n"
+	return s
+}
+```
+
+#### 滚动视图
