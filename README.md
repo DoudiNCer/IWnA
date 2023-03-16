@@ -7,6 +7,7 @@ Some of my interesting and useful programming works and articles.
 
 + [Training Essay](Articles/TrainingEssay.md)：科协&机器人培训笔记（C/算法入门）
 + [C++_Learning_Essay](Articles/CppLearningEssay.md)： C++ 学习笔记
++ [Lua_Learning_Essay](Articles/LuaLearningEssay.md)： Lua 学习笔记
 
 ### 后端开发
 
