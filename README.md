@@ -39,7 +39,7 @@ Some of my interesting and useful programming works and articles.
 
 ### 通用基础知识
 
-+ [Web_Learning_Essay](Articles/WebLearningEssay.md)： Web 学习笔记
++ [CN_Learning_Essay](Articles/CNLearningEssay.md)： 计算机网络学习笔记
 + [Discrete_Math_Learning_Essay](Articles/DiscreteMathLearningEssay.md)： 离散数学学习笔记
 
 ### 编译构建/代码管理工具
