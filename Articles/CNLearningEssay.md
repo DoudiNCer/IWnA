@@ -1,4 +1,4 @@
-# Web学习笔记
+# 计算机网络学习笔记
 
 ## OSI七层模型
 
@@ -14,7 +14,7 @@
 > - **表示层**（Presentation Layer）：负责对传输的数据进行处理，如数据的格式转换、编码/解码、加密/解密、压缩/解压缩等。
 > - **应用层**（Application Layer）：为操作系统和网络应用程序提供接口，为用户提供服务。
 
-![s](WebLearningEssay.assets/OSI.png)
+![s](CNLearningEssay.assets/OSI.png)
 
 ## Application Layer
 
