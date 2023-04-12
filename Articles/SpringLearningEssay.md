@@ -476,7 +476,7 @@ batchUpdate(String sql, List<Object[]> batchArgs);
 
 #### 整合日志框架
 
-&emsp;&emssp;Spring5框架自带了通用的日志封装，移除了Log4JConfigListener，不再默认支持Log4J,建议使用Log4J2。
+&emsp;&emsp;Spring5框架自带了通用的日志封装，移除了Log4JConfigListener，不再默认支持Log4J,建议使用Log4J2。
 
 &emsp;&emsp;Spring5使用Log4J2的步骤：
 
@@ -696,7 +696,8 @@ Controller的相关注解：
    @RequiredHeader // 请求头
    @RequestBody    // 请求体
    @CookieValue    // Cookie
-   @RequestPart    // 用于文件上传的复合型请求体      
+   @RequestPart    // 用于文件上传的复合型请求体，接收文件的类为 MultipartFile
+   ......
    ```
 
 3. RESTFul风格的请求参数
@@ -808,9 +809,11 @@ class configure implements WebMvcConfigurer{
 
 ## SpringBoot
 
-### 服务启动
+### 基础配置
 
-&emsp;&emsp;被@SugwApplication注解的类会被当作起动器并在SpringBoot项目起动时调用其main方法，如：
+#### 服务启动
+
+&emsp;&emsp;被@SpringBootApplication注解的类会被当作起动器并在SpringBoot项目起动时调用其main方法，如：
 
 ```java
 @SpringBootApplication
@@ -821,7 +824,38 @@ public class SugwApplication {
 }
 ```
 
-### SpringBoot配置文件
+#### 依赖管理
+
+&emsp;&emsp;在 SpringBoot 项目中，声明了一个父项目：
+
+```xml
+<parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+</parent>
+```
+
+&emsp;&emsp;它的父项目为：
+
+```xml
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-dependencies</artifactId>
+    <version>2.7.4</version>
+  </parent>
+```
+
+&emsp;&emsp;声明以上父项目后，SpringBoot根据自身版本仲裁了常用依赖的版本，若需要修改其版本，可参考 spring-boot-dependencies 配置文件里定义，修改版本，如：
+
+```xml
+<properties>
+    <mysql.version>8.0.30</mysql.version>
+</properties>
+```
+
+#### 配置文件与配置类
 
 &emsp;&emsp;SpringBoot 的配置文件为 resources/application.properties ，可使用其他格式，建议为YAML
 
@@ -833,9 +867,9 @@ public class SugwApplication {
 
 ```java
 @ConfigurationProperties(prefix = "zml")
-// 与 application.yml 中的类 zml 匹配
+// 与 application.yml 中的类 zml 匹配，自动赋值
 @PropertySources(value = "classpath:zml.yml")
-// 指定配置文件，且需要 @value($(variable)) 取出变量值手动赋值
+// 指定配置文件，需要 @value($(variable)) 取出变量值手动赋值
 public class zml{
     private String name;
     private Date birthday;
@@ -866,15 +900,13 @@ zml:
 > - 松散绑定：first_name == firstName
 > - JSR303 数据校验：开启 @Validated 后可对某些字段开启数据类型/格式校验
 
-### 配置类
-
 &emsp;&emsp;Spring 支持将 xml 配置文件中所有配置转移到配置类中，实现完全注解开发。
 
 ```java
-@Configuration(proxyBeanMethods = true)   // 是否以单例模式获取组件
+@Configuration(proxyBeanMethods = true)   // 配置类注解，是否以单例模式获取组件，默认 true
 @ComponentScan                            // 包扫描范围
 @Import                                   // 导入组件
-@Conditional*                             // 根据条件装配组件
+@Conditional                              // 根据条件装配组件
 @ImportResource                           // 导入 XML 配置文件中的组件
 @EnableConfiguration                      // 从配置文件自动注入并注册组件
 public class MyConfig{
@@ -886,6 +918,8 @@ public class MyConfig{
 ```
 
 > 除了编写自定义的配置类，还可将配置写在主程序类
+>
+> 若配置类只有一个含参构造器，其所需参数均从容器中获取
 
 ### Web开发
 
@@ -895,19 +929,41 @@ public class MyConfig{
 
 > 注意请求优先级为动态资源>静态资源
 
-&emsp;&emsp;默认情况下静态资源“位于根目录下，若需要修改访问路径和扫描目录可以通过以下设置修改：
+&emsp;&emsp;默认情况下静态资源位于根目录下，若需要修改访问路径和扫描目录可以通过以下设置修改：
 
 ```yaml
 spring: 
     mvc: 
         static-path-pattern: /static/**
-        # 修改访问路径
+        # 修改静态资源访问路径
     resources: 
         static-locations: classpath:/res/
-        # 修改静态资源路径
+        # 修改静态资源本地地址
 ```
 
 &emsp;&emsp;还可访问 /webjar 下的 jar 包
+
+#### 请求&响应处理
+
+> 参考 SpringMVC 部分
+
+#### 异常处理
+
+> ​    By default, Spring Boot provides an `/error` mapping that handles all errors in a sensible way, and it is registered as a “global” error page in the servlet container. For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message. For browser clients, there is a “whitelabel” error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
+
+&emsp;&emsp;获取到的 JSON 中包含如下信息：
+
+```json
+{
+    "timestamp":"2022-11-10T11:50:49.551+00:00",
+    "status":404,
+    "error":"Not Found",
+    "message":null,
+    "path":"/erro"
+}
+```
+
+&emsp;&emsp;自定义的错误页面可放至`static-locations/error`下，如`resources/static/error.4xx/htm`等。
 
 ## Spring Security
 
