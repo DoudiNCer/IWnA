@@ -216,3 +216,125 @@
 <img src="https://github.com/account" alt="猫猫图" align="“middle”">
 ```
 
+### 表格
+
+&emsp;&emsp;HTML 中一个表格使用`<table></table>`定义，其中表头使用`<thead></thead>`定义，表体使用`<tbody></tbody>`定义。如：
+
+```html
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>猫猫</td>
+            <td>20</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>狗狗</td>
+            <td>20</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>鼠鼠</td>
+            <td>19</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+&emsp;&emsp;表格可以使用以下可选属性
+
+- border：边框粗细，值为数字
+- background：背景图片
+- bgcolor：背景颜色
+- width、height：宽度高度
+- align：表格的对齐方式，包括左对齐（`left`）、居中（`center`）、右对齐（`right`）
+- valign：表格内容对齐方式
+- cellpadding：单元格之间的距离
+- cellspacing：单元格内容与边框的距离
+
+### 表单
+
+&emsp;&emsp;表单用于接收用户的输入并将其发送到后端服务器，并接收服务器的处理结果，表单使用`<form></form>`标签定义。`<form></form>`标签的私有属性包括：
+
+- action：请求要发送到的地址
+- method：请求方式，只能使用 GET 或 POST
+- target：在何处提交表单
+- enctype：对表单数据进行编码，适用于 POST 请求
+
+&emsp;&emsp;表单中用于接收用户输入的方式有以下几种：
+
+- input：多功能输入框，根据`type`属性有多种表现形式，如复选框（`checkbox`）、文件选择（`file`）、密码框（`password`）、单选（`radio`）、文本框（`text`）等。如：
+
+    ```html
+    <div>
+        <label for "username">用户名</label>
+        <input id="username" type="text" name="username">
+    </div>
+    <div>
+        <label>性别：</label>
+        <input type="radio" name="gender" value="男"/>男
+        <input type="radio" name="gender" value="⼥"/>⼥
+    </div>
+    <div>
+        <input type="submit" value="提交按钮"/>
+        <input type="button" value="按钮"/>
+        <input type="reset" value="重置按钮"/>
+     </div>
+    ```
+
+- select/option：下拉框，用于多选一，如：
+
+    ```html
+    <div>
+        <label>城市：</label>
+        <select name="city">
+            <option>--请选择--</option>
+            <option value="天津">天津</option>
+            <option value="北京">北京</option>
+        </select>
+     </div>
+    ```
+
+    &emsp;&emsp;表单的内容有以下几种通用属性：
+
+    - name：用于指定该输入在表单中的属性名
+    - disabled：警用该元素
+    - readonly：该输入不可输入
+    - value：选择该选项对应的属性值
+
+### 列表
+
+&emsp;&emsp;列表分为有序列表、无序列表和自定义列表，其中有序列表使用`<ol></ol>`标签，其中每一项使用`<li></li>`，如：
+
+```html
+<div>
+    <!-- type 可以是 A、a、1、i、l -->
+    <ol type=“1”>
+        <li>猫猫</li>
+        <li>狗狗</li>
+        <li>鼠鼠</li>
+    </ol>
+</div>
+```
+
+&emsp;&emsp;无序列表使用`<ul></ul>`标签，其 type 可以使用空心圆（`circle`）、实心圆（`disc`）、正方形（`square`）。
+
+&emsp;&emsp;自定义列表使用`<dl></dl>`标签，如：
+
+```html
+<dl>
+    <dt>个⼈中⼼</dt>
+    <dd>我的资料</dd>
+    <dt>⾸⻚</dt>
+    <dd>轮播图</dd>
+ </dl>
+```
+
