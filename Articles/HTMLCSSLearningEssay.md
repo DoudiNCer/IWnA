@@ -338,3 +338,140 @@
  </dl>
 ```
 
+## CSS
+
+&emsp;&emsp;CSS（Cascading Style Sheets，层叠样式表）是用于更灵活地定义 HTML 元素样式的一种语言，实现了元素与样式的分离。在以前，元素的样式写在元素的`style`属性中（内联样式，Inline style），可复用性较低且代码格式混乱。现在，我们可以使用 CSS 统一定义元素的样式。CSS 可以写在 HTML文档 头元素的`<style></style>`元素中（内部样式表，Internal style sheet），也可写在单独的 css 文件中并在头元素中使用`<link rel="stylesheet" type="text/css" href="mystyle.css">`引入（外部样式表，External style sheet）。
+
+&emsp;&emsp;每条 CSS 规则由选择器和一个或多个声明组成，如：
+
+```css
+/* 我是注释 */
+h1 {color: blue; font-size: 12px}
+```
+
+### 选择器
+
+&emsp;&emsp;选择器用于选择 CSS 规则作用的元素，可分为基础选择器、复合选择器和伪类/伪元素选择器。
+
+#### 基础选择器
+
+&emsp;&emsp;基础选择器包括标签选择器、类（Class）选择器和ID选择器：
+
+&emsp;&emsp;标签选择器可以选中某种标签，选择器为`标签名`。如：
+
+```html
+<html>
+    <head>
+        <title>标签选择器</title>
+        <style>
+            h1 {color: red}
+        </style>
+    </head>
+    <body>
+        <h1>标题</h1>
+        <h1>标题</h1>
+        <h1>标题</h1>
+    </body>
+</html>
+```
+
+&emsp;&emsp;类（Class）选择器会选中所有`class`属性相同的元素，选择器为`.类名`。如：
+
+```html
+<html>
+    <head>
+        <title>类选择器</title>
+        <style>
+            .clazz {color: red}
+        </style>
+    </head>
+    <body>
+        <div class=“clazz”>喵</div>
+        <div class=“clazz”>喵喵</div>
+        <div >喵喵喵</div>
+    </body>
+</html>
+```
+
+&emsp;&emsp;ID 选择器可以选中某 ID （唯一）的元素，选择器为`#ID`。如：
+
+```html
+<html>
+    <head>
+        <title>ID</title>
+        <style>
+            #clazz {color: red}
+        </style>
+    </head>
+    <body>
+        <div id=“clazz”>喵</div>
+        <div>喵喵</div>
+    </body>
+</html>
+```
+
+#### 复合选择器
+
+&emsp;&emsp;复合选择器是通过基础选择器组合的选择器，包括并集选择器、后代选择器与交集选择器。
+
+&emsp;&emsp;并集选择器由多个基础选择器通过`,`连接，选中满足任一条件的所有元素，如：
+
+```css
+.photo, #mian{margin 0}
+```
+
+&emsp;&emsp;后代选择器由从选中父元素的选择器到选中子元素的选择器通过` `连接而成，的用于选中满足某种继承关系的元素。如：
+
+```css
+body #mian .photo{margin: 0
+```
+
+&emsp;&emsp;交集选择器以标签选择器开头，后接类选择器或ID选择器，选中该类或该ID的该标签。如：
+
+```css
+div.photo{margin: 0}
+```
+
+#### 伪类选择器
+
+&emsp;&emsp;伪类是添加到选择器的关键字，用于指定要选择的元素的**特殊状态**。以`:`开始。可以在⼀个选择器中同时⼀起写多个伪类。一些通用伪类如：
+
+> - `:first-child`：选择某个元素的第⼀个⼦元素； 
+> - `:last-child`：选择某个元素的最后⼀个⼦元素；
+> - `:nth-child(n)`：匹配属于其⽗元素的第 n个⼦元素，不论元素的类型；
+> - `:nth-last-child()`：从这个元素的最后⼀个⼦元素开始算，选匹配属于其⽗元素的第 n个⼦元素，不论元素的类型；
+> - `:nth-of-type()`：规定属于其⽗元素的第n个 指定 元素；
+> - `:nth-last-of-type()`：从元素的最后⼀个开始计算,规定属于其⽗元素的指定 元素；
+> - `:first-of-t、ype`：选择⼀个上级元素下的第⼀个同类⼦元素；
+
+#### 伪元素选择器
+
+&emsp;&emsp;&emsp;&emsp;伪元素是是⼀个附加⾄选择器末的关键词，允许对被选择元素的**特定部分**修改样式。伪元素以`::`开头，一些通用的伪元素如：
+
+> - ` ::after`
+> - `::before`
+> - `::first-letter`：选择⾸⾏⾸字⺟
+> - `::first-line`：选择⾸⾏
+
+### 背景
+
+&emsp;&emsp;cdefHTML 元素的背景可以使用颜色或图片，相关属性包括：
+
+> - `background-color`：背景颜色，可使用六位十六进制颜色（`#ff0000`）、颜色名（`red`）或RGB（`RGB(255, 0, 0)`）
+> - `background-image`：背景图片，使用`url("/img/background.jpg")`设置图片
+> - `background-repeat`：图片对齐方式，默认图片会重复平铺，使用该属性可设置只在水平方向重复平铺（`repeat-x`）、只在竖直方向重复平铺（`repeat-y`）或不重复平铺（`no-repeat`）
+> - `background-attachment`：图像是否固定
+> - `background-position`：图像对齐方式
+
+&emsp;&emsp;也可使用`background`属性简化上述配置，根据上述顺序依次给出属性值。
+
+### 文本与链接
+
+&emsp;&emsp;文本可用的属性包括颜色（`color`）、对齐方式（`text-align`）、大小写转换（`text-transform`）、文本缩进（`text-indent`）等。
+
+&emsp;&emsp;链接可使用背景、颜色、字体等属性。我们可以使用以下几种伪类选择器设置不同状态下的链接的样式：
+
+> - `a:link`：未访问的链接
+> - `a:visited`：访问过的链接
+> - `a:hover`：掠过（鼠标触碰到）的链接
+> - `a:active`：激活（鼠标点击时）的链接
