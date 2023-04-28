@@ -29,6 +29,7 @@ Some of my interesting and useful programming works and articles.
 ### 前端开发
 
 + [HTML_CSS_LearningEssay](Articles/HTMLCSSLearningEssay.md)：HTML&CSS 学习笔记
++ [JavaScript_LearningEssay](Articles/JSLearningEssay.md)：JavaScript 学习笔记
 
 ### 运维
 
