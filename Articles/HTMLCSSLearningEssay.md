@@ -475,3 +475,49 @@ div.photo{margin: 0}
 > - `a:visited`：访问过的链接
 > - `a:hover`：掠过（鼠标触碰到）的链接
 > - `a:active`：激活（鼠标点击时）的链接
+
+### 盒子模型
+
+&emsp;&emsp;可将所有 HTML 元素看成一个盒子（Box），每个盒子具有 Margin（外边距）、Border（边框）、Padding（内边距）和 Content（内容）。
+
+&emsp;&emsp;Margin 和 Padding 是透明的，可使用`margin`和`padding`属性指定其宽度。参数为四个、两个或一个参数，顺序为上右下左、上（下）右（左）或全部，值可使用`auto`、具体的宽度（px）或百分比。
+
+&emsp;&emsp;元素的边框（Border）可以设置样式（`border-style`），如虚线边框（`dashed`）、实线边框（`solid`）、3D嵌入边框（`inset`）等。
+
+&emsp;&emsp;HTML中的元素可通过`display`改变展示方式（块级元素`block`、内联元素`inline`、内联块`inline-block`、不展示`none`）
+
+> 0. `display:none`可以完全隐蔽一个元素；`visibility:hidden`可以不显示该元素的内容但占据原本大小的空间
+
+&emsp;&emsp;`position`可改变元素的定位方式：
+
+- `static`：默认值，不会受到 `top`、`bottom`、 `left`、`right`的影响
+- `fixed`：元素位置相对浏览器固定
+- `relative`：元素位置相对其“正常”位置有偏差
+- `absolute`：元素位置相对于其附近固定元素固定
+- `sticky`：粘性定位，依赖于用户滚动
+
+### Flex 布局
+
+&emsp;&emsp;Flex（Flexible Box）是 CSS3 引入的一种布局方式。采⽤ Flex 布局的元素，称为 Flex 容器（Flex Container），其子元素自动转化为 Flex 元素（Flex Item）。
+
+&emsp;&emsp;使用`display:flex`或`display:inline-flex`将一个元素转化为 Flex 容器，此时其子元素受 Flex 布局影响但其子元素的子元素不受影响。
+
+&emsp;&emsp;在 Flex Container 中有两条轴，分别为水平的主轴（main axis）与竖直的交叉轴（cross axis）。项目默认按主轴排列，可使用`flex-direction`属性修改。
+
+&emsp;&emsp;Flex Container/Item 的其他属性如下：
+
+| 属性            | 描述                                                         |
+| --------------- | ------------------------------------------------------------ |
+| display         | 指定 HTML 元素的盒子类型                                     |
+| flex-direction  | 指定弹性盒子中子元素的排列方式                               |
+| flex-wrap       | 设置当弹性盒子的子元素超出父容器时是否换行                   |
+| flex-flow       | flex-direction 和 flex-wrap 两个属性的简写                   |
+| justify-content | 设置弹性盒子中元素在主轴（横轴）方向上的对齐方式             |
+| align-items     | 设置弹性盒子中元素在侧轴（纵轴）方向上的对齐方式             |
+| align-content   | 修改 flex-wrap 属性的行为，类似 align-items，但不是设置子元素对齐，而是设置行对齐 |
+| order           | 设置弹性盒子中子元素的排列顺序                               |
+| align-self      | 在弹性盒子的子元素上使用，用来覆盖容器的 align-items 属性    |
+| flex            | 设置弹性盒子中子元素如何分配空间                             |
+| flex-grow       | 设置弹性盒子的扩展比率                                       |
+| flex-shrink     | 设置弹性盒子的收缩比率                                       |
+| flex-basis      | 设置弹性盒子伸缩基准值                                       |
