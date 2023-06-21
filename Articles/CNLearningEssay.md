@@ -1,4 +1,4 @@
-# Web学习笔记
+# 计算机网络学习笔记
 
 ## OSI七层模型
 
@@ -14,37 +14,21 @@
 > - **表示层**（Presentation Layer）：负责对传输的数据进行处理，如数据的格式转换、编码/解码、加密/解密、压缩/解压缩等。
 > - **应用层**（Application Layer）：为操作系统和网络应用程序提供接口，为用户提供服务。
 
-![s](WebLearningEssay.assets/OSI.png)
+![s](CNLearningEssay.assets/OSI.png)
 
-## TCP/IP
+## Application Layer
 
-> TCP/IP
-
-### TCP与UDP
-
-### 端口
-
-&emsp;&emsp;端口用于区分同一设备上的应用，范围为0～65535，一般分为三类：
-
-> - 公认端口：0～1023，被预先定义的通信服务占据，在Linux系统上操作需要root权限
-> - 注册端口：1024～49151，分配给用户进程和某些应用，如Tomcat（8080），MySQL（3306），Oracle（1521）等。
-> - 私有端口：49152～65535
-
-### 三次握手与四次挥手
-
-
-
-## HTTP
+### HTTP
 
 > &emsp;&emsp;超文本传输协议（HyperText Transfer Protocol，HTTP）是一种用于分布式、协作式和超媒体信息系统的应用层协议，是因特网上应用最为广泛的一种网络传输协议。
 
-### HTTP的特性
+#### HTTP的特性
 
 > - **无连接**：无连接的含义是限制每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。采用这种方式可以节省传输时间。
 > - **媒体独立**：这意味着，只要客户端和服务器知道如何处理的数据内容，任何类型的数据都可以通过HTTP发送。客户端以及服务器指定使用适合的MIME-type内容类型。
 > - **无状态**：HTTP协议是无状态协议。无状态是指协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时它的应答就较快。
 
-### HTTP消息
+#### HTTP消息
 
 &emsp;&emsp;客户端通过发送给服务器一个HTTP**请求报文**与服务器交互，请求报文的格式包括**请求行**（request line）、**请求头**（header）、空行和**请求数据**。一般格式为：
 
@@ -58,7 +42,7 @@
 >
 > 其他...
 >
->  
+> 
 >
 > 请求数据...
 
@@ -81,7 +65,7 @@ Accept-Language: en, mi
 >
 > 其他...
 >
->  
+> 
 >
 > 响应数据...
 
@@ -104,13 +88,12 @@ Content-Type: text/plain
     </body>
 </html>
 ```
-
 >  注意：HTTP报文中换行采用CRLF（`\r\n`）
 
-### HTTP请求方法
+#### HTTP请求方法
 
 > &emsp;&emsp;根据 HTTP 标准，HTTP 请求可以使用多种请求方法。
->  &emsp;&emsp;HTTP1.0 定义了三种请求方法： GET, POST 和 HEAD 方法。
+> &emsp;&emsp;HTTP1.0 定义了三种请求方法： GET, POST 和 HEAD 方法。
 > &emsp;&emsp;HTTP1.1 新增了六种请求方法：OPTIONS、PUT、PATCH、DELETE、TRACE 和 CONNECT 方法。
 
 |  方法   | 描述                                                         |
@@ -125,7 +108,7 @@ Content-Type: text/plain
 |  TRACE  | 回显服务器收到的请求，主要用于测试或诊断。                   |
 |  PATCH  | 是对 PUT 方法的补充，用来对已知资源进行局部更新 。           |
 
-### HTTP响应头字段
+#### HTTP响应头字段
 
 |      响应头      | 说明                                                         |
 | :--------------: | :----------------------------------------------------------- |
@@ -142,7 +125,7 @@ Content-Type: text/plain
 |    Set-Cookie    | 设置和页面关联的Cookie。Servlet不应使用response.setHeader("Set-Cookie", ...)，而是应使用HttpServletResponse提供的专用方法addCookie。参见下文有关Cookie设置的讨论。 |
 | WWW-Authenticate | 客户应该在Authorization头中提供什么类型的授权信息？在包含401（Unauthorized）状态行的应答中这个头是必需的。例如，response.setHeader("WWW-Authenticate", "BASIC realm=＼"executives＼"")。 注意Servlet一般不进行这方面的处理，而是让Web服务器的专门机制来控制受密码保护页面的访问（例如.htaccess）。 |
 
-### HTTP状态码
+#### HTTP状态码
 
 &emsp;&emsp;HTTP 状态码由三个十进制数字组成，第一个十进制数字定义了状态码的类型。响应分为五类：信息响应(100–199)，成功响应(200–299)，重定向(300–399)，客户端错误(400–499)和服务器错误 (500–599)：
 
@@ -154,7 +137,7 @@ Content-Type: text/plain
 | 4xx  | 客户端错误，请求包含语法错误或无法完成请求（前端的锅）     |
 | 5xx  | 服务器错误，服务器在处理请求的过程中发生了错误（后端的锅） |
 
-&emsp;&emsp;集体的状态码如下：
+&emsp;&emsp;具体的状态码如下：
 
 | 状态码 |           状态码名称            | 中文描述                                                     |
 | :----: | :-----------------------------: | :----------------------------------------------------------- |
@@ -200,7 +183,7 @@ Content-Type: text/plain
 |  504   |        Gateway Time-out         | 充当网关或代理的服务器，未及时从远端服务器获取请求           |
 |  505   |   HTTP Version not supported    | 服务器不支持请求的HTTP协议的版本，无法完成处理               |
 
-## cURL
+### cURL
 
 &emsp;&emsp;cURL（transfer a URL）是一个通过URL传输数据的命令行工具，支持的协议包括DICT, FILE, FTP, FTPS, GOPHER, GOPHERS, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, MQTT, POP3, POP3S, RTMP, RTMPS, RTSP, SCP, SFTP, SMB, SMBS, SMTP, SMTPS, TELNET 和 TFTP。
 
@@ -208,9 +191,9 @@ Content-Type: text/plain
 
 > 本节关于cURL的使用方法参考了[Arch manual page curl(1)](https://man.archlinux.org/man/curl.1)。
 
-### 输入输出
+#### 输入输出
 
-#### 多URL匹配
+##### 多URL匹配
 
 &emsp;&emsp;当需要使用多个相似的URL时，可以使用[]和/或{}来匹配这些URL。
 
@@ -228,7 +211,7 @@ curl "http:/localhost:8080/{1-50:2}.png"
 
 > 注意：该功能由cURL提供，为避免shell的转义，需要将完整的URL置于双引号中。
 
-#### 输出重定向
+##### 输出重定向
 
 &emsp;&emsp;cURL默认将响应数据输出到标准输出，如有必要，可使用-o fileName或-O指定输出到文件。
 
@@ -239,7 +222,7 @@ curl $url
     -O --output-dir $dir     # 使用服务器上的文件名并指定储存目录
 ```
 
-#### 查看
+##### 查看
 
 ```shell
 curl $url
@@ -248,7 +231,7 @@ curl $url
     -S, --show-error    # 屏蔽除响应数据外的标准输出，但保留标准错误
 ```
 
-### 编辑请求头
+#### 编辑请求头
 
 ```shell
 curl $url
@@ -260,7 +243,7 @@ curl $url
     -H, --header $key:$value/@$file       # 添加/修改/删除额外的请求头字段
 ```
 
-### 认证/身份
+#### 认证/身份
 
 ```shell
 curl $url
@@ -271,7 +254,7 @@ curl $url
     -u, --user $user:$password        # 指定用户名、密码
 ```
 
-### 连接
+#### 连接
 
 ```shell
 curl $url
@@ -294,4 +277,16 @@ curl $url
     -x [$protocol://]$host[:$port]   # 使用代理
     -X, --request                    # 请求方式
 ```
+
+## Transport Layer
+
+### 端口
+
+&emsp;&emsp;端口用于区分同一设备上的应用，范围为0～65535，一般分为三类：
+
+> - 公认端口：0～1023，被预先定义的通信服务占据，在Linux系统上操作需要root权限
+> - 注册端口：1024～49151，分配给用户进程和某些应用，如Tomcat（8080），MySQL（3306），Oracle（1521）等。
+> - 私有端口：49152～65535
+
+
 

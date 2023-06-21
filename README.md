@@ -26,6 +26,10 @@ Some of my interesting and useful programming works and articles.
 
 + [Go_Learning_Essay](Articles/GoLearningEssay.md)： Go 学习笔记
 
+### 前端开发
+
++ [HTML_CSS_LearningEssay](Articles/HTMLCSSLearningEssay.md)：HTML&CSS 学习笔记
+
 ### 运维
 
 + [Python_Learning_Essay](Articles/PythonLearningEssay.md)： Python 学习笔记
@@ -35,7 +39,7 @@ Some of my interesting and useful programming works and articles.
 
 ### 通用基础知识
 
-+ [Web_Learning_Essay](Articles/WebLearningEssay.md)： Web 学习笔记
++ [CN_Learning_Essay](Articles/CNLearningEssay.md)： 计算机网络学习笔记
 + [Discrete_Math_Learning_Essay](Articles/DiscreteMathLearningEssay.md)： 离散数学学习笔记
 
 ### 编译构建/代码管理工具

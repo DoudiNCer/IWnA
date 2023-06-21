@@ -164,17 +164,282 @@ root ALL=(ALL) ALL
 
 ## Shell 与 Shell 脚本
 
-### Shell 、 Bash 与命令
+### 基本概念
 
+#### Terminal 与 TTY
 
+&emsp;&emsp;很久很久以前，计算机非常昂贵，一台计算机会配置多套终端（Terminal），即一个键盘与一台电传打字机。如今的“Terminal”（虚拟终端）一般是一个应用程序，担负读取输入和打印输出的任务。
 
-### 变量与转义
+&emsp;&emsp;TTY（TeleTYpewriter）是对电传打印机的抽象，是一套内核之上的操作内核的系统。如今，Linux 发行版一般提供多个TTY,我们使用 Ctrl + Alt —+ Fx（x为1～7的数字）在这些 TTY间切换，而虚拟终端、SSH 或 Telent 会使用一个“伪终端”（*pseudo-TTY*，PTY），由多个 PTS（pseudo-terminal slave）与一个PTMX（pseudo-terminal master）实现。
 
-### 重定向与管道
+&emsp;&emsp;我们可以使用命令`tty`查看正在使用的终端。
 
-### 正则表达式与文件处理
+#### Shell 及其实现
+
+&emsp;&emsp;Shell指一套解释、执行用户输入的命令的程序，不同的公司和团队开发出了多种 Shell 的实现，如 `ash`、`bash`、`dash`、`fish`、`sh`、`zsh`等。它们的语法有些许差异。如今，在 Shell 脚本方面，Bash 的语法已经成为了事实标准。
+
+#### login shell 与 non-login shell
+
+&emsp;&emsp;登录 shell（login shell）是指通过完整流程（包括验证用户名与密码）获得的 shell，如通过 TTY 登录、SSH登录得到的 Shell；非登录 Shell（non-login shell）是不需要完整流程获得的 Shell，如打开一个虚拟终端或直接在一个 Shell 中运行`bash`。
+
+> 0. 可查看`$0`的值来判断是否为 login shell，login shell 的`$0`类似`-bash`或`-zsh`；non-login shell 的`$0`为当前 shell。如`bash`或`/usr/bin/zsh`。
+> 1. 退出 login shell 可使用`exit`或`logout`；退出 non-login shell 只能使用`exit`
+
+### 命令与保留字
+
+&emsp;&emsp;有些命令是 Shell 提供的内置命令，如`cd`、`pwd`、`[`、`alias`等；有些是“外置”可执行文件，如`ls`、`mkdir`、`rm`等，这些命令从`$PATH`给出的目录中依次寻找。还有一些是 Shell 语法的保留字，如`if`、`fi`等。
+
+&emsp;&emsp;我们可以使用`alias`为命令设置别名，使用`ubalias`取消别名。如：
+
+```bash
+alias ll="ls -lh"
+unalias ll
+```
+
+> 0. 优先级顺序为 alias > build-in command > extra command
+>
+> 1. 可使用`which`命令查看匹配到的是哪一个
+>
+> 2. 对于与alias冲突的命令，可在其前面添加“\”来强制使用。如：
+>
+>     ```bash
+>     alias which=ls
+>     which
+>     \which
+>     ```
+> 3. sudo 只能执行外部命令
+> 4. 内置命令没有手册页，bash 提供了`help`命令来查看这些内置命令的帮助
+
+### Shell 语法
+
+#### 变量
+
+&emsp;&emsp;声明变量直接使用“变量名=变量值”，如：
+
+```shell
+name="Monroe"
+age=18
+married=false
+```
+
+&emsp;&emsp;使用变量可在变量名前加“\$”或使用"\${}"，如：
+
+```shell
+echo $PATH
+echo ${PATH}
+```
+
+&emsp;&emsp;默认变量为字符串，可使用`let` 来声明整型变量，或使用`declare`或`let`
+
+&emsp;&emsp;上述变量仅在当前 shell 中有效，可使用`export`或`declare -x`将使其设置为环境变量。使其可在子进程中访问到。
+
+&emsp;&emsp;对于 login shell，Bash 会依次加载`/etc/profile`、`/etc/profile.d/*`、`~/.bash_profile`、`~/.bashrc`、`/etc/bashrc`；对于 no-login shell，仅加载`~/.bashrc`与`/etc.bashrc`。
+
+&emsp;&emsp;有一些特殊的环境变量可供使用，如：
+
+|   name   |          meaning          |
+| :------: | :-----------------------: |
+|   \$0    |    当前 Shell/脚本名称    |
+| \$1、\$2 |     依次为传入的参数      |
+|   \$*    |      传入的所有参数       |
+|   \$?    |    上一条命令的状态码     |
+|  \$PS1   |        命令提示符         |
+|  \$HOME  | 用户家目录，也可用`~`代替 |
+|  \$PATH  |      以`:`分割的PATH      |
+|  \$path  |      以` `分割的PATH      |
+
+#### 运算符
+
+<table>
+    <tr>
+        <th>type</th>
+        <th>signal</th>
+        <th>usage</th>
+    </tr>
+    <tr>
+        <td>算术运算符</td>
+        <td>+ - * / %</td>
+        <td>算术运算</td>
+    </tr>
+    <tr>
+        <td>逻辑运算符</td>
+        <td>| &</td>
+        <td>逻辑运算</td>
+    </tr>
+    <tr>
+        <td>比较运算符</td>
+        <td>== != < > </td>
+        <td>比较运算</td>
+    </tr>
+    <tr>
+        <td rowspan=3>引号</td>
+        <td>''</td>
+        <td>所有内容保留原样</td>
+    </tr>
+    <tr>
+        <td>""</td>
+        <td>仅 $ ` \ 保留作用</td>
+    </tr>
+    <tr>
+        <td>``</td>
+        <td>内容作为命令执行，将其输出作为结果</td>
+    </tr>
+    <tr>
+        <td rowspan=2>括号</td>
+        <td> (()) </td>
+        <td> 算术运算 </td>
+    </tr>
+    <tr>
+        <td> () </td>
+        <td>执行命令</td>
+    </tr>
+    <tr>
+        <td rowspan=3>命令连接</td>
+        <td> || </td>
+        <td>前面的命令执行失败后执行后面的命令</td>
+    </tr>
+    <tr>
+        <td> && </td>
+        <td>前面的命令执行成功后执行后面的命令</td>
+    </tr>
+    <tr>
+        <td>;</td>
+        <td>两条命令串行执行</td>
+    </tr>
+    <tr>
+        <td>后台执行</td>
+        <td>&</td>
+        <td>用在命令结尾，使命令不占用输入输出，但shell关闭i后会停止执行，可与 nohup 搭配实现后台执行</td>
+    </tr>
+</table>
+
+#### 管道与重定向
+
+&emsp;&emsp;Linux 下一个程序开始运行时会打开三个文件描述符（位于`/proc/$PID/fd`）0,1和2,分别对应标准输入（STDIN）、标准输出（STDOUT）和标准错误（STDERR）。使用`|`连接两个命令，可将前一个命令的标准输出作为第二个命令的标准输入，如：
+
+```bash
+ps aux | grep bash
+```
+
+&emsp;&emsp;可以用`>`或`>>`来重定向标准输出和标准错误，用`<`或`<<`来重定向标准输入。重定向既可以重定向至文件（默认行为），也可使用`&`来指定重定向至文件描述符。使一个 Java 项目在后台运行并将其标准输出与标准错误重定向至日志文件的命令为：
+
+```bash
+nohup java -jar test.jar &> log.txt &
+# 或
+nohup java -jar test.jar > log.txt 2>&1 &
+```
+
+&emsp;&emsp;也可使用`tee`命令更灵活地处理标准输入、标准输出与标准错误。
+
+#### 条件语句
+
+&emsp;&emsp;可使用`test`、`[`或`[[`来进行条件判断。注意，Shell 中使用 0 表示 `true`，1 表示`false`。
+
+&emsp;&emsp;可使用 test 来判断文件的属性或判断两个文件的关系，也可使用它的特殊标志位或上述逻辑运算符进行字符串的判断（逻辑运算符不支持数字），如：
+
+```bash
+# 判断两个数字的大小
+test $n1 -eq $n2
+# 判断文件是否存在
+test -a $fileDir
+```
+
+&emsp;&emsp;可使用`[]`包裹 test 的参数达到同样的目的。
+
+&emsp;&emsp;`[[`与`[`类似，但可以使用逻辑运算发比较数字或使用`=~`按照正则表达式进行匹配。
+
+#### 分支与循环
+
+&emsp;&emsp;Shell 中分支语句可使用`if`式或`case`式。如：
+
+```shell
+#！ /usr/bin/env bash
+
+read -p "请输入一个整数：" n
+if [[ $n < 3 ]]; then
+    echo "$n < 3."
+elif [[ $n < 5 ]]; then
+    echo "3 <= $n < 5."
+else 
+    echo "$n >= 5"
+fi
+```
+
+&emsp;&emsp;或：
+
+```shell
+#！ /usr/bin/env bash
+
+read -p "请输入一个整数：" n
+case $n in :
+    1)
+        echo "One"
+        ;;
+    2)
+        echo "Two"
+        ;;
+    3)
+        echo "Three"
+        ;;
+    *)
+        echo "Error"
+        ;;
+esac
+```
+
+&emsp;&emsp;Shell 中可使用`for`、`while`或`until`实现循环。如：
+
+```shell
+#！ /usr/bin/env bash
+
+let n=1
+while [[ $n -le 100 ]]
+do
+    echo "n = $n"
+    ((n++))
+done
+```
+
+```shell
+#！ /usr/bin/env bash
+
+let n=1
+until [[ $n -ge 100 ]]
+do
+    echo "n = $n"
+    ((n++))
+done
+```
 
 ### Shell 脚本
+
+&emsp;&emsp;一般 Shell 脚本文件以“sh”作为扩展名（也不一定），其格式大致如下：
+
+```shell
+#! /bin/sh
+
+echo "Hello Shell!"
+```
+
+&emsp;&emsp;其中第一行开头的“#!”成为“Shebang”，在“直接运行” Shell 脚本时指出要使用的解释器。为了保证其兼容性，建议使用“/usr/bin/env bash”来自动获取本机 bash 的路径。
+
+&emsp;&emsp;运行 Shell 脚本可以使用脚本解释程序运行，该脚本会在新进程内运行。如：
+
+```bash
+bash foo.sh
+```
+
+&emsp;&emsp;也可以使用 source 在当前 shell 内运行，如：
+
+```bash
+source foo.sh
+```
+
+&emsp;&emsp;或者在确定脚本有可执行权限时直接运行：
+
+```bash
+./foo.sh
+```
 
 ## Systemd
 
