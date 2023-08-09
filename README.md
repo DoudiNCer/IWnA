@@ -46,7 +46,7 @@ Some of my interesting and useful programming works and articles.
 
 + [CMake_Essay](Articles/CMake.md)： CMake 学习笔记
 
-### .NET Core相关
+### Microsoft .NET 相关
 
 + [CSharp_Learning_Essay](Articles/CSharpLearningEssay.md) C# 学习笔记
 
