@@ -30,3 +30,121 @@
 - **Pod**：一组共享网络的 Container 的集合，是 Kube 集群部署的最小单元。Pod 的生命周期是短暂的
 - **Controller**：控制 Pod 的生命周期、部署方式等
 - **Service**：定义 Pod 的访问规则
+
+## 集群搭建
+
+&emsp;&emsp;部署 Kube 集群主要有两种方式：Kubeadm 和手动部署二进制程序。
+
+&emsp;&emsp;对于每个节点，都应进行如下操作：
+
+- 关闭 Firewalld：
+
+    ```bash
+    sudo systemctl disable firewalld --now
+    ```
+
+- 关闭 SELinux：
+
+    ```bash
+    sudo setendorc 0
+    sudo sed -i 's/enforcing/disables/'/etc/selinux/config
+    ```
+
+- 关闭 swap：
+
+    ```bash
+    # 传统swap 分区
+    sudo swapoff -a
+    sudo sed -i '/ swap / s/^/#/' /etc/fstab
+    # zram
+    sudo swapoff /dev/zram0
+    sudo modprobe -r zram
+    # Systemd 接管的 swap
+    systemctl --type swap
+    sudo systemctl mask "dev-XYZ.swap"
+    reboot
+    ```
+
+- 在 Master 的 Hosts 中添加 Worker 的相关信息
+
+- 加载相关内核模块：
+
+    ```bash
+    cat > /etc/modules-load.d/k8s.conf << EOF
+    overlay
+    br_netfilter
+    EOF
+    # 验证
+    lsmod | grep br_netfilter
+    lsmod | grep overlay
+    ```
+
+- 将桥接的 IPv4 流量传递给 iptables 的域:
+
+    ```bash
+    cat > /etc/sysctl.d/k8s.conf << EOF
+    net.bridge.bridge-nf-call-iptables  = 1
+    net.bridge.bridge-nf-call-ip6tables = 1
+    net.ipv4.ip_forward                 = 1
+    EOF
+    # 不重启生效
+    sudo sysctl --system
+    # 验证
+    sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
+    ```
+
+### Kubeadm
+
+&emsp;&emsp;Kubeadm 是 Kubernetes 社区推出的用于搭建 Kube 集群的工具，操作简单快速，受到广泛使用。
+
+&emsp;&emsp;对于每个节点，安装 `docker`、`kubeadm`、`kubelet`和`kubectl`并进行`systemctl enable kubelet --now`
+
+&emsp;&emsp;在 Master Node 初始化集群：
+
+```bash
+kubeadm init \
+  # 当前节点的 IP 地址
+  --apiserver-advertise-address=192.168.31.61 \
+  # 镜像地址
+  --image-repository registry.aliyuncs.com/google_containers \
+  --kubernetes-version v1.17.0 \
+  --service-cidr=10.96.0.0/12 \
+  --pod-network-cidr=10.244.0.0/16
+```
+
+&emsp;&emsp;在 Master Node 完成基本配置：
+
+```bash
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+&emsp;&emsp;在 Master Node 查看集群中的 Node：
+
+```bash
+kubectl get nodes
+```
+
+&emsp;&emsp;将 Worker Node 加入集群：
+
+```bash
+kubeadm join xxx:xxx --token xxx.xxx \
+  -- discovery-token-ca-cert-hash xxx
+```
+
+&emsp;&emsp;默认 Token 有效期为 24 小时，过期后可在 Master Node 重新生成：
+
+```bash
+kubeadm token create --print-join-command
+```
+
+&emsp;&emsp;在 Master Node 部署 CNI：
+
+```bash
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+```
+
+### 手动部署
+
+&emsp;&emsp;首先部署ETCD
