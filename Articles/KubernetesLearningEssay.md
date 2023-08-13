@@ -7,6 +7,8 @@
 > - Linux
 > - Docker
 
+> 官方文档：https://kubernetes.io/zh-cn/docs/
+
 ## 基本概念
 
 ### 集群组件
@@ -148,3 +150,49 @@ kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/
 ### 手动部署
 
 &emsp;&emsp;首先部署ETCD
+
+## 集群操作
+
+&emsp;&emsp;操作 Kube 集群的主要工具是`kubectl`，其命令格式为`kubectl [command] [TYPE] [NAME] [flags] `。
+
+> 0. 更多信息参考https://kubernetes.io/zh-cn/docs/reference/kubectl/
+
+&emsp;&emsp;为了使操作可以复用，可以编写资源清单文件。资源编排文件采用 YAML 格式如：
+
+```yaml
+# API 版本
+apiVersion: apps/v1
+# 资源类型
+kind: Deployment
+# 元数据
+metadata: 
+    name: nginx-deployment
+    namespace: default
+# 志愿规格
+spec: 
+    # 副本数量
+    replicas: 3
+    # 标签选择器
+    selector: 
+        matchLabels: 
+            app: nginx
+    # Pod 模板
+    template: 
+        metadata: 
+            lanels: 
+                app: nginx
+        # Pod 规格
+        spec: 
+            # 容器元数据
+            containers: 
+                - name: nginx
+                
+```
+
+&emsp;&emsp;可以通过`kubectl create` 的 `-o yaml --dry-run` 生成 资源清单文件而不进行实际操作，也可以使用`苦kubectl get` 的 `-o=yaml --export` 导出资源清单文件。如：
+
+```bash
+kubectl create deployment web --image=nginx -o yaml --dry-run
+kubectl get deploy nginx -o=yaml --export
+```
+
