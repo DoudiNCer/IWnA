@@ -12,6 +12,7 @@ Some of my interesting and useful programming works and articles.
 
 + [MySQL_Learning_Essay](Articles/MySQLLearningEssay.md)： MySQL 学习笔记
 + [Redis_Learning_Essay](Articles/RedisLearningEssay.md)： Redis 学习笔记
++ [ElasticSearch_Learning_Essay](Articles/ElasticSearchLearningEssay.md)：ElasticSearch 学习笔记
 
 #### Java 后端
 
