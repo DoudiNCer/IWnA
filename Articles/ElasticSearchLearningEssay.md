@@ -87,3 +87,92 @@ POST /_analyze
 </properties>
 ```
 
+## 索引库操作
+
+&emsp;&emsp;创建一个索引库的昂发如下：
+
+```http
+PUT /user_info
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "integer",
+        "index": false
+      },
+      "name": {
+        "type": "keyword"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "ik_smart"
+      }
+    }
+  }
+}
+```
+
+&emsp;&emsp;对于每一个 mapping，有以下几个常用属性：
+
+> - `type`：数据类型，如`byte`、`short`、`integer`、`long`、`float`、`double`、`text`（可分词的文本）、`keyword`（不参与分词的文本）、`boolean`、`date`、`object`等
+> - `index`：是否创建倒排索引，默认为`true`
+> - `analyzer`：分词器
+> - `properties`：子属性
+
+&emsp;&emsp;查看、删除索引库的操作如下：
+
+```http
+GET /user_info
+```
+
+```http
+DELETE /user_info
+```
+
+&emsp;&emsp;由于修改索引库结构会导致倒排索引失效，Elasksearch 禁止修改索引库结构。但是 ES 允许为索引库添加新字段，如：
+
+```http
+PUT /user_info/_mapping
+{
+  "properties": {
+    "age": {
+      "type": "integer"
+    }
+  }
+}
+```
+
+## 文档操作
+
+&emsp;&emsp;ES插入文档的操作示例如下：
+
+```http
+POST /user_info/_doc/1
+{
+  "id": 1,
+  "age": "18",
+  "name": "猫猫学姐",
+  "description": "可爱的猫猫学姐"
+}
+```
+
+&emsp;&emsp;查询、删除的示例如下：
+
+```http
+GET /user_info/_doc/1
+```
+
+```http
+DELETE /user_info/_doc/1
+```
+
+&emsp;&emsp;若要进行全量修改（将旧文档替换为新文档），可直接`PUT`相同 ID 的文档；进行部分修改的示例如下：
+
+```http
+POST /user_info/_update/1
+{
+  "description": "可爱又聪明的猫猫学姐"
+}
+```
+
+> 0. `PUT`一个不存在的文档会创建新文档
