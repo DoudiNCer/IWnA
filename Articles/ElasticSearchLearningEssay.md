@@ -118,6 +118,7 @@ PUT /user_info
 > - `index`：是否创建倒排索引，默认为`true`
 > - `analyzer`：分词器
 > - `properties`：子属性
+> - `copy_to`：指定一个虚拟字段“包含”当前字段，便于搜索
 
 &emsp;&emsp;查看、删除索引库的操作如下：
 
@@ -176,3 +177,24 @@ POST /user_info/_update/1
 ```
 
 > 0. `PUT`一个不存在的文档会创建新文档
+
+## RestClient
+
+&emsp;&emsp;ElasticSearch 提供了多种语言的 API（https://www.elastic.co/guide/en/elasticsearch/client/index.html），下面以 Java 的为例进行讲解。
+
+&emsp;&emsp;首先导入依赖：
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
+<dependency>
+    <groupId>org.elasticsearch.client</groupId>
+    <artifactId>elasticsearch-rest-high-level-client</artifactId>
+    <version>7.17.6</version>
+</dependency>
+```
+
+&emsp;&emsp;然后在`<properties></properties>` 中覆盖其版本：
+
+```xml
+<elasticsearch.version>7.17.6</elasticsearch.version>
+```
