@@ -12,6 +12,7 @@ Some of my interesting and useful programming works and articles.
 
 + [MySQL_Learning_Essay](Articles/MySQLLearningEssay.md)： MySQL 学习笔记
 + [Redis_Learning_Essay](Articles/RedisLearningEssay.md)： Redis 学习笔记
++ [RabbitMQ_Learning_Essay](Articles/RabbitMQLearningEssay.md)： RabbitMQ 学习笔记
 
 #### Java 后端
 
