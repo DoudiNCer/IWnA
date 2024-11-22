@@ -159,3 +159,19 @@ duplicate(column: "_stop", as: "_time")
 ```flux
 window(every: inf)
 ```
+
+## Flux
+
+Flux 是一门开源的数据脚本语言，用于从包括但不限于时序数据库（InfluxDB）、关系型SQL数据库和CSV中查询、分析和处理数据。
+
+> - Flux 文档：https://docs.influxdata.com/flux/v0/
+> - 在未来的InfluxDB v3 中，将放弃对 Flux 的支持而改用 InfluxQL：https://docs.influxdata.com/flux/v0/future-of-flux/
+
+### 数据模型
+
+- **表流**（Stream of Tables）：不少于0个表的集合，是Flux操作的对象。
+- **表**（Table）：按组键进行分组的列的集合
+- **列**（Column）：相同基本类型值的集合
+- **行**（Row）：相关联的列值的集合
+- **组键**（Group key）：组键定义使用哪些列对表流中的表进行分组。表流中的每个表都代表一个唯一的组键实例。表中的所有行的每个组键列都包含相同的值。
+
