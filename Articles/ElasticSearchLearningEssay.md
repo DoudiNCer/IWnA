@@ -1,4 +1,4 @@
-# ElasticSearch 笔记
+#  ElasticSearch 笔记
 
 &emsp;&emsp;ElasticSearch（ES）是一个开源的搜索引擎，基于 Lucene 开发。
 
@@ -89,7 +89,7 @@ POST /_analyze
 
 ## 索引库操作
 
-&emsp;&emsp;创建一个索引库的昂发如下：
+&emsp;&emsp;&emsp;创建一个索引库的方法如下：
 
 ```http
 PUT /user_info
@@ -130,7 +130,7 @@ GET /user_info
 DELETE /user_info
 ```
 
-&emsp;&emsp;由于修改索引库结构会导致倒排索引失效，Elasksearch 禁止修改索引库结构。但是 ES 允许为索引库添加新字段，如：
+&emsp;&emsp;由于修改索引库结构会导致倒排索引失效，Elasticsearch 禁止修改索引库结构。但是 ES 允许为索引库添加新字段，如：
 
 ```http
 PUT /user_info/_mapping
@@ -143,58 +143,90 @@ PUT /user_info/_mapping
 }
 ```
 
+&emsp;&emsp;由于索引的不可变性，要修改索引只能通过reindex实现：
+
+```http
+POST _reindex
+{
+    "source": {
+        "index": "src_idx"
+    },
+    "dest": {
+        "index": "desc_idx "
+    }
+}
+```
+
+> 0. 实际上，reindex的工作是将source的文档复制到desc中，当source为空时无任何操作
+
 ## 文档操作
 
-&emsp;&emsp;ES插入文档的操作示例如下：
+&emsp;&emsp;ES创建文档的操作示例如下：
 
 ```http
-POST /user_info/_doc/1
+PUT <index_name>/_doc/<id>
 {
-  "id": 1,
-  "age": "18",
-  "name": "猫猫学姐",
-  "description": "可爱的猫猫学姐"
+	# doc content
 }
 ```
 
-&emsp;&emsp;查询、删除的示例如下：
-
 ```http
-GET /user_info/_doc/1
-```
-
-```http
-DELETE /user_info/_doc/1
-```
-
-&emsp;&emsp;若要进行全量修改（将旧文档替换为新文档），可直接`PUT`相同 ID 的文档；进行部分修改的示例如下：
-
-```http
-POST /user_info/_update/1
+PUT <index_name>/_create/<id>
 {
-  "description": "可爱又聪明的猫猫学姐"
+	# doc content
 }
 ```
 
-> 0. `PUT`一个不存在的文档会创建新文档
-
-## RestClient
-
-&emsp;&emsp;ElasticSearch 提供了多种语言的 API（https://www.elastic.co/guide/en/elasticsearch/client/index.html），下面以 Java 的为例进行讲解。
-
-&emsp;&emsp;首先导入依赖：
-
-```xml
-<!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
-<dependency>
-    <groupId>org.elasticsearch.client</groupId>
-    <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.17.6</version>
-</dependency>
+```http
+POST <index_name>/_create/<id>
+{
+	# doc content
+}
 ```
 
-&emsp;&emsp;然后在`<properties></properties>` 中覆盖其版本：
+&emsp;&emsp;查询、删除指定文档的示例如下：
 
-```xml
-<elasticsearch.version>7.17.6</elasticsearch.version>
+```http
+GET <index_name>/_doc/<id>
 ```
+
+```http
+DELETE <index_name>/_doc/<id>
+```
+
+&emsp;&emsp;文档的内容分为`source`和`shore`，获取文档时使用`_source`、`_source_include`和`_source_exclude`对获取的source进行过滤
+
+```http
+GET <index_name>/_doc/<id>?_source=field1,field2
+```
+
+&emsp;&emsp;若要部分修改文档，要使用`_update` API，如：
+
+```http
+POST  <index_name>/_update/<id>
+{
+	"doc": {
+		"field1": "value1",
+		"field2": "value2 "
+	}
+}
+```
+
+> 0. 文档操作（`_doc`）的参数之一为 `op_type` ，默认为`index`（等同于`_index`），表示创建或更新数据，当指定为create（等同于`_create  `）时仅创建，ID存在则拒绝工作
+> 1. `POST <index_name>/_doc`可自动生成ID创建新文档
+> 2. 也可使用`_source` API只获取文档的source部分
+> 3. 在ES 7.x中，`POST  <index_name>/_update/<id>`可写为`POST  <index_name>/——doc/<id>/_update`，但在ES8.x中该API已弃用 
+
+&emsp;&emsp;若需要批量创建/修改/删除文档，可使用 `_bulk` API：
+
+```http
+ POST /_bulk
+ {"create": {"_index": "test_bulk","_id": 1}}
+ {"name": "foo"}
+ {"create": {"_index": "test_bulk","_id": 2}}
+ {"name": "bar"}
+```
+
+> 0. `_bulk` API的操作法方式包括创建（`create`）、索引（`index`）、更新（`update`）和删除（`delete`）
+> 1. `_bulk` API的请求体每一组必须为两行，每一行一个JSON 
+> 2. `_bulk` API不具有原子性
