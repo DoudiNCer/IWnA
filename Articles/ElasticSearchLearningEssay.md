@@ -94,31 +94,11 @@ POST /_analyze
 ```http
 PUT /user_info
 {
-  "mappings": {
-    "properties": {
-      "id": {
-        "type": "integer",
-        "index": false
-      },
-      "name": {
-        "type": "keyword"
-      },
-      "description": {
-        "type": "text",
-        "analyzer": "ik_smart"
-      }
-    }
-  }
+  "alias": {},
+  "settings": {},
+  "mappings": {}
 }
 ```
-
-&emsp;&emsp;对于每一个 mapping，有以下几个常用属性：
-
-> - `type`：数据类型，如`byte`、`short`、`integer`、`long`、`float`、`double`、`text`（可分词的文本）、`keyword`（不参与分词的文本）、`boolean`、`date`、`object`等
-> - `index`：是否创建倒排索引，默认为`true`
-> - `analyzer`：分词器
-> - `properties`：子属性
-> - `copy_to`：指定一个虚拟字段“包含”当前字段，便于搜索
 
 &emsp;&emsp;查看、删除索引库的操作如下：
 
@@ -129,35 +109,6 @@ GET /user_info
 ```http
 DELETE /user_info
 ```
-
-&emsp;&emsp;由于修改索引库结构会导致倒排索引失效，Elasticsearch 禁止修改索引库结构。但是 ES 允许为索引库添加新字段，如：
-
-```http
-PUT /user_info/_mapping
-{
-  "properties": {
-    "age": {
-      "type": "integer"
-    }
-  }
-}
-```
-
-&emsp;&emsp;由于索引的不可变性，要修改索引只能通过reindex实现：
-
-```http
-POST _reindex
-{
-    "source": {
-        "index": "src_idx"
-    },
-    "dest": {
-        "index": "desc_idx "
-    }
-}
-```
-
-> 0. 实际上，reindex的工作是将source的文档复制到desc中，当source为空时无任何操作
 
 ## 文档操作
 
@@ -230,3 +181,78 @@ POST  <index_name>/_update/<id>
 > 0. `_bulk` API的操作法方式包括创建（`create`）、索引（`index`）、更新（`update`）和删除（`delete`）
 > 1. `_bulk` API的请求体每一组必须为两行，每一行一个JSON 
 > 2. `_bulk` API不具有原子性
+
+## Mapping
+
+&emsp;&emsp;`Mapping` 是ES index中对数据结构的定义，可使用`_mapping` API 查看某index的 mapping 信息，如：
+
+```http
+GET  <index_name>/_mapping 
+```
+
+&emsp;&emsp;默认情况下，ES会根据插入/更新的文档自动修改mapping的properties，这称为 `dynamic mapping` 但是由于ES不支持隐式类型转换且Mapping不可修改已有的字段，因此自动映射应谨慎使用。
+
+&emsp;&emsp;手动创建 Mapping 的示例如下：
+
+```http
+PUT user
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "integer",
+      },
+      "name": {
+        "type": "keyword"  
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "ik_smart"
+        "field": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+&emsp;&emsp;对于每一个 mapping，有以下几个常用属性：
+
+> - `type`：数据类型，如`byte`、`short`、`integer`、`long`、`float`、`double`、`text`（可分词的文本）、`keyword`（不参与分词的文本）、`boolean`、`date`、`object`等
+> - `index`：是否创建倒排索引，默认为`true`
+> - `analyzer`：分词器
+> - `properties`：子属性
+> - `copy_to`：指定一个虚拟字段“包含”当前字段，便于搜索
+
+&emsp;&emsp;由于修改mapping的数据类型等会导致倒排索引失效，Elasticsearch 禁止修改部分属性。但是 可以添加新字段或修改某些属性，如：
+
+```http
+PUT /user_info/_mapping
+{
+  "properties": {
+    "age": {
+      "type": "integer"
+    }
+  }
+}
+```
+
+&emsp;&emsp;由于索引的不可变性，要修改索引只能通过reindex实现：
+
+```http
+POST _reindex
+{
+    "source": {
+        "index": "src_idx"
+    },
+    "dest": {
+        "index": "desc_idx "
+    }
+}
+```
+
+> 0. 可以使用`GET  <index_name>/_mapping/field/<field_name>`查看指定字段的mapping信息
+> 1. 实际上，reindex的工作是将source的文档复制到desc中，当source为空时无任何操作
