@@ -256,3 +256,17 @@ POST _reindex
 
 > 0. 可以使用`GET  <index_name>/_mapping/field/<field_name>`查看指定字段的mapping信息
 > 1. 实际上，reindex的工作是将source的文档复制到desc中，当source为空时无任何操作
+
+## 分词器 
+
+&emsp;&emsp;文本分析器（Text Analyzer）用于将可分词的数据按照预先制定的分词规则分为更小粒度的词项（term）。分词器在 写入/修改文档建立索引（Index Time）和搜索（Search Time ）时工作。  
+
+&emsp;&emsp;分词器包括切词器（Tokenizer）、词项过滤器（Token Filter）和 字符过滤器（Character Filter），而分词的步骤包括切词（word segmentation）、归一化（normalization）、去重（distinct）和字典序（sort）。 
+
+&emsp;&emsp;Token Filter在切词后对词项进行处理，而Character Filter则在切词前对字符进行处理。
+
+&emsp;&emsp;在自定义分词器时，必须指定一个Tokenizer，而Token Filter和Character Filter的可以有0个或多个。 
+
+&emsp;&emsp;归一化（Normalization）指对原始文档进行 大小写统一、同义词替换、删除停用等操作来达到提高被匹配率和提高搜索效率的目的。Normalizer只包含Token Filter和Character Filter，用于不能被分词 的 keyword
+
+> 0. 分词器仅加工并返回数据，不会修改原始数据  
